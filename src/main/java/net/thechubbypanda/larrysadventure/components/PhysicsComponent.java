@@ -20,4 +20,8 @@ public class PhysicsComponent implements Component {
 	public Vector2 getPosition() {
 		return body.getPosition().scl(PPM);
 	}
+
+	public float getRotation() {
+		return body.getAngle();
+	}
 }

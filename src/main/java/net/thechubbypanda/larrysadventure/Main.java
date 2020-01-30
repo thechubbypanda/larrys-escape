@@ -11,14 +11,11 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import net.thechubbypanda.larrysadventure.components.AnimationComponent;
@@ -27,6 +24,7 @@ import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.components.SpriteComponent;
 import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
 import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
+import net.thechubbypanda.larrysadventure.scripts.PlayerScript;
 import net.thechubbypanda.larrysadventure.systems.*;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
@@ -98,6 +96,7 @@ public class Main extends ApplicationAdapter {
 		body.createFixture(fdef);
 
 		player.add(new PhysicsComponent(body));
+		player.add(new PlayerScript());
 
 		//player.add(new LightComponent(rayHandler, 150f, body));
 		engine.addEntity(player);
@@ -111,6 +110,7 @@ public class Main extends ApplicationAdapter {
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new LightSystem());
 		engine.addSystem(new AnimationSystem());
+		engine.addSystem(new ScriptSystem());
 		InputSystem inputSystem = new InputSystem(b2dCamera, world, rayHandler, player);
 		Gdx.input.setInputProcessor(inputSystem);
 		engine.addSystem(inputSystem);
@@ -161,7 +161,7 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		world.dispose();
-		//rayHandler.dispose();
+		rayHandler.dispose();
 		batch.dispose();
 		assets.dispose();
 		//currentLevel.dispose();

@@ -15,14 +15,11 @@ import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 
 public class InputSystem extends EntitySystem implements InputProcessor {
 
-	private Engine engine;
 	private OrthographicCamera b2dCamera;
 	private World world;
 	private RayHandler rayHandler;
 	private PhysicsComponent playerPhysicsComponent;
 	//private AnimationComponent playerAnimationComponent;
-
-	private final Vector2 vel = new Vector2();
 
 	public InputSystem(OrthographicCamera b2dCamera, World world, RayHandler rayHandler, Entity player) {
 		super(-1);
@@ -31,39 +28,6 @@ public class InputSystem extends EntitySystem implements InputProcessor {
 		this.rayHandler = rayHandler;
 		playerPhysicsComponent = player.getComponent(PhysicsComponent.class);
 		//playerAnimationComponent = player.getComponent(AnimationComponent.class);
-	}
-
-	@Override
-	public void addedToEngine(Engine engine) {
-		super.addedToEngine(engine);
-		this.engine = engine;
-	}
-
-	@Override
-	public void update(float deltaTime) {
-		vel.setZero();
-
-		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-			vel.y += 1;
-			//playerAnimationComponent.play("up");
-		} else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-			vel.y -= 1;
-			//playerAnimationComponent.play("down");
-		}
-
-		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-			vel.x -= 1;
-			//playerAnimationComponent.play("left");
-		} else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			vel.x += 1;
-			//playerAnimationComponent.play("right");
-		}
-
-		if (vel.len2() <= 0) {
-			//playerAnimationComponent.setToInitialFrame();
-		}
-
-		playerPhysicsComponent.body.setLinearVelocity(vel.nor());
 	}
 
 	@Override
