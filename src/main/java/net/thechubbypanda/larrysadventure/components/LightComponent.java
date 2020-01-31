@@ -5,7 +5,7 @@ import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.physics.box2d.Body;
-import net.thechubbypanda.larrysadventure.Constants;
+import net.thechubbypanda.larrysadventure.Globals;
 
 public class LightComponent implements Component {
 
@@ -13,7 +13,7 @@ public class LightComponent implements Component {
 	public float initialDistance;
 
 	public LightComponent(RayHandler rayHandler, float distance, Body body) {
-		initialDistance = distance / Constants.PPM;
+		initialDistance = distance / Globals.PPM;
 		light = new PointLight(rayHandler, (int) distance / 2, Color.WHITE, initialDistance, 0, 0);
 		light.attachToBody(body);
 		light.setIgnoreAttachedBody(true);
@@ -22,8 +22,8 @@ public class LightComponent implements Component {
 	}
 
 	public LightComponent(RayHandler rayHandler, float distance, float x, float y) {
-		initialDistance = distance / Constants.PPM;
-		light = new PointLight(rayHandler, (int) distance / 2, Color.WHITE, initialDistance, x / Constants.PPM, y / Constants.PPM);
+		initialDistance = distance / Globals.PPM;
+		light = new PointLight(rayHandler, (int) distance / 2, Color.WHITE, initialDistance, x / Globals.PPM, y / Globals.PPM);
 		light.setStaticLight(true);
 		// TODO: use filtering
 		light.setXray(true);
