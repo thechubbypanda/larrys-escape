@@ -9,7 +9,7 @@ import static org.lwjgl.opengl.GL11.glClear;
 public class GLInitSystem extends EntitySystem {
 
 	public GLInitSystem() {
-		super(Globals.SystemPriority.GLINIT);
+		super(Globals.SystemPriority.GL_INIT);
 	}
 
 	@Override

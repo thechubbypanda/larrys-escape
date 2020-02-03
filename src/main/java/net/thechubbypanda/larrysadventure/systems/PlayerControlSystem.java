@@ -18,7 +18,7 @@ public class PlayerControlSystem extends IteratingSystem {
 	private final Vector2 vel = new Vector2();
 
 	public PlayerControlSystem() {
-		super(Family.all(PlayerComponent.class, PhysicsComponent.class).get());
+		super(Family.all(PlayerComponent.class).get());
 	}
 
 	@Override
@@ -45,6 +45,14 @@ public class PlayerControlSystem extends IteratingSystem {
 			//playerAnimationComponent.setToInitialFrame();
 		}
 
-		physicsMapper.get(entity).body.setLinearVelocity(vel.nor());
+		if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+			physicsMapper.get(entity).setRotationalVelocity(-1);
+		} else if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+			physicsMapper.get(entity).setRotationalVelocity(1);
+		} else {
+			physicsMapper.get(entity).setRotationalVelocity(0);
+		}
+
+		physicsMapper.get(entity).setLinearVelocity(vel.nor());
 	}
 }

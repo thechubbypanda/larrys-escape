@@ -23,6 +23,6 @@ public class PhysicsEntityListener implements EntityListener {
 
 	@Override
 	public void entityRemoved(Entity entity) {
-		world.destroyBody(physicsMapper.get(entity).body);
+		physicsMapper.get(entity).removeBody(world);
 	}
 }
