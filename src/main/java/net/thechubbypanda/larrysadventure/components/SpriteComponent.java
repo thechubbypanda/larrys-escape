@@ -13,6 +13,7 @@ public class SpriteComponent implements Component {
 	public SpriteComponent(Texture texture) {
 		sprite = new Sprite(texture);
 		sprite.setCenter(0, 0);
+		sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2);
 	}
 
 	public SpriteComponent(TextureRegion textureRegion) {
@@ -22,5 +23,9 @@ public class SpriteComponent implements Component {
 
 	public void setPosition(Vector2 position) {
 		sprite.setCenter(position.x, position.y);
+	}
+
+	public Vector2 getPosition() {
+		return new Vector2(sprite.getX() + sprite.getWidth() / 2, sprite.getY() + sprite.getHeight() / 2);
 	}
 }

@@ -1,4 +1,4 @@
-//package net.thechubbypanda.larrysadventure.entities;
+//package net.thechubbypanda.larrysadventure.old.entities;
 //
 //import com.badlogic.gdx.Gdx;
 //import com.badlogic.gdx.Input;

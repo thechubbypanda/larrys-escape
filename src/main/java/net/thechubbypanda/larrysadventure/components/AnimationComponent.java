@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import net.thechubbypanda.larrysadventure.Utils;
 
@@ -18,6 +19,7 @@ public class AnimationComponent implements Component {
 	public float stateTime;
 
 	private final Vector2 position = new Vector2();
+	private float rotation = 0;
 
 	public AnimationComponent() {
 		animations = new HashMap<>();
@@ -41,11 +43,15 @@ public class AnimationComponent implements Component {
 	}
 
 	public void draw(Batch batch) {
-		Texture texture = currentAnimation.getKeyFrame(stateTime);
-		batch.draw(texture, position.x - texture.getWidth()/2f, position.y - texture.getHeight()/2f);
+		TextureRegion texture = new TextureRegion(currentAnimation.getKeyFrame(stateTime));
+		batch.draw(texture, position.x - texture.getRegionWidth()/2f, position.y - texture.getRegionHeight()/2f, 0, 0, texture.getRegionWidth(), texture.getRegionHeight(), 1, 1, rotation);
 	}
 
 	public void setPosition(Vector2 position) {
 		this.position.set(position);
+	}
+
+	public void setRotation(float rotation) {
+		this.rotation = rotation;
 	}
 }

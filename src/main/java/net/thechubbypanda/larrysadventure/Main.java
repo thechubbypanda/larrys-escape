@@ -4,38 +4,39 @@ import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.signals.Signal;
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
 import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
-import net.thechubbypanda.larrysadventure.signals.Resize;
+import net.thechubbypanda.larrysadventure.signals.InputSignal;
+import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 import net.thechubbypanda.larrysadventure.systems.*;
 
-import static net.thechubbypanda.larrysadventure.Globals.PPM;
-import static net.thechubbypanda.larrysadventure.Globals.TITLE;
+import static net.thechubbypanda.larrysadventure.Globals.*;
 
-public class Main extends ApplicationAdapter {
-
-	private AssetManager assets;
+public class Main implements ApplicationListener, InputProcessor {
 
 	private Engine engine;
-	private Signal<Resize> resizeSignal;
 
 	private World world;
 
+	private OrthographicCamera mainCamera, b2dCamera;
+
 	@Override
 	public void create() {
+		Gdx.input.setInputProcessor(this);
 
-		// Other
 		engine = new Engine();
 		world = new World(Vector2.Zero, true);
 
@@ -47,13 +48,10 @@ public class Main extends ApplicationAdapter {
 		// TODO: Load initial files
 		assets.finishLoading();
 
-		// Signals
-		resizeSignal = new Signal<>();
-
 		// Player
 		Entity player = new Entity();
 		BodyDef bdef = new BodyDef();
-		bdef.type = BodyDef.BodyType.KinematicBody;
+		bdef.type = BodyDef.BodyType.DynamicBody;
 		bdef.fixedRotation = true;
 
 		Shape shape = new CircleShape();
@@ -78,21 +76,24 @@ public class Main extends ApplicationAdapter {
 		mcc.follow(player, 0, Gdx.graphics.getHeight() / 8f, 0);
 		resizeSignal.add(mcc);
 		engine.addEntity(new Entity().add(mcc));
+		mainCamera = mcc.getCamera();
 
 		// B2d viewport and camera
 		CameraComponent b2dcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth() / PPM, Gdx.graphics.getHeight() / PPM), 1f / PPM);
+		b2dcc.follow(player, 0, Gdx.graphics.getHeight() / 8f, 0);
 		resizeSignal.add(b2dcc);
 		engine.addEntity(new Entity().add(b2dcc));
 
 		// Engine systems
-		engine.addSystem(new MovementSystem());
+		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new LightSystem());
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new PlayerControlSystem());
+		engine.addSystem(new PlayerSystem(player));
 		engine.addSystem(new GLInitSystem());
 		engine.addSystem(new CameraSystem());
-		engine.addSystem(new MainRenderSystem(mcc.getCamera()));
+		engine.addSystem(new MainRenderSystem(mainCamera));
+		engine.addSystem(new PlayerRenderSystem(mainCamera, player));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners
@@ -111,8 +112,18 @@ public class Main extends ApplicationAdapter {
 	}
 
 	@Override
+	public void pause() {
+
+	}
+
+	@Override
+	public void resume() {
+
+	}
+
+	@Override
 	public void resize(int width, int height) {
-		resizeSignal.dispatch(new Resize(width, height));
+		resizeSignal.dispatch(new ResizeSignal(width, height));
 	}
 
 	@Override
@@ -121,13 +132,77 @@ public class Main extends ApplicationAdapter {
 		assets.dispose();
 	}
 
+	@Override
+	public boolean keyDown(int keycode) {
+		InputSignal s = new InputSignal();
+		s.type = InputSignal.Type.keyDown;
+		s.keycode = keycode;
+		inputSignal.dispatch(s);
+		return true;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		InputSignal s = new InputSignal();
+		if (pointer == -1) {
+			s.type = InputSignal.Type.mouseMoved;
+		} else {
+			s.type = InputSignal.Type.mouseDragged;
+		}
+		Vector3 v = new Vector3(screenX, screenY, 0);
+		v = mainCamera.unproject(v);
+		s.x = (int)v.x;
+		s.y = (int)v.y;
+		s.mouse = pointer;
+		inputSignal.dispatch(s);
+		return true;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		return touchDragged(screenX, screenY, -1);
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		return false;
+	}
+
 	public static void main(String[] args) {
+		if (args.length > 0) {
+			if (args[0].equals("debug")) {
+				DEBUG = true;
+			}
+		}
+
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+
 		config.setMaximized(true);
 		config.setMaximizedMonitor(Lwjgl3ApplicationConfiguration.getPrimaryMonitor());
 		config.setTitle(TITLE);
 		config.setWindowPosition(-1, -1);
 		config.setWindowIcon("icon.png");
+
 		new Lwjgl3Application(new Main(), config);
 	}
 }

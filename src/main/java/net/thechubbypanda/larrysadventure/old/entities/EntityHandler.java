@@ -1,4 +1,4 @@
-//package net.thechubbypanda.larrysadventure.entities;
+//package net.thechubbypanda.larrysadventure.old.entities;
 //
 //import java.util.ArrayList;
 //
@@ -11,10 +11,10 @@
 //import com.badlogic.gdx.physics.box2d.World;
 //
 //import net.thechubbypanda.larrysadventure.GameStateManager;
-//import net.thechubbypanda.larrysadventure.entities.enemies.Enemy;
-//import net.thechubbypanda.larrysadventure.entities.enemies.RobotChicken;
-//import net.thechubbypanda.larrysadventure.entities.enemies.Spawner;
-//import net.thechubbypanda.larrysadventure.entities.projectiles.Projectile;
+//import net.thechubbypanda.larrysadventure.old.entities.enemies.Enemy;
+//import net.thechubbypanda.larrysadventure.old.entities.enemies.RobotChicken;
+//import net.thechubbypanda.larrysadventure.old.entities.enemies.Spawner;
+//import net.thechubbypanda.larrysadventure.old.entities.projectiles.Projectile;
 //import net.thechubbypanda.larrysadventure.items.Item;
 //import net.thechubbypanda.larrysadventure.states.GameState;
 //

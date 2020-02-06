@@ -27,8 +27,9 @@ public class PhysicsComponent implements Component {
 		body.setLinearVelocity(vel);
 	}
 
-	public void setRotationalVelocity(float vel) {
-		body.setAngularVelocity(vel);
+	public void setRotation(float angle) {
+		body.setAngularVelocity(0);
+		body.setTransform(body.getPosition(), angle);
 	}
 
 	public void removeBody(World world) {

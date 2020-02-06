@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.AnimationComponent;
+import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 import net.thechubbypanda.larrysadventure.components.SpriteComponent;
 
 public class MainRenderSystem extends IteratingSystem {
@@ -20,7 +21,7 @@ public class MainRenderSystem extends IteratingSystem {
 	private ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
 
 	public MainRenderSystem(Camera camera) {
-		super(Family.one(SpriteComponent.class, AnimationComponent.class).get(), Globals.SystemPriority.MAIN_RENDER);
+		super(Family.one(SpriteComponent.class, AnimationComponent.class).exclude(PlayerComponent.class).get(), Globals.SystemPriority.MAIN_RENDER);
 		this.camera = camera;
 		batch = new SpriteBatch();
 	}

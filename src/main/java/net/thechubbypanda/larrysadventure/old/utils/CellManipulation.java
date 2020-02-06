@@ -3,7 +3,7 @@
 //import java.util.ArrayList;
 //import java.util.Collections;
 //
-//import net.thechubbypanda.larrysadventure.entities.tiles.Tile.TileType;
+//import net.thechubbypanda.larrysadventure.old.entities.tiles.Tile.TileType;
 //import net.thechubbypanda.larrysadventure.misc.Cell;
 //import net.thechubbypanda.larrysadventure.utils.interfaces.Walkable;
 //

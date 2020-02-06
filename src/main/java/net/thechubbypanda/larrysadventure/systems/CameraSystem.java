@@ -8,11 +8,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
-import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 
 public class CameraSystem extends IteratingSystem {
 
-	private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
+	//private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
 	private ComponentMapper<CameraComponent> cameraMapper = ComponentMapper.getFor(CameraComponent.class);
 
 	public CameraSystem() {
@@ -30,7 +29,7 @@ public class CameraSystem extends IteratingSystem {
 			final float dX = c.getPosOffset().x * cos - c.getPosOffset().y * sin;
 			final float dY = c.getPosOffset().x * sin + c.getPosOffset().y * cos;
 			c.setPosition(vec.add(new Vector2(dX, dY)));
-			c.setRotation(c.getRotationOffset() + angle);
+			c.setRotation(-MathUtils.radiansToDegrees * (c.getRotationOffset() + angle));
 		}
 	}
 }

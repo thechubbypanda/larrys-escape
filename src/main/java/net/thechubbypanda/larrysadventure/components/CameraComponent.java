@@ -7,9 +7,9 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import net.thechubbypanda.larrysadventure.signals.Resize;
+import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 
-public class CameraComponent implements Component, Listener<Resize> {
+public class CameraComponent implements Component, Listener<ResizeSignal> {
 
 	private Viewport vp;
 
@@ -18,11 +18,7 @@ public class CameraComponent implements Component, Listener<Resize> {
 	private Vector2 posOffset;
 	private float rotationOffset;
 
-	public float getScale() {
-		return scale;
-	}
-
-	private float scale;
+	public final float scale;
 
 	public CameraComponent(Viewport viewport, float scale) {
 		this.vp = viewport;
@@ -37,8 +33,8 @@ public class CameraComponent implements Component, Listener<Resize> {
 		this.rotationOffset = rotationOffset;
 	}
 
-	public void receive (Signal<Resize> signal, Resize resize) {
-		vp.update(resize.width, resize.height);
+	public void receive (Signal<ResizeSignal> signal, ResizeSignal resizeSignal) {
+		vp.update(resizeSignal.width, resizeSignal.height);
 	}
 
 	public boolean isFollowing() {
@@ -66,7 +62,7 @@ public class CameraComponent implements Component, Listener<Resize> {
 	}
 
 	public void setPosition(Vector2 xy) {
-		getCamera().position.set(xy, 0);
+		getCamera().position.set(xy.scl(scale), 0);
 		vp.apply();
 	}
 

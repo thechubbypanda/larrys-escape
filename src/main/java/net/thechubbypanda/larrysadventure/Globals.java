@@ -1,5 +1,10 @@
 package net.thechubbypanda.larrysadventure;
 
+import com.badlogic.ashley.signals.Signal;
+import com.badlogic.gdx.assets.AssetManager;
+import net.thechubbypanda.larrysadventure.signals.InputSignal;
+import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
+
 public class Globals {
 
 	public static final String TITLE = "Larry's Adventure";
@@ -11,13 +16,19 @@ public class Globals {
 		public static final int VIEWPORT = 1;
 		public static final int GL_INIT = 2;
 		public static final int MAIN_RENDER = 3;
-		public static final int LIGHT_RENDER = 4;
-		public static final int DEBUG_RENDER = 5;
+		public static final int PLAYER_RENDER = 4;
+		public static final int LIGHT_RENDER = 5;
+		public static final int DEBUG_RENDER = 6;
 	}
 
 	public static boolean SOUND = true;
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
+
+	public static AssetManager assets;
+
+	public static final Signal<ResizeSignal> resizeSignal = new Signal<>();
+	public static final Signal<InputSignal> inputSignal = new Signal<>();
 
 	private Globals() {
 	}

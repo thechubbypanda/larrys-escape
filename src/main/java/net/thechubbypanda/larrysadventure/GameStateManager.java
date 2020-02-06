@@ -4,10 +4,10 @@
 //import com.badlogic.gdx.Input;
 //import com.badlogic.gdx.audio.Music;
 //import com.badlogic.gdx.graphics.Cursor.SystemCursor;
-//import net.thechubbypanda.larrysadventure.entities.Player;
+//import net.thechubbypanda.larrysadventure.old.entities.Player;
 //import net.thechubbypanda.larrysadventure.states.*;
 //import net.thechubbypanda.larrysadventure.states.GameState.StateType;
-//import net.thechubbypanda.larrysadventure.states.levels.Maze;
+//import net.thechubbypanda.larrysadventure.old.levels.Maze;
 //
 //import java.util.Stack;
 //
