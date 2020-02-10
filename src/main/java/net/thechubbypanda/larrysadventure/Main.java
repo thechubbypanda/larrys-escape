@@ -12,6 +12,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -20,7 +21,6 @@ import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
 import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
 import net.thechubbypanda.larrysadventure.map.CellMap;
-import net.thechubbypanda.larrysadventure.map.TileMap;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 import net.thechubbypanda.larrysadventure.systems.*;
@@ -34,7 +34,7 @@ public class Main implements ApplicationListener, InputProcessor {
 	private World world;
 
 	private CellMap cellMap;
-	private TileMap tileMap;
+	private TileMapComponent tileMap;
 
 	private OrthographicCamera mainCamera;//, b2dCamera;
 
@@ -52,6 +52,9 @@ public class Main implements ApplicationListener, InputProcessor {
 		assets = new AssetManager();
 		// Load initial files
 		assets.load(Textures.GRASS, Texture.class);
+		assets.load(Textures.WALL_CORNER, Texture.class);
+		assets.load(Textures.WALL_VERT, Texture.class);
+		assets.load(Textures.WALL_HORIZ, Texture.class);
 		assets.finishLoading();
 
 		// Player
@@ -90,6 +93,10 @@ public class Main implements ApplicationListener, InputProcessor {
 		resizeSignal.add(b2dcc);
 		engine.addEntity(new Entity().add(b2dcc));
 
+		// Map
+		cellMap = new CellMap(5);
+		engine.addEntity(new Entity().add(new TileMapComponent(cellMap)));
+
 		// Engine systems
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
@@ -98,6 +105,7 @@ public class Main implements ApplicationListener, InputProcessor {
 		engine.addSystem(new PlayerSystem(player));
 		engine.addSystem(new GLInitSystem());
 		engine.addSystem(new CameraSystem());
+		engine.addSystem(new MapRenderSystem(mainCamera));
 		engine.addSystem(new MainRenderSystem(mainCamera));
 		engine.addSystem(new PlayerRenderSystem(mainCamera, player));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
@@ -105,9 +113,6 @@ public class Main implements ApplicationListener, InputProcessor {
 		// Entity listeners
 		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new PhysicsEntityListener(world));
 		engine.addEntityListener(Family.all(LightComponent.class).get(), new LightEntityListener());
-
-		cellMap = new CellMap(5);
-		tileMap = new TileMap(cellMap);
 	}
 
 	@Override
