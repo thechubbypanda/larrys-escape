@@ -21,14 +21,18 @@ public class Globals {
 		public static final int DEBUG_RENDER = 6;
 	}
 
+	public static final Signal<ResizeSignal> resizeSignal = new Signal<>();
+	public static final Signal<InputSignal> inputSignal = new Signal<>();
+
 	public static boolean SOUND = true;
 
 	public static boolean DEBUG = false;
 
 	public static AssetManager assets;
 
-	public static final Signal<ResizeSignal> resizeSignal = new Signal<>();
-	public static final Signal<InputSignal> inputSignal = new Signal<>();
+	public static class Textures {
+		public static final String GRASS = "grass.png";
+	}
 
 	private Globals() {
 	}

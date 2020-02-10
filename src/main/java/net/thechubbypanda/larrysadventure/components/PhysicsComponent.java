@@ -30,6 +30,7 @@ public class PhysicsComponent implements Component {
 	public void setRotation(float angle) {
 		body.setAngularVelocity(0);
 		body.setTransform(body.getPosition(), angle);
+		body.setAngularVelocity(0);
 	}
 
 	public void removeBody(World world) {

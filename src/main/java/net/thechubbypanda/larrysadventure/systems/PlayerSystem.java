@@ -8,7 +8,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.components.SpriteComponent;
@@ -22,6 +21,7 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 	private final Vector2 vel = new Vector2();
 
 	private float targetRotation = 0;
+	private float lerpPercent = 0;
 
 	public PlayerSystem(Entity player) {
 		pc = player.getComponent(PhysicsComponent.class);
@@ -53,9 +53,10 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 //			//playerAnimationComponent.setToInitialFrame();
 //		}
 
-		pc.setRotation(MathUtils.lerpAngle(pc.getRotation(), targetRotation, 8f * deltaTime));
+		pc.setRotation(MathUtils.lerpAngle(pc.getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
 		pc.setLinearVelocity(vel.rotateRad(pc.getRotation()).nor());
 
+		sc.sprite.setRotation(sc.sprite.getRotation());
 		sc.setPosition(pc.getPosition());
 	}
 
@@ -63,21 +64,19 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 	public void receive(Signal<InputSignal> signal, InputSignal o) {
 		if (o.type == InputSignal.Type.keyDown) {
 			if (o.keycode == Input.Keys.Q) {
-				targetRotation += Math.PI / 2f;
+				targetRotation += MathUtils.PI / 2f;
+				lerpPercent = 0;
+				while (targetRotation > MathUtils.PI2) {
+					targetRotation -= MathUtils.PI2;
+				}
 			}
 			if (o.keycode == Input.Keys.E) {
-				targetRotation -= Math.PI / 2f;
+				targetRotation -= MathUtils.PI / 2f;
+				lerpPercent = 0;
+				while (targetRotation < -MathUtils.PI2) {
+					targetRotation += MathUtils.PI2;
+				}
 			}
-			if (targetRotation <= -Math.PI * 2) {
-				targetRotation += Math.PI * 2;
-			}
-		}
-
-		if (o.type == InputSignal.Type.mouseDragged || o.type == InputSignal.Type.mouseMoved) {
-			//Vector3 v = camera.unproject(new Vector3(o.x, o.y, 0));
-
-			System.out.println(sc.getPosition().angle(new Vector2(o.x, o.y)));
-			sc.sprite.setRotation(sc.getPosition().angle(new Vector2(o.x, o.y)));
 		}
 	}
 }

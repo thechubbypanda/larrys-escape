@@ -19,6 +19,8 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
 import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
+import net.thechubbypanda.larrysadventure.map.CellMap;
+import net.thechubbypanda.larrysadventure.map.TileMap;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 import net.thechubbypanda.larrysadventure.systems.*;
@@ -31,7 +33,10 @@ public class Main implements ApplicationListener, InputProcessor {
 
 	private World world;
 
-	private OrthographicCamera mainCamera, b2dCamera;
+	private CellMap cellMap;
+	private TileMap tileMap;
+
+	private OrthographicCamera mainCamera;//, b2dCamera;
 
 	@Override
 	public void create() {
@@ -45,7 +50,8 @@ public class Main implements ApplicationListener, InputProcessor {
 
 		// Assets
 		assets = new AssetManager();
-		// TODO: Load initial files
+		// Load initial files
+		assets.load(Textures.GRASS, Texture.class);
 		assets.finishLoading();
 
 		// Player
@@ -100,9 +106,8 @@ public class Main implements ApplicationListener, InputProcessor {
 		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new PhysicsEntityListener(world));
 		engine.addEntityListener(Family.all(LightComponent.class).get(), new LightEntityListener());
 
-		Entity a = new Entity();
-		a.add(new SpriteComponent(new Texture("explosionSprite.png")));
-		engine.addEntity(a);
+		cellMap = new CellMap(5);
+		tileMap = new TileMap(cellMap);
 	}
 
 	@Override
