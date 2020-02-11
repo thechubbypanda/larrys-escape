@@ -28,3 +28,8 @@ dependencies {
 	runtimeOnly "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 	runtimeOnly "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 }
+
+jar {
+	from { configurations.runtimeClasspath.collect { zipTree(it) } }
+	manifest { attributes 'Main-Class': project.mainClassName }
+}
