@@ -4,7 +4,7 @@ public class Cell {
 
 	public int x, y;
 	public boolean visited = false;
-	public boolean wallTop = true, wallLeft = true, wallBottom = true, wallRight = true;
+	public boolean top = true, left = true, bottom = true, right = true;
 
 	public Cell(int x, int y) {
 		this.x = x;

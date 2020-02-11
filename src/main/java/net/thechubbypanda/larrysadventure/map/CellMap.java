@@ -28,51 +28,51 @@ public class CellMap {
 		Cell currentCell = map[0][0];
 		currentCell.visited = true;
 		stack.push(currentCell);
+		Cell nextCell = null;
 		while (!stack.empty()) {
 			currentCell = stack.pop();
 			getNeighbours(currentCell, neighbours);
 			if (containsUnvisited(neighbours)) {
 				stack.push(currentCell);
-				Cell nextCell;
 				int index;
 				do {
 					index = MathUtils.random(neighbours.length - 1);
 					nextCell = neighbours[index];
-				} while (nextCell == null);
-				System.out.println(index+1 + "/" + neighbours.length);
+				} while (nextCell == null || nextCell.visited);
 				if (index == 0) { // top
-					currentCell.wallTop = false;
-					nextCell.wallBottom = false;
+					currentCell.top = false;
+					nextCell.bottom = false;
 				} else if (index == 1) { // left
-					currentCell.wallLeft = false;
-					nextCell.wallRight = false;
+					currentCell.left = false;
+					nextCell.right = false;
 				} else if (index == 2) { // bottom
-					currentCell.wallBottom = false;
-					nextCell.wallTop = false;
+					currentCell.bottom = false;
+					nextCell.top = false;
 				} else { // right
-					currentCell.wallRight = false;
-					nextCell.wallLeft = false;
+					currentCell.right = false;
+					nextCell.left = false;
 				}
 				nextCell.visited = true;
 				stack.push(nextCell);
 			}
 
-//			for (int y = size - 1; y >= 0; y--) {
-//				for (int x = 0; x < size; x++) {
-//					System.err.print(map[x][y].wallTop ? " _ " : "   ");
-//				}
-//				System.err.println();
-//				for (int x = 0; x < size; x++) {
-//					System.err.print((map[x][y].wallLeft ? "| " : "  ") + (map[x][y].wallRight ? "|" : " "));
-//				}
-//				System.err.println();
-//				for (int x = 0; x < size; x++) {
-//					System.err.print(map[x][y].wallBottom ? " - " : "   ");
-//				}
-//				System.err.println();
-//			}
-//			System.err.println();
-//			System.err.flush();
+			if (Globals.DEBUG) {
+				for (int y = size - 1; y >= 0; y--) {
+					for (int x = 0; x < size; x++) {
+						System.out.print(map[x][y].top ? " _ " : "   ");
+					}
+					System.out.println();
+					for (int x = 0; x < size; x++) {
+						System.out.print((map[x][y].left ? "|" : " ") + (currentCell == map[x][y] ? "+" : (nextCell == map[x][y] ? "*" : " ")) + (map[x][y].right ? "|" : " "));
+					}
+					System.out.println();
+					for (int x = 0; x < size; x++) {
+						System.out.print(map[x][y].bottom ? " - " : "   ");
+					}
+					System.out.println();
+				}
+				System.out.println();
+			}
 		}
 
 	}
@@ -100,6 +100,16 @@ public class CellMap {
 				return true;
 		}
 		return false;
+	}
+
+	private static int countNonNullNeighbours(Cell[] cells) {
+		int count = 0;
+		for(Cell c : cells) {
+			if (c != null) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	public Cell[][] getMap() {

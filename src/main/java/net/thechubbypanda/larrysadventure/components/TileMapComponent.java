@@ -1,12 +1,20 @@
 package net.thechubbypanda.larrysadventure.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.map.Cell;
 import net.thechubbypanda.larrysadventure.map.CellMap;
 import net.thechubbypanda.larrysadventure.map.Tile;
 
 public class TileMapComponent implements Component {
+
+
+	static {
+
+	}
 
 	private Tile[][] map;
 	private final int size;
