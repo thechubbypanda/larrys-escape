@@ -9,11 +9,14 @@ ext.ashleyVersion="1.7.3"
 ext.box2dlightsVersion="1.5"
 ext.gdxVersion = "1.9.11-SNAPSHOT"
 
-version = '2.0.1'
+version = '0.6.0-ALPHA'
 
 repositories {
 	mavenCentral()
-	mavenLocal()
+	//mavenLocal()
+	maven {
+		url "https://oss.sonatype.org/content/repositories/snapshots/"
+	}
 }
 
 dependencies {

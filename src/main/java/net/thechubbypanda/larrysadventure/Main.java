@@ -12,7 +12,6 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -32,6 +31,7 @@ public class Main implements ApplicationListener, InputProcessor {
 	private Engine engine;
 
 	private World world;
+	private RayHandler rayHandler;
 
 	private CellMap cellMap;
 	private TileMapComponent tileMap;
@@ -47,6 +47,7 @@ public class Main implements ApplicationListener, InputProcessor {
 
 		// Lights
 		RayHandler.useDiffuseLight(true);
+		rayHandler = new RayHandler(world);
 
 		// Assets
 		assets = new AssetManager();
@@ -75,7 +76,7 @@ public class Main implements ApplicationListener, InputProcessor {
 		player.add(new PlayerComponent());
 		player.add(new PhysicsComponent(body));
 		player.add(new SpriteComponent(new Texture("icon.png")));
-		//player.add(new LightComponent(rayHandler, 150f, body));
+		player.add(new LightComponent(rayHandler, 200f, body));
 
 		engine.addEntity(player);
 
@@ -95,7 +96,7 @@ public class Main implements ApplicationListener, InputProcessor {
 
 		// Map
 		cellMap = new CellMap(5);
-		engine.addEntity(new Entity().add(new TileMapComponent(cellMap)));
+		engine.addEntity(new Entity().add(new TileMapComponent(world, cellMap)));
 
 		// Engine systems
 		engine.addSystem(new MainMovementSystem());
@@ -108,11 +109,18 @@ public class Main implements ApplicationListener, InputProcessor {
 		engine.addSystem(new MapRenderSystem(mainCamera));
 		engine.addSystem(new MainRenderSystem(mainCamera));
 		engine.addSystem(new PlayerRenderSystem(mainCamera, player));
+		engine.addSystem(new LightRenderSystem(world,rayHandler, b2dcc.getCamera()));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners
 		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new PhysicsEntityListener(world));
 		engine.addEntityListener(Family.all(LightComponent.class).get(), new LightEntityListener());
+
+		body = world.createBody(bdef);
+		body.createFixture(fdef);
+		Entity e = new Entity();
+		e.add(new PhysicsComponent(body));
+		engine.addEntity(e);
 	}
 
 	@Override
@@ -138,6 +146,7 @@ public class Main implements ApplicationListener, InputProcessor {
 
 	@Override
 	public void dispose() {
+		rayHandler.dispose();
 		world.dispose();
 		assets.dispose();
 	}

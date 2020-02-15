@@ -18,7 +18,7 @@ public class LightComponent implements Component {
 		light.attachToBody(body);
 		light.setIgnoreAttachedBody(true);
 		// TODO: use filtering
-		light.setXray(true);
+		//light.setXray(true);
 	}
 
 	public LightComponent(RayHandler rayHandler, float distance, float x, float y) {
