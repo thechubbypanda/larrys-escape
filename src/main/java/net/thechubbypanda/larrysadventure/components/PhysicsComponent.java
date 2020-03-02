@@ -19,6 +19,9 @@ public class PhysicsComponent implements Component {
 		return body.getPosition().scl(PPM);
 	}
 
+	/**
+	 * Returns the angle of the body in radians
+	 */
 	public float getRotation() {
 		return body.getAngle();
 	}

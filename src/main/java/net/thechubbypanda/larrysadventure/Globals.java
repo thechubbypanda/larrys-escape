@@ -2,6 +2,7 @@ package net.thechubbypanda.larrysadventure;
 
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 
@@ -11,6 +12,9 @@ public class Globals {
 
 	// Pixels per meter, Box2D conversion value
 	public static final float PPM = 100;
+
+	public static final float AMBIENT_INTENSITY = 0.07f;
+	public static final Color AMBIENT_COLOR = new Color(AMBIENT_INTENSITY, AMBIENT_INTENSITY, AMBIENT_INTENSITY, 1f);
 
 	public static class SystemPriority {
 		public static final int VIEWPORT = 1;

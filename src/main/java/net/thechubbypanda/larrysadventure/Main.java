@@ -1,6 +1,8 @@
 package net.thechubbypanda.larrysadventure;
 
+import box2dLight.ConeLight;
 import box2dLight.RayHandler;
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -10,6 +12,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -17,7 +20,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysadventure.components.*;
-import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
 import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
 import net.thechubbypanda.larrysadventure.map.CellMap;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
@@ -38,6 +40,8 @@ public class Main implements ApplicationListener, InputProcessor {
 
 	private OrthographicCamera mainCamera;//, b2dCamera;
 
+	ConeLight light;
+
 	@Override
 	public void create() {
 		Gdx.input.setInputProcessor(this);
@@ -48,6 +52,7 @@ public class Main implements ApplicationListener, InputProcessor {
 		// Lights
 		RayHandler.useDiffuseLight(true);
 		rayHandler = new RayHandler(world);
+		rayHandler.setAmbientLight(AMBIENT_COLOR);
 
 		// Assets
 		assets = new AssetManager();
@@ -76,7 +81,11 @@ public class Main implements ApplicationListener, InputProcessor {
 		player.add(new PlayerComponent());
 		player.add(new PhysicsComponent(body));
 		player.add(new SpriteComponent(new Texture("icon.png")));
-		player.add(new LightComponent(rayHandler, 200f, body));
+
+		light = new ConeLightComponent(rayHandler, 16, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
+		light.attachToBody(body, 0,0, 90);
+		light.setIgnoreAttachedBody(true);
+		player.add((Component) light);
 
 		engine.addEntity(player);
 
@@ -101,9 +110,8 @@ public class Main implements ApplicationListener, InputProcessor {
 		// Engine systems
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
-		engine.addSystem(new LightSystem());
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new PlayerSystem(player));
+		engine.addSystem(new PlayerSystem(player, mainCamera));
 		engine.addSystem(new GLInitSystem());
 		engine.addSystem(new CameraSystem());
 		engine.addSystem(new MapRenderSystem(mainCamera));
@@ -114,13 +122,7 @@ public class Main implements ApplicationListener, InputProcessor {
 
 		// Entity listeners
 		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new PhysicsEntityListener(world));
-		engine.addEntityListener(Family.all(LightComponent.class).get(), new LightEntityListener());
-
-		body = world.createBody(bdef);
-		body.createFixture(fdef);
-		Entity e = new Entity();
-		e.add(new PhysicsComponent(body));
-		engine.addEntity(e);
+		//engine.addEntityListener(Family.all(LightComponent.class).get(), new LightEntityListener());
 	}
 
 	@Override
