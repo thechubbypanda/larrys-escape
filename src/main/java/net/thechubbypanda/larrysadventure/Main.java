@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysadventure.components.*;
+import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
 import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
 import net.thechubbypanda.larrysadventure.map.CellMap;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
@@ -122,7 +123,7 @@ public class Main implements ApplicationListener, InputProcessor {
 
 		// Entity listeners
 		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new PhysicsEntityListener(world));
-		//engine.addEntityListener(Family.all(LightComponent.class).get(), new LightEntityListener());
+		engine.addEntityListener(Family.all(ConeLightComponent.class).get(), new LightEntityListener());
 	}
 
 	@Override
