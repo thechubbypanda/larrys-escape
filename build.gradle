@@ -9,14 +9,11 @@ ext.ashleyVersion="1.7.3"
 ext.box2dlightsVersion="1.5"
 ext.gdxVersion = "1.9.11-SNAPSHOT"
 
-version = '0.6.0-ALPHA'
+version = '0.6.1-ALPHA'
 
 repositories {
-	mavenCentral()
-	//mavenLocal()
-	maven {
-		url "https://oss.sonatype.org/content/repositories/snapshots/"
-	}
+	maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
@@ -25,8 +22,8 @@ dependencies {
 	implementation "com.badlogicgames.box2dlights:box2dlights:$box2dlightsVersion"
 	implementation "com.badlogicgames.ashley:ashley:$ashleyVersion"
 	implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-
 	implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+
 	runtimeOnly "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 	runtimeOnly "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 	runtimeOnly "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
