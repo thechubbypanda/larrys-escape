@@ -1,9 +1,11 @@
 package net.thechubbypanda.larrysadventure;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import net.thechubbypanda.larrysadventure.screens.Play;
+import net.thechubbypanda.larrysadventure.screens.MainMenu;
 import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 
 import static net.thechubbypanda.larrysadventure.Globals.*;
@@ -12,7 +14,13 @@ public class Main extends Game {
 
 	@Override
 	public void create() {
-		setScreen(new Play(this));
+		// Assets
+		assets = new AssetManager();
+
+		//Graphics
+		Gdx.gl.glClearColor(.1f, .1f, .1f, 1);
+
+		setScreen(new MainMenu());
 	}
 
 	@Override
@@ -20,7 +28,6 @@ public class Main extends Game {
 		super.resize(width, height);
 		resizeSignal.dispatch(new ResizeSignal(width, height));
 	}
-
 
 	public static void main(String[] args) {
 		if (args.length > 0) {
