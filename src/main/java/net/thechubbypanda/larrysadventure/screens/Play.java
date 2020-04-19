@@ -6,9 +6,9 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -27,7 +27,7 @@ import net.thechubbypanda.larrysadventure.systems.*;
 
 import static net.thechubbypanda.larrysadventure.Globals.*;
 
-public class Play implements Screen, InputProcessor {
+public class Play extends Screen implements InputProcessor {
 
 	private Engine engine;
 
@@ -41,7 +41,8 @@ public class Play implements Screen, InputProcessor {
 
 	private ConeLight light;
 
-	public Play() {
+	public Play(Game game) {
+		super(game);
 		Gdx.input.setInputProcessor(this);
 
 		engine = new Engine();

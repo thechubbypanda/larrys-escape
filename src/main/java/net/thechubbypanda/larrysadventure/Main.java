@@ -12,7 +12,7 @@ public class Main extends Game {
 
 	@Override
 	public void create() {
-		setScreen(new Play());
+		setScreen(new Play(this));
 	}
 
 	@Override
