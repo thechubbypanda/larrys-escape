@@ -6,10 +6,9 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,7 +26,7 @@ import net.thechubbypanda.larrysadventure.systems.*;
 
 import static net.thechubbypanda.larrysadventure.Globals.*;
 
-public class Play extends Screen implements InputProcessor {
+public class Play extends ScreenAdapter implements InputProcessor {
 
 	private Engine engine;
 
@@ -41,10 +40,7 @@ public class Play extends Screen implements InputProcessor {
 
 	private ConeLight light;
 
-	public Play(Game game) {
-		super(game);
-		Gdx.input.setInputProcessor(this);
-
+	public Play() {
 		engine = new Engine();
 		world = new World(Vector2.Zero, true);
 
@@ -53,8 +49,6 @@ public class Play extends Screen implements InputProcessor {
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(AMBIENT_COLOR);
 
-		// Assets
-		assets = new AssetManager();
 		// Load initial files
 		assets.load(Globals.Textures.GRASS, Texture.class);
 		assets.load(Globals.Textures.WALL_CORNER, Texture.class);
@@ -126,7 +120,7 @@ public class Play extends Screen implements InputProcessor {
 
 	@Override
 	public void show() {
-
+		Gdx.input.setInputProcessor(this);
 	}
 
 	@Override
@@ -137,16 +131,6 @@ public class Play extends Screen implements InputProcessor {
 
 	@Override
 	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void resume() {
 
 	}
 
