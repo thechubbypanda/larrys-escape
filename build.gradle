@@ -9,7 +9,7 @@ ext.ashleyVersion="1.7.3"
 ext.box2dlightsVersion="1.5"
 ext.gdxVersion = "1.9.11-SNAPSHOT"
 
-version = '0.6.1-ALPHA'
+version = '0.7.0-ALPHA'
 
 repositories {
 	maven { url "https://oss.sonatype.org/content/repositories/releases/" }
