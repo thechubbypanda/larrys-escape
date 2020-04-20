@@ -33,7 +33,8 @@ public class CameraComponent implements Component, Listener<ResizeSignal> {
 		this.rotationOffset = rotationOffset;
 	}
 
-	public void receive (Signal<ResizeSignal> signal, ResizeSignal resizeSignal) {
+	@Override
+	public void receive(Signal<ResizeSignal> signal, ResizeSignal resizeSignal) {
 		vp.update(resizeSignal.width, resizeSignal.height);
 	}
 
