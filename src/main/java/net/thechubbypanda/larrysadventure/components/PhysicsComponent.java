@@ -39,4 +39,8 @@ public class PhysicsComponent implements Component {
 	public void removeBody(World world) {
 		world.destroyBody(body);
 	}
+
+	public Vector2 getBodyPosition() {
+		return body.getPosition();
+	}
 }
