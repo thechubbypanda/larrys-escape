@@ -17,6 +17,7 @@ public class DebugRenderSystem extends EntitySystem {
 	public DebugRenderSystem(World world, Camera camera) {
 		super(Globals.SystemPriority.DEBUG_RENDER);
 		debugRenderer = new Box2DDebugRenderer();
+		debugRenderer.setDrawVelocities(true);
 		this.camera = camera;
 		this.world = world;
 	}
