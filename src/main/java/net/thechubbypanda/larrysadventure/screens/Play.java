@@ -28,17 +28,12 @@ import static net.thechubbypanda.larrysadventure.Globals.*;
 
 public class Play extends ScreenAdapter implements InputProcessor {
 
-	private Engine engine;
+	private final Engine engine;
 
-	private World world;
-	private RayHandler rayHandler;
+	private final World world;
+	private final RayHandler rayHandler;
 
-	private CellMap cellMap;
-	private TileMapComponent tileMap;
-
-	private OrthographicCamera mainCamera;//, b2dCamera;
-
-	private ConeLight light;
+	private final OrthographicCamera mainCamera;//, b2dCamera;
 
 	public Play() {
 		engine = new Engine();
@@ -69,13 +64,14 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		fdef.shape = shape;
 
 		Body body = world.createBody(bdef);
-		body.createFixture(fdef);
+		Fixture x = body.createFixture(fdef);
+		x.setUserData(player);
 
 		player.add(new PlayerComponent());
 		player.add(new PhysicsComponent(body));
 		player.add(new SpriteComponent(new Texture("icon.png")));
 
-		light = new ConeLightComponent(rayHandler, 16, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
+		ConeLight light = new ConeLightComponent(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
 		light.attachToBody(body, 0,0, 90);
 		light.setIgnoreAttachedBody(true);
 		player.add((Component) light);
@@ -97,14 +93,29 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addEntity(new Entity().add(b2dcc));
 
 		// Map
-		cellMap = new CellMap(5);
+		CellMap cellMap = new CellMap(5);
 		engine.addEntity(new Entity().add(new TileMapComponent(world, cellMap)));
+
+		// Enemies
+		Entity enemy = new Entity();
+
+		bdef.position.set(128f / PPM, 128f / PPM);
+
+		body = world.createBody(bdef);
+
+		body.createFixture(fdef);
+
+		enemy.add(new PhysicsComponent(body));
+		enemy.add(new EnemyComponent());
+		enemy.add(new SpriteComponent(new Texture("icon.png")));
+		engine.addEntity(enemy);
 
 		// Engine systems
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
 		engine.addSystem(new PlayerSystem(player, mainCamera));
+		engine.addSystem(new EnemySystem(world, player));
 		engine.addSystem(new GLInitSystem());
 		engine.addSystem(new CameraSystem());
 		engine.addSystem(new MapRenderSystem(mainCamera));
