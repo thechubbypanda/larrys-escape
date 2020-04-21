@@ -3,7 +3,7 @@ package net.thechubbypanda.larrysadventure.signals;
 public class InputSignal {
 
 	public enum Type {
-		keyDown, keyUp, mouseDragged, mouseMoved;
+		keyDown, keyUp, mouseDragged, mouseMoved
 	}
 
 	public Type type;

@@ -11,9 +11,9 @@ import net.thechubbypanda.larrysadventure.components.SpriteComponent;
 
 public class PlayerRenderSystem extends EntitySystem {
 
-	private Batch batch;
-	private OrthographicCamera camera;
-	private SpriteComponent sc;
+	private final Batch batch;
+	private final OrthographicCamera camera;
+	private final SpriteComponent sc;
 
 	public PlayerRenderSystem(OrthographicCamera camera, Entity player) {
 		super(Globals.SystemPriority.PLAYER_RENDER);

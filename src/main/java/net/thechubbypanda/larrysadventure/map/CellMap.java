@@ -7,8 +7,8 @@ import java.util.Stack;
 
 public class CellMap {
 
-	private Cell[][] map;
-	private int size;
+	private final Cell[][] map;
+	private final int size;
 
 	public CellMap(int size) {
 		this.size = size;

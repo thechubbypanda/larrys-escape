@@ -2,7 +2,7 @@ package net.thechubbypanda.larrysadventure.map;
 
 public class Cell {
 
-	public int x, y;
+	public final int x, y;
 	public boolean visited = false;
 	public boolean top = true, left = true, bottom = true, right = true;
 

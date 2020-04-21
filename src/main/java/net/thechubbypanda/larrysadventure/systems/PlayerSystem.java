@@ -18,11 +18,11 @@ import net.thechubbypanda.larrysadventure.signals.InputSignal;
 
 public class PlayerSystem extends EntitySystem implements Listener<InputSignal> {
 
-	private OrthographicCamera camera;
+	private final OrthographicCamera camera;
 
-	private PhysicsComponent pc;
-	private SpriteComponent sc;
-	private ConeLightComponent clc;
+	private final PhysicsComponent pc;
+	private final SpriteComponent sc;
+	private final ConeLightComponent clc;
 
 	private final Vector2 vel = new Vector2();
 

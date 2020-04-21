@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class AnimationComponent implements Component {
 
-	private HashMap<String, Animation<Texture>> animations;
+	private final HashMap<String, Animation<Texture>> animations;
 	private Animation<Texture> currentAnimation;
 
 	public float stateTime;

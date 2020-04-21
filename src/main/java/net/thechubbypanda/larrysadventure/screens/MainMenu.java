@@ -16,16 +16,15 @@ import static net.thechubbypanda.larrysadventure.Globals.assets;
 
 public class MainMenu extends ScreenAdapter {
 
-	private Stage stage;
-	private Play play;
-	private Skin skin;
+	private final Stage stage;
+	private final Play play;
 
 	public MainMenu() {
 		stage = new Stage(new ExtendViewport(1000, 1000));
 
 		assets.load("flatearthui/flat-earth-ui.json", Skin.class);
 		assets.finishLoading();
-		skin = assets.get("flatearthui/flat-earth-ui.json");
+		Skin skin = assets.get("flatearthui/flat-earth-ui.json");
 
 		Table window = new Table();
 		window.setFillParent(true);

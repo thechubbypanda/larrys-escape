@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class SpriteComponent implements Component {
 
-	public Sprite sprite;
+	public final Sprite sprite;
 
 	public SpriteComponent(Texture texture) {
 		sprite = new Sprite(texture);

@@ -10,7 +10,7 @@ import static net.thechubbypanda.larrysadventure.Globals.PPM;
 
 public class PhysicsComponent implements Component {
 
-	private Body body;
+	private final Body body;
 
 	public PhysicsComponent(Entity e, Body body) {
 		this.body = body;

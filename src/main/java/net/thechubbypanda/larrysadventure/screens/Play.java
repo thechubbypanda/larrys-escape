@@ -141,7 +141,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addSystem(new MapRenderSystem(mainCamera));
 		engine.addSystem(new MainRenderSystem(mainCamera));
 		engine.addSystem(new PlayerRenderSystem(mainCamera, player));
-		engine.addSystem(new LightRenderSystem(world, rayHandler, b2dcc.getCamera()));
+		engine.addSystem(new LightRenderSystem(rayHandler, b2dcc.getCamera()));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners

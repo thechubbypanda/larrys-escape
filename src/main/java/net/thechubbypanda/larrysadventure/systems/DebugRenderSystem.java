@@ -10,9 +10,9 @@ import static net.thechubbypanda.larrysadventure.Globals.DEBUG;
 
 public class DebugRenderSystem extends EntitySystem {
 
-	private Box2DDebugRenderer debugRenderer;
-	private Camera camera;
-	private World world;
+	private final Box2DDebugRenderer debugRenderer;
+	private final Camera camera;
+	private final World world;
 
 	public DebugRenderSystem(World world, Camera camera) {
 		super(Globals.SystemPriority.DEBUG_RENDER);

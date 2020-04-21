@@ -4,19 +4,18 @@ import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysadventure.Globals;
 
 public class LightRenderSystem extends EntitySystem {
 
-	private RayHandler rayHandler;
-	private OrthographicCamera camera;
+	private final RayHandler rayHandler;
+	private final OrthographicCamera camera;
 
-	public LightRenderSystem(World world, RayHandler rayHandler, OrthographicCamera camera) {
+	public LightRenderSystem(RayHandler rayHandler, OrthographicCamera camera) {
 		super(Globals.SystemPriority.LIGHT_RENDER);
 		this.rayHandler = rayHandler;
 		this.camera = camera;
-		this.rayHandler.setCombinedMatrix((OrthographicCamera)camera);
+		this.rayHandler.setCombinedMatrix(camera);
 	}
 
 	@Override

@@ -15,10 +15,10 @@ import net.thechubbypanda.larrysadventure.components.SpriteComponent;
 
 public class MainRenderSystem extends IteratingSystem {
 
-	private Batch batch;
-	private Camera camera;
-	private ComponentMapper<SpriteComponent> spriteMapper = ComponentMapper.getFor(SpriteComponent.class);
-	private ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
+	private final Batch batch;
+	private final Camera camera;
+	private final ComponentMapper<SpriteComponent> spriteMapper = ComponentMapper.getFor(SpriteComponent.class);
+	private final ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
 
 	public MainRenderSystem(Camera camera) {
 		super(Family.one(SpriteComponent.class, AnimationComponent.class).exclude(PlayerComponent.class).get(), Globals.SystemPriority.MAIN_RENDER);

@@ -7,7 +7,7 @@ import net.thechubbypanda.larrysadventure.components.ConeLightComponent;
 
 public class LightEntityListener implements EntityListener {
 
-	private ComponentMapper<ConeLightComponent> lightMapper = ComponentMapper.getFor(ConeLightComponent.class);
+	private final ComponentMapper<ConeLightComponent> lightMapper = ComponentMapper.getFor(ConeLightComponent.class);
 
 	@Override
 	public void entityAdded(Entity entity) {

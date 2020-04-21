@@ -8,9 +8,9 @@ import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 
 public class PhysicsEntityListener implements EntityListener {
 
-	private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
 
-	private World world;
+	private final World world;
 
 	public PhysicsEntityListener(World world) {
 		this.world = world;

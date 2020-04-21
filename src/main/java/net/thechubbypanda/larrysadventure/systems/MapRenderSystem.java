@@ -1,20 +1,22 @@
 package net.thechubbypanda.larrysadventure.systems;
 
-import com.badlogic.ashley.core.*;
+import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.TileMapComponent;
 
 public class MapRenderSystem extends IteratingSystem {
 
-	private ComponentMapper<TileMapComponent> tmm = ComponentMapper.getFor(TileMapComponent.class);
+	private final ComponentMapper<TileMapComponent> tmm = ComponentMapper.getFor(TileMapComponent.class);
 
-	private SpriteBatch batch;
-	private Camera camera;
+	private final SpriteBatch batch;
+	private final Camera camera;
 
 	public MapRenderSystem(OrthographicCamera camera) {
 		super(Family.all(TileMapComponent.class).get(), Globals.SystemPriority.MAP_RENDER);

@@ -119,8 +119,9 @@ public class Tile {
 	}
 
 	public Cell cell;
-	private float x, y;
-	private Body body;
+	private final float x;
+	private final float y;
+	private final Body body;
 
 	public Tile(World world, Cell cell) {
 		this.cell = cell;

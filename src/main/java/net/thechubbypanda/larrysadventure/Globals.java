@@ -29,11 +29,9 @@ public class Globals {
 	public static final Signal<ResizeSignal> resizeSignal = new Signal<>();
 	public static final Signal<InputSignal> inputSignal = new Signal<>();
 
-	public static boolean SOUND = true;
-
 	public static boolean DEBUG = false;
 
-	public static AssetManager assets;
+	public static final AssetManager assets = new AssetManager();
 
 	public static class Textures {
 		public static final String GRASS = "grass.png";

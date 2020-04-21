@@ -2,7 +2,6 @@ package net.thechubbypanda.larrysadventure;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import net.thechubbypanda.larrysadventure.screens.MainMenu;
@@ -14,9 +13,6 @@ public class Main extends Game {
 
 	@Override
 	public void create() {
-		// Assets
-		assets = new AssetManager();
-
 		//Graphics
 		Gdx.gl.glClearColor(.1f, .1f, .1f, 1);
 

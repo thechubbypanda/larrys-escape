@@ -13,9 +13,9 @@ import net.thechubbypanda.larrysadventure.components.SpriteComponent;
 
 public class MainMovementSystem extends IteratingSystem {
 
-	private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
-	private ComponentMapper<SpriteComponent> spriteMapper = ComponentMapper.getFor(SpriteComponent.class);
-	private ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
+	private final ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<SpriteComponent> spriteMapper = ComponentMapper.getFor(SpriteComponent.class);
+	private final ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
 
 	public MainMovementSystem() {
 		super(Family.all(PhysicsComponent.class).exclude(PlayerComponent.class).get());

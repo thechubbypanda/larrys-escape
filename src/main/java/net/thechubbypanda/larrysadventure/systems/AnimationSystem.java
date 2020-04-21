@@ -8,7 +8,7 @@ import net.thechubbypanda.larrysadventure.components.AnimationComponent;
 
 public class AnimationSystem extends IteratingSystem {
 
-	private ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
+	private final ComponentMapper<AnimationComponent> animationMapper = ComponentMapper.getFor(AnimationComponent.class);
 
 	public AnimationSystem() {
 		super(Family.all(AnimationComponent.class).get());

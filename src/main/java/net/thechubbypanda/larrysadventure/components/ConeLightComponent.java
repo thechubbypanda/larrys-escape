@@ -18,7 +18,7 @@ public class ConeLightComponent extends ConeLight implements Component {
 	 * @param x               axis position
 	 * @param y               axis position
 	 * @param directionDegree direction of cone light
-	 * @param coneDegree
+	 * @param coneDegree      half-size of cone light, centered over direction
 	 */
 	public ConeLightComponent(RayHandler rayHandler, int rays, Color color, float distance, float x, float y, float directionDegree, float coneDegree) {
 		super(rayHandler, rays, color, distance, x, y, directionDegree, coneDegree);

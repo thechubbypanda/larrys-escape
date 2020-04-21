@@ -9,7 +9,7 @@ import net.thechubbypanda.larrysadventure.map.Tile;
 
 public class TileMapComponent implements Component {
 
-	private Tile[][] map;
+	private final Tile[][] map;
 	private final int size;
 
 	public TileMapComponent(World world, CellMap cellMap) {

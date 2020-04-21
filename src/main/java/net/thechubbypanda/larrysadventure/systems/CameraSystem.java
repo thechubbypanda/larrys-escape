@@ -12,7 +12,7 @@ import net.thechubbypanda.larrysadventure.components.CameraComponent;
 public class CameraSystem extends IteratingSystem {
 
 	//private ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
-	private ComponentMapper<CameraComponent> cameraMapper = ComponentMapper.getFor(CameraComponent.class);
+	private final ComponentMapper<CameraComponent> cameraMapper = ComponentMapper.getFor(CameraComponent.class);
 
 	public CameraSystem() {
 		super(Family.all(CameraComponent.class).get(), Globals.SystemPriority.VIEWPORT);
