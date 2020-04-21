@@ -1,6 +1,7 @@
 package net.thechubbypanda.larrysadventure.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
@@ -11,8 +12,9 @@ public class PhysicsComponent implements Component {
 
 	private Body body;
 
-	public PhysicsComponent(Body body) {
+	public PhysicsComponent(Entity e, Body body) {
 		this.body = body;
+		this.body.setUserData(e);
 	}
 
 	public Vector2 getPosition() {

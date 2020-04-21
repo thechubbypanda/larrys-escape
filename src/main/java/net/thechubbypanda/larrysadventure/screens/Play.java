@@ -26,8 +26,8 @@ import net.thechubbypanda.larrysadventure.map.Tile;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 import net.thechubbypanda.larrysadventure.systems.*;
 
+import java.util.ArrayList;
 import java.util.Random;
-import java.util.Vector;
 
 import static net.thechubbypanda.larrysadventure.Globals.*;
 
@@ -69,11 +69,10 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		fdef.shape = shape;
 
 		Body body = world.createBody(bdef);
-		Fixture x = body.createFixture(fdef);
-		x.setUserData(player);
+		body.createFixture(fdef);
 
 		player.add(new PlayerComponent());
-		player.add(new PhysicsComponent(body));
+		player.add(new PhysicsComponent(player, body));
 		player.add(new SpriteComponent(new Texture("icon.png")));
 
 		ConeLight light = new ConeLightComponent(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
@@ -102,7 +101,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addEntity(new Entity().add(new TileMapComponent(world, cellMap)));
 
 		// Enemies
-		Vector<Cell> containingEnemies = new Vector<>();
+		ArrayList<Cell> containingEnemies = new ArrayList<>();
 		Random random = new Random();
 		for (int i = 0; i < 5; i++) {
 			Cell cell;
@@ -121,17 +120,22 @@ public class Play extends ScreenAdapter implements InputProcessor {
 			body.createFixture(fdef);
 
 			enemy.add(new EnemyComponent());
-			enemy.add(new PhysicsComponent(body));
+			enemy.add(new PhysicsComponent(enemy, body));
 			enemy.add(new SpriteComponent(new Texture("icon.png")));
 			engine.addEntity(enemy);
 		}
 
 		// Engine systems
+		CollisionSystem cs = new CollisionSystem();
+		world.setContactListener(cs);
+
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
 		engine.addSystem(new PlayerSystem(player, mainCamera));
 		engine.addSystem(new EnemySystem(world, player));
+		engine.addSystem(cs);
+
 		engine.addSystem(new GLInitSystem());
 		engine.addSystem(new CameraSystem());
 		engine.addSystem(new MapRenderSystem(mainCamera));

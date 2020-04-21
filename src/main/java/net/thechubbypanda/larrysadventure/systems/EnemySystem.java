@@ -36,7 +36,7 @@ public class EnemySystem extends IteratingSystem {
 				last = fixture;
 				return fraction;
 			}, pc.getBodyPosition(), ppc.getBodyPosition());
-			if (last != null && last.getUserData() == player) {
+			if (last != null && last.getBody().getUserData() == player) {
 				pc.setLinearVelocity(ppc.getBodyPosition().sub(pc.getBodyPosition()).nor().scl(0.5f));
 			} else {
 				pc.setLinearVelocity(Vector2.Zero);
