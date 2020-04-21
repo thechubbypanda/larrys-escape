@@ -74,6 +74,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		player.add(new PlayerComponent());
 		player.add(new PhysicsComponent(player, body));
 		player.add(new SpriteComponent(new Texture("icon.png")));
+		player.add(new HealthComponent(100));
 
 		ConeLight light = new ConeLightComponent(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
 		light.attachToBody(body, 0, 0, 90);
@@ -122,6 +123,8 @@ public class Play extends ScreenAdapter implements InputProcessor {
 			enemy.add(new EnemyComponent());
 			enemy.add(new PhysicsComponent(enemy, body));
 			enemy.add(new SpriteComponent(new Texture("icon.png")));
+			enemy.add(new HealthComponent(20));
+			enemy.add(new DamageComponent(10));
 			engine.addEntity(enemy);
 		}
 
@@ -135,6 +138,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addSystem(new PlayerSystem(player, mainCamera));
 		engine.addSystem(new EnemySystem(world, player));
 		engine.addSystem(cs);
+		engine.addSystem(new HealthSystem());
 
 		engine.addSystem(new GLInitSystem());
 		engine.addSystem(new CameraSystem());
