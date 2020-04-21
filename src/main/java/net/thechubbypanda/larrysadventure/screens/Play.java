@@ -20,9 +20,14 @@ import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
 import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
+import net.thechubbypanda.larrysadventure.map.Cell;
 import net.thechubbypanda.larrysadventure.map.CellMap;
+import net.thechubbypanda.larrysadventure.map.Tile;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 import net.thechubbypanda.larrysadventure.systems.*;
+
+import java.util.Random;
+import java.util.Vector;
 
 import static net.thechubbypanda.larrysadventure.Globals.*;
 
@@ -72,7 +77,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		player.add(new SpriteComponent(new Texture("icon.png")));
 
 		ConeLight light = new ConeLightComponent(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
-		light.attachToBody(body, 0,0, 90);
+		light.attachToBody(body, 0, 0, 90);
 		light.setIgnoreAttachedBody(true);
 		player.add((Component) light);
 
@@ -97,18 +102,29 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addEntity(new Entity().add(new TileMapComponent(world, cellMap)));
 
 		// Enemies
-		Entity enemy = new Entity();
+		Vector<Cell> containingEnemies = new Vector<>();
+		Random random = new Random();
+		for (int i = 0; i < 5; i++) {
+			Cell cell;
+			do {
+				cell = cellMap.getMap()[random.nextInt(cellMap.getMap().length - 1)][random.nextInt(cellMap.getMap()[0].length - 1)];
+			} while (containingEnemies.contains(cell));
+			containingEnemies.add(cell);
+		}
 
-		bdef.position.set(128f / PPM, 128f / PPM);
+		for (Cell cell : containingEnemies) {
+			Entity enemy = new Entity();
+			bdef.position.set(cell.x * Tile.SIZE / PPM, cell.y * Tile.SIZE / PPM);
 
-		body = world.createBody(bdef);
+			body = world.createBody(bdef);
 
-		body.createFixture(fdef);
+			body.createFixture(fdef);
 
-		enemy.add(new PhysicsComponent(body));
-		enemy.add(new EnemyComponent());
-		enemy.add(new SpriteComponent(new Texture("icon.png")));
-		engine.addEntity(enemy);
+			enemy.add(new EnemyComponent());
+			enemy.add(new PhysicsComponent(body));
+			enemy.add(new SpriteComponent(new Texture("icon.png")));
+			engine.addEntity(enemy);
+		}
 
 		// Engine systems
 		engine.addSystem(new MainMovementSystem());
@@ -121,7 +137,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addSystem(new MapRenderSystem(mainCamera));
 		engine.addSystem(new MainRenderSystem(mainCamera));
 		engine.addSystem(new PlayerRenderSystem(mainCamera, player));
-		engine.addSystem(new LightRenderSystem(world,rayHandler, b2dcc.getCamera()));
+		engine.addSystem(new LightRenderSystem(world, rayHandler, b2dcc.getCamera()));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners
@@ -196,8 +212,8 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		}
 		Vector3 v = new Vector3(screenX, screenY, 0);
 		v = mainCamera.unproject(v);
-		s.x = (int)v.x;
-		s.y = (int)v.y;
+		s.x = (int) v.x;
+		s.y = (int) v.y;
 		s.mouse = pointer;
 		inputSignal.dispatch(s);
 		return true;
