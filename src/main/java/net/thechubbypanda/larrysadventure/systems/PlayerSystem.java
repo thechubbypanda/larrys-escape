@@ -1,5 +1,6 @@
 package net.thechubbypanda.larrysadventure.systems;
 
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.signals.Listener;
@@ -20,9 +21,11 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 
 	private final OrthographicCamera camera;
 
-	private final PhysicsComponent pc;
-	private final SpriteComponent sc;
-	private final ConeLightComponent clc;
+	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
+	private final ComponentMapper<ConeLightComponent> clcm = ComponentMapper.getFor(ConeLightComponent.class);
+
+	private final Entity player;
 
 	private final Vector2 vel = new Vector2();
 
@@ -30,11 +33,9 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 	private float lerpPercent = 0;
 
 	public PlayerSystem(Entity player, OrthographicCamera camera) {
-		pc = player.getComponent(PhysicsComponent.class);
-		sc = player.getComponent(SpriteComponent.class);
-		clc = player.getComponent(ConeLightComponent.class);
 		Globals.inputSignal.add(this);
 		this.camera = camera;
+		this.player = player;
 	}
 
 	@Override
@@ -61,17 +62,17 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 //			//playerAnimationComponent.setToInitialFrame();
 //		}
 
-		pc.setRotation(MathUtils.lerpAngle(pc.getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
-		pc.setLinearVelocity(vel.rotateRad(pc.getRotation()).nor());
+		pcm.get(player).setRotation(MathUtils.lerpAngle(pcm.get(player).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
+		pcm.get(player).setLinearVelocity(vel.rotateRad(pcm.get(player).getRotation()).nor());
 
-		sc.sprite.setRotation(sc.sprite.getRotation());
-		sc.setPosition(pc.getPosition());
+		scm.get(player).sprite.setRotation(scm.get(player).sprite.getRotation());
+		scm.get(player).setPosition(pcm.get(player).getPosition());
 
 		Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		float diffX = mousePos.x - pc.getPosition().x;
-		float diffY = mousePos.y - pc.getPosition().y;
+		float diffX = mousePos.x - pcm.get(player).getPosition().x;
+		float diffY = mousePos.y - pcm.get(player).getPosition().y;
 		float angle = (float) Math.atan2(diffY, diffX);
-		clc.setBodyAngleOffset(angle * MathUtils.radiansToDegrees);
+		clcm.get(player).setBodyAngleOffset(angle * MathUtils.radiansToDegrees);
 	}
 
 	@Override
