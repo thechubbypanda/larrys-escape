@@ -14,11 +14,12 @@ public class HealthComponent implements Component {
 	}
 
 	public void hit(Object e) {
-		if (e != null && e instanceof Entity) {
+		if (e instanceof Entity) {
 			if (dcm.has((Entity)e)) {
 				health -= dcm.get((Entity)e).getDamage();
 			}
 		}
+		System.out.println(health);
 	}
 
 	public int getHealth() {

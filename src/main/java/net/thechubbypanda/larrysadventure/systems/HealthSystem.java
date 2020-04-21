@@ -19,9 +19,7 @@ public class HealthSystem extends IteratingSystem {
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		if (hcm.get(entity).getHealth() <= 0) {
-			if (!pcm.has(entity)) {
-				getEngine().removeEntity(entity);
-			}
+			getEngine().removeEntity(entity);
 		}
 	}
 }
