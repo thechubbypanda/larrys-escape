@@ -11,7 +11,7 @@ import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 
 public class CameraComponent implements Component, Listener<ResizeSignal> {
 
-	private Viewport vp;
+	private final Viewport vp;
 
 	private boolean following = false;
 	private PhysicsComponent follow;
