@@ -1,23 +1,24 @@
 package net.thechubbypanda.larrysadventure.screens;
 
-import box2dLight.ConeLight;
 import box2dLight.RayHandler;
-import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
-import net.thechubbypanda.larrysadventure.components.*;
+import net.thechubbypanda.larrysadventure.components.CameraComponent;
+import net.thechubbypanda.larrysadventure.components.ConeLightComponent;
+import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
+import net.thechubbypanda.larrysadventure.components.TileMapComponent;
 import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
 import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
 import net.thechubbypanda.larrysadventure.map.Cell;
@@ -56,31 +57,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		assets.load(Globals.Textures.WALL_HORIZ, Texture.class);
 		assets.finishLoading();
 
-		// Player
-		Entity player = new Entity();
-		BodyDef bdef = new BodyDef();
-		bdef.type = BodyDef.BodyType.DynamicBody;
-		bdef.fixedRotation = true;
-
-		Shape shape = new CircleShape();
-		shape.setRadius(16 / Globals.PPM);
-
-		FixtureDef fdef = new FixtureDef();
-		fdef.shape = shape;
-
-		Body body = world.createBody(bdef);
-		body.createFixture(fdef);
-
-		player.add(new PlayerComponent());
-		player.add(new PhysicsComponent(player, body));
-		player.add(new SpriteComponent(new Texture("icon.png")));
-		player.add(new HealthComponent(100));
-
-		ConeLight light = new ConeLightComponent(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
-		light.attachToBody(body, 0, 0, 90);
-		light.setIgnoreAttachedBody(true);
-		player.add((Component) light);
-
+		Entity player = EntityFactory.player(world, rayHandler);
 		engine.addEntity(player);
 
 		// Cameras
@@ -112,20 +89,10 @@ public class Play extends ScreenAdapter implements InputProcessor {
 			containingEnemies.add(cell);
 		}
 
+		final Vector2 pos = new Vector2();
 		for (Cell cell : containingEnemies) {
-			Entity enemy = new Entity();
-			bdef.position.set(cell.x * Tile.SIZE / PPM, cell.y * Tile.SIZE / PPM);
-
-			body = world.createBody(bdef);
-
-			body.createFixture(fdef);
-
-			enemy.add(new EnemyComponent());
-			enemy.add(new PhysicsComponent(enemy, body));
-			enemy.add(new SpriteComponent(new Texture("icon.png")));
-			enemy.add(new HealthComponent(20));
-			enemy.add(new DamageComponent(10));
-			engine.addEntity(enemy);
+			pos.set(cell.x * Tile.SIZE, cell.y * Tile.SIZE);
+			engine.addEntity(EntityFactory.enemy(world, pos));
 		}
 
 		// Engine systems
