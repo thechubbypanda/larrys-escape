@@ -16,7 +16,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
-import net.thechubbypanda.larrysadventure.components.ConeLightComponent;
+import net.thechubbypanda.larrysadventure.components.LightComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 import net.thechubbypanda.larrysadventure.components.SpriteComponent;
@@ -30,9 +30,11 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 
 	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
-	private final ComponentMapper<ConeLightComponent> clcm = ComponentMapper.getFor(ConeLightComponent.class);
+	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
 
 	private final Entity player;
+	private final RayHandler rayHandler;
+	private final World world;
 
 	private final Vector2 vel = new Vector2();
 
@@ -81,7 +83,7 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 		float diffX = mousePos.x - pcm.get(player).getPosition().x;
 		float diffY = mousePos.y - pcm.get(player).getPosition().y;
 		float angle = (float) Math.atan2(diffY, diffX);
-		clcm.get(player).setBodyAngleOffset(angle * MathUtils.radiansToDegrees);
+		lcm.get(player).setBodyAngleOffset(angle * MathUtils.radiansToDegrees);
 	}
 
 	@Override

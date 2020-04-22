@@ -16,11 +16,9 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
-import net.thechubbypanda.larrysadventure.components.ConeLightComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.components.TileMapComponent;
-import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
-import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
+import net.thechubbypanda.larrysadventure.entityListeners.WorldListener;
 import net.thechubbypanda.larrysadventure.map.Cell;
 import net.thechubbypanda.larrysadventure.map.CellMap;
 import net.thechubbypanda.larrysadventure.map.Tile;
@@ -116,8 +114,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners
-		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new PhysicsEntityListener(world));
-		engine.addEntityListener(Family.all(ConeLightComponent.class).get(), new LightEntityListener());
+		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new WorldListener(world));
 	}
 
 	@Override

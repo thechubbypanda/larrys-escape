@@ -42,7 +42,8 @@ public final class EntityFactory {
 		ConeLight light = new ConeLight(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
 		light.attachToBody(body, 0, 0, 90);
 		light.setIgnoreAttachedBody(true);
-		player.add((Component) light);
+
+		player.add(new LightComponent(light));
 
 		return player;
 	}
@@ -103,13 +104,13 @@ public final class EntityFactory {
 
 		body.createFixture(BULLET_FDEF);
 
-		PointLightComponent light = new PointLightComponent(rayHandler, 64, BULLET_LIGHT_COLOR, 16 / PPM, 0, 0);
+		bullet.add(new PhysicsComponent(bullet, body));
+
+		PointLight light = new PointLight(rayHandler, 64, BULLET_LIGHT_COLOR, 16 / PPM, 0, 0);
 		light.attachToBody(body);
 		light.setIgnoreAttachedBody(true);
 
-		bullet.add(new DamageComponent(10));
-		bullet.add(new PhysicsComponent(bullet, body));
-		bullet.add(light);
+		bullet.add(new LightComponent(light));
 
 		return bullet;
 	}
