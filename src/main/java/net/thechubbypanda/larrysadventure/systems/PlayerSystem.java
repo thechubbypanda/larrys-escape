@@ -1,8 +1,10 @@
 package net.thechubbypanda.larrysadventure.systems;
 
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
@@ -11,13 +13,18 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.World;
+import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.ConeLightComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
+import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 import net.thechubbypanda.larrysadventure.components.SpriteComponent;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 
 public class PlayerSystem extends EntitySystem implements Listener<InputSignal> {
+
+	private static final Family family = Family.all(PlayerComponent.class).get();
 
 	private final OrthographicCamera camera;
 
@@ -32,10 +39,12 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
 
-	public PlayerSystem(Entity player, OrthographicCamera camera) {
+	public PlayerSystem(World world, RayHandler rayHandler, Entity player, OrthographicCamera camera) {
 		Globals.inputSignal.add(this);
 		this.camera = camera;
 		this.player = player;
+		this.world = world;
+		this.rayHandler = rayHandler;
 	}
 
 	@Override
@@ -91,6 +100,12 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 				while (targetRotation < -MathUtils.PI2) {
 					targetRotation += MathUtils.PI2;
 				}
+			}
+		}
+		if (o.type == InputSignal.Type.mouseDown) {
+			if (o.button == Input.Buttons.LEFT) {
+				Vector2 currentPosition = pcm.get(getEngine().getEntitiesFor(family).get(0)).getPosition();
+				getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
 			}
 		}
 	}

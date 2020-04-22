@@ -102,7 +102,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new PlayerSystem(player, mainCamera));
+		engine.addSystem(new PlayerSystem(world, rayHandler, player, mainCamera));
 		engine.addSystem(new EnemySystem(world, player));
 		engine.addSystem(cs);
 		engine.addSystem(new HealthSystem());
