@@ -71,6 +71,39 @@ public final class EntityFactory {
 		return enemy;
 	}
 
+	private static final Color BULLET_LIGHT_COLOR = new Color(1, 1, 0.9f, 1);
+	private static final BodyDef BULLET_BDEF = new BodyDef();
+	private static final CircleShape BULLET_SHAPE = new CircleShape();
+	private static final FixtureDef BULLET_FDEF = new FixtureDef();
+
+	static {
+		BULLET_BDEF.type = BodyDef.BodyType.DynamicBody;
+		BULLET_BDEF.bullet = true;
+		BULLET_BDEF.fixedRotation = true;
+		BULLET_SHAPE.setRadius(2/PPM);
+	}
+
+	public static Entity bullet(World world, RayHandler rayHandler, Vector2 position, Vector2 direction) {
+		Entity bullet = new Entity();
+
+		BULLET_BDEF.position.set(position.scl(1/PPM));
+		BULLET_BDEF.linearVelocity.set(direction.nor().scl(2));
+
+		Body body = world.createBody(BULLET_BDEF);
+
+		body.createFixture(BULLET_FDEF);
+
+		PointLightComponent light = new PointLightComponent(rayHandler, 64, BULLET_LIGHT_COLOR, 16 / PPM, 0, 0);
+		light.attachToBody(body);
+		light.setIgnoreAttachedBody(true);
+
+		bullet.add(new DamageComponent(10));
+		bullet.add(new PhysicsComponent(bullet, body));
+		bullet.add(light);
+
+		return bullet;
+	}
+
 	private EntityFactory() {
 	}
 }
