@@ -19,7 +19,6 @@ public class HealthComponent implements Component {
 				health -= dcm.get((Entity)e).getDamage();
 			}
 		}
-		System.out.println(health);
 	}
 
 	public int getHealth() {
