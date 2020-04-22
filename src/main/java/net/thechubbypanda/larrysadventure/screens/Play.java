@@ -159,7 +159,11 @@ public class Play extends ScreenAdapter implements InputProcessor {
 
 	@Override
 	public boolean keyUp(int keycode) {
-		return false;
+		InputSignal s = new InputSignal();
+		s.type = InputSignal.Type.keyUp;
+		s.keycode = keycode;
+		inputSignal.dispatch(s);
+		return true;
 	}
 
 	@Override
@@ -169,12 +173,16 @@ public class Play extends ScreenAdapter implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		return false;
+		InputSignal s = new InputSignal();
+		s.type = InputSignal.Type.mouseDown;
+		return touchSignal(screenX, screenY, button, s);
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		return false;
+		InputSignal s = new InputSignal();
+		s.type = InputSignal.Type.mouseUp;
+		return touchSignal(screenX, screenY, button, s);
 	}
 
 	@Override
@@ -189,7 +197,6 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		v = mainCamera.unproject(v);
 		s.x = (int) v.x;
 		s.y = (int) v.y;
-		s.mouse = pointer;
 		inputSignal.dispatch(s);
 		return true;
 	}
@@ -202,5 +209,15 @@ public class Play extends ScreenAdapter implements InputProcessor {
 	@Override
 	public boolean scrolled(int amount) {
 		return false;
+	}
+
+	private boolean touchSignal(int screenX, int screenY, int button, InputSignal s) {
+		Vector3 v = new Vector3(screenX, screenY, 0);
+		v = mainCamera.unproject(v);
+		s.x = (int) v.x;
+		s.y = (int) v.y;
+		s.button = button;
+		inputSignal.dispatch(s);
+		return true;
 	}
 }
