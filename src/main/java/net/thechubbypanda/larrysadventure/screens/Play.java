@@ -108,7 +108,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 			Cell cell;
 			do {
 				cell = cellMap.getMap()[random.nextInt(cellMap.getMap().length - 1)][random.nextInt(cellMap.getMap()[0].length - 1)];
-			} while (containingEnemies.contains(cell) && cellMap.getMap()[0][0] != cell);
+			} while (containingEnemies.contains(cell) && cellMap.getMap()[0][0] == cell);
 			containingEnemies.add(cell);
 		}
 
