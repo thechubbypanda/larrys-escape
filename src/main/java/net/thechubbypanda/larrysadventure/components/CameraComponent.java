@@ -1,6 +1,7 @@
 package net.thechubbypanda.larrysadventure.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
@@ -11,10 +12,12 @@ import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 
 public class CameraComponent implements Component, Listener<ResizeSignal> {
 
+	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+
 	private final Viewport vp;
 
 	private boolean following = false;
-	private PhysicsComponent follow;
+	private Entity follow;
 	private Vector2 posOffset;
 	private float rotationOffset;
 
@@ -28,7 +31,7 @@ public class CameraComponent implements Component, Listener<ResizeSignal> {
 
 	public void follow(Entity follow, float offsetX, float offsetY, float rotationOffset) {
 		following = true;
-		this.follow = follow.getComponent(PhysicsComponent.class);
+		this.follow = follow;
 		posOffset = new Vector2(offsetX, offsetY);
 		this.rotationOffset = rotationOffset;
 	}
@@ -43,11 +46,11 @@ public class CameraComponent implements Component, Listener<ResizeSignal> {
 	}
 
 	public Vector2 getFollowPosition() {
-		return follow.getPosition();
+		return pcm.get(follow).getPosition();
 	}
 
 	public float getFollowRotation() {
-		return follow.getRotation();
+		return pcm.get(follow).getRotation();
 	}
 
 	public Vector2 getPosOffset() {
