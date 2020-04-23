@@ -37,7 +37,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 	private final World world;
 	private final RayHandler rayHandler;
 
-	private final OrthographicCamera mainCamera;//, b2dCamera;
+	private final OrthographicCamera mainCamera;
 
 	public Play() {
 		engine = new Engine();
