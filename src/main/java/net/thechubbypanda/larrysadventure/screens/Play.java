@@ -16,11 +16,9 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
-import net.thechubbypanda.larrysadventure.components.ConeLightComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.components.TileMapComponent;
-import net.thechubbypanda.larrysadventure.entityListeners.LightEntityListener;
-import net.thechubbypanda.larrysadventure.entityListeners.PhysicsEntityListener;
+import net.thechubbypanda.larrysadventure.entityListeners.WorldListener;
 import net.thechubbypanda.larrysadventure.map.Cell;
 import net.thechubbypanda.larrysadventure.map.CellMap;
 import net.thechubbypanda.larrysadventure.map.Tile;
@@ -102,7 +100,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new PlayerSystem(player, mainCamera));
+		engine.addSystem(new PlayerSystem(world, rayHandler, player, mainCamera));
 		engine.addSystem(new EnemySystem(world, player));
 		engine.addSystem(cs);
 		engine.addSystem(new HealthSystem());
@@ -116,8 +114,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners
-		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new PhysicsEntityListener(world));
-		engine.addEntityListener(Family.all(ConeLightComponent.class).get(), new LightEntityListener());
+		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new WorldListener(world));
 	}
 
 	@Override
@@ -159,7 +156,11 @@ public class Play extends ScreenAdapter implements InputProcessor {
 
 	@Override
 	public boolean keyUp(int keycode) {
-		return false;
+		InputSignal s = new InputSignal();
+		s.type = InputSignal.Type.keyUp;
+		s.keycode = keycode;
+		inputSignal.dispatch(s);
+		return true;
 	}
 
 	@Override
@@ -169,12 +170,16 @@ public class Play extends ScreenAdapter implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		return false;
+		InputSignal s = new InputSignal();
+		s.type = InputSignal.Type.mouseDown;
+		return touchSignal(screenX, screenY, button, s);
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		return false;
+		InputSignal s = new InputSignal();
+		s.type = InputSignal.Type.mouseUp;
+		return touchSignal(screenX, screenY, button, s);
 	}
 
 	@Override
@@ -189,7 +194,6 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		v = mainCamera.unproject(v);
 		s.x = (int) v.x;
 		s.y = (int) v.y;
-		s.mouse = pointer;
 		inputSignal.dispatch(s);
 		return true;
 	}
@@ -202,5 +206,15 @@ public class Play extends ScreenAdapter implements InputProcessor {
 	@Override
 	public boolean scrolled(int amount) {
 		return false;
+	}
+
+	private boolean touchSignal(int screenX, int screenY, int button, InputSignal s) {
+		Vector3 v = new Vector3(screenX, screenY, 0);
+		v = mainCamera.unproject(v);
+		s.x = (int) v.x;
+		s.y = (int) v.y;
+		s.button = button;
+		inputSignal.dispatch(s);
+		return true;
 	}
 }

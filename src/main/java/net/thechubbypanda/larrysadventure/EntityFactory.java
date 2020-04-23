@@ -1,8 +1,8 @@
 package net.thechubbypanda.larrysadventure;
 
 import box2dLight.ConeLight;
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
-import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,6 +17,11 @@ public final class EntityFactory {
 	public static Entity player(World world, RayHandler rayHandler) {
 		// Player
 		Entity player = new Entity();
+
+		player.add(new PlayerComponent());
+		player.add(new SpriteComponent(new Texture("icon.png")));
+		player.add(new HealthComponent(100));
+
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyDef.BodyType.DynamicBody;
 		bdef.fixedRotation = true;
@@ -26,19 +31,19 @@ public final class EntityFactory {
 
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
+		fdef.filter.categoryBits = CollisionBit.player.bits;
+		fdef.filter.maskBits = CollisionBit.other.bits;
 
 		Body body = world.createBody(bdef);
 		body.createFixture(fdef);
 
-		player.add(new PlayerComponent());
 		player.add(new PhysicsComponent(player, body));
-		player.add(new SpriteComponent(new Texture("icon.png")));
-		player.add(new HealthComponent(100));
 
-		ConeLight light = new ConeLightComponent(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
+		ConeLight light = new ConeLight(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
 		light.attachToBody(body, 0, 0, 90);
 		light.setIgnoreAttachedBody(true);
-		player.add((Component) light);
+
+		player.add(new LightComponent(light));
 
 		return player;
 	}
@@ -69,6 +74,45 @@ public final class EntityFactory {
 		enemy.add(new DamageComponent(10));
 
 		return enemy;
+	}
+
+	private static final Color BULLET_LIGHT_COLOR = new Color(1, 1, 0.8f, 1);
+	private static final BodyDef BULLET_BDEF = new BodyDef();
+	private static final FixtureDef BULLET_FDEF = new FixtureDef();
+
+	static {
+		BULLET_BDEF.type = BodyDef.BodyType.DynamicBody;
+		BULLET_BDEF.bullet = true;
+		BULLET_BDEF.fixedRotation = true;
+		CircleShape shape = new CircleShape();
+		shape.setRadius(2/PPM);
+		BULLET_FDEF.shape = shape;
+		BULLET_FDEF.isSensor = true;
+		BULLET_FDEF.filter.categoryBits = CollisionBit.bullet.bits;
+	}
+
+	public static Entity bullet(World world, RayHandler rayHandler, Vector2 position, Vector2 direction) {
+		Entity bullet = new Entity();
+
+		bullet.add(new BulletComponent());
+		bullet.add(new DamageComponent(10));
+
+		BULLET_BDEF.position.set(position.scl(1/PPM));
+		BULLET_BDEF.linearVelocity.set(direction.nor().scl(2));
+
+		Body body = world.createBody(BULLET_BDEF);
+
+		body.createFixture(BULLET_FDEF);
+
+		bullet.add(new PhysicsComponent(bullet, body));
+
+		PointLight light = new PointLight(rayHandler, 64, BULLET_LIGHT_COLOR, 16 / PPM, 0, 0);
+		light.attachToBody(body);
+		light.setIgnoreAttachedBody(true);
+
+		bullet.add(new LightComponent(light));
+
+		return bullet;
 	}
 
 	private EntityFactory() {

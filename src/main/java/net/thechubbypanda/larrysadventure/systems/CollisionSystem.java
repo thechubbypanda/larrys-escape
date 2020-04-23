@@ -3,30 +3,37 @@ package net.thechubbypanda.larrysadventure.systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import net.thechubbypanda.larrysadventure.components.BulletComponent;
 import net.thechubbypanda.larrysadventure.components.HealthComponent;
 
 public class CollisionSystem extends EntitySystem implements ContactListener {
 
 	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
+	private final ComponentMapper<BulletComponent> bcm = ComponentMapper.getFor(BulletComponent.class);
+
+	private void dealWithContact(Entity a, Object b) {
+		if (hcm.has(a)) {
+			getEngine().getSystem(HealthSystem.class).hit(a, b);
+		}
+		if (bcm.has(a)) {
+			Gdx.app.postRunnable(() -> getEngine().removeEntity(a));
+		}
+	}
 
 	@Override
 	public void beginContact(Contact contact) {
 		Object a = contact.getFixtureA().getBody().getUserData();
 		Object b = contact.getFixtureB().getBody().getUserData();
 		if (a instanceof Entity) {
-			contact((Entity) a, b);
-		} else if (b instanceof Entity) {
-			contact((Entity) b, a);
+			dealWithContact((Entity) a, b);
 		}
-	}
-
-	private void contact(Entity a, Object b) {
-		if (hcm.has(a)) {
-			hcm.get(a).hit(b);
+		if (b instanceof Entity) {
+			dealWithContact((Entity) b, a);
 		}
 	}
 
