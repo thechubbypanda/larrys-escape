@@ -28,6 +28,10 @@ public class PhysicsComponent implements Component {
 		return body.getAngle();
 	}
 
+	public Vector2 getBodyPosition() {
+		return body.getPosition();
+	}
+
 	public void setLinearVelocity(Vector2 vel) {
 		body.setLinearVelocity(vel);
 	}
@@ -38,11 +42,11 @@ public class PhysicsComponent implements Component {
 		body.setAngularVelocity(0);
 	}
 
-	public void removeBody(World world) {
-		world.destroyBody(body);
+	public void setPosition(Vector2 position) {
+		body.setTransform(position.x, position.y, getRotation());
 	}
 
-	public Vector2 getBodyPosition() {
-		return body.getPosition();
+	public void removeBody(World world) {
+		world.destroyBody(body);
 	}
 }

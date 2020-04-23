@@ -3,16 +3,20 @@ package net.thechubbypanda.larrysadventure.map;
 import com.badlogic.gdx.math.MathUtils;
 import net.thechubbypanda.larrysadventure.Globals;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class CellMap {
 
 	private final Cell[][] map;
 	private final int size;
+	private ArrayList<Cell> deadEnds;
 
 	public CellMap(int size) {
 		this.size = size;
+
 		map = new Cell[size][size];
+
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				map[x][y] = new Cell(x, y);
@@ -22,6 +26,9 @@ public class CellMap {
 		generateMaze();
 	}
 
+	/**
+	 * Uses recursive back-tracker to generate a maze
+	 */
 	private void generateMaze() {
 		Stack<Cell> stack = new Stack<>();
 		Cell[] neighbours = new Cell[4];
@@ -74,9 +81,10 @@ public class CellMap {
 				System.out.println();
 			}
 		}
-
 	}
-// TODO: Something wrong with determining whether there are cells available
+
+	// TODO: Something wrong with determining whether there are cells available
+	// Can't see any issues?
 	private void getNeighbours(Cell cell, Cell[] neighbours) {
 		Cell top = null, left = null, bottom = null, right = null;
 		if (cell.y != size - 1)
@@ -102,17 +110,41 @@ public class CellMap {
 		return false;
 	}
 
-	private static int countNonNullNeighbours(Cell[] cells) {
-		int count = 0;
-		for(Cell c : cells) {
-			if (c != null) {
-				count++;
+//	private static int countNonNullNeighbours(Cell[] cells) {
+//		int count = 0;
+//		for(Cell c : cells) {
+//			if (c != null) {
+//				count++;
+//			}
+//		}
+//		return count;
+//	}
+
+	public ArrayList<Cell> getDeadEnds() {
+		if (deadEnds == null) {
+			deadEnds = new ArrayList<>();
+
+			for (Cell[] cells : map) {
+				for (Cell cell : cells) {
+					int count = 0;
+					if (cell.top) count++;
+					if (cell.left) count++;
+					if (cell.bottom) count++;
+					if (cell.right) count++;
+
+					if (count == 3) deadEnds.add(cell);
+				}
 			}
 		}
-		return count;
+
+		return deadEnds;
 	}
 
 	public Cell[][] getMap() {
 		return map;
+	}
+
+	public int getSize() {
+		return size;
 	}
 }

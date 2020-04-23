@@ -3,10 +3,10 @@ package net.thechubbypanda.larrysadventure.systems;
 import box2dLight.RayHandler;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
+import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,9 +22,10 @@ import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 import net.thechubbypanda.larrysadventure.components.SpriteComponent;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 
-public class PlayerSystem extends EntitySystem implements Listener<InputSignal> {
+public class PlayerSystem extends IteratingSystem implements Listener<InputSignal> {
 
 	private static final Family family = Family.all(PlayerComponent.class).get();
+	private static float speed = 1;
 
 	private final OrthographicCamera camera;
 
@@ -32,7 +33,6 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
 	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
 
-	private final Entity player;
 	private final RayHandler rayHandler;
 	private final World world;
 
@@ -41,17 +41,20 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
 
-	public PlayerSystem(World world, RayHandler rayHandler, Entity player, OrthographicCamera camera) {
-		Globals.inputSignal.add(this);
+	public PlayerSystem(World world, RayHandler rayHandler, OrthographicCamera camera) {
+		super(Family.all(PlayerComponent.class).get());
 		this.camera = camera;
-		this.player = player;
 		this.world = world;
 		this.rayHandler = rayHandler;
 	}
 
 	@Override
-	public void update(float deltaTime) {
+	protected void processEntity(Entity entity, float deltaTime) {
 		vel.setZero();
+
+		if (Globals.DEBUG) {
+			speed = 5;
+		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 			vel.y += 1;
@@ -65,7 +68,7 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 			vel.x -= 1;
 			//playerAnimationComponent.play("left");
 		} else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			vel.x += 1; 
+			vel.x += 1;
 			//playerAnimationComponent.play("right");
 		}
 
@@ -73,17 +76,17 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 //			//playerAnimationComponent.setToInitialFrame();
 //		}
 
-		pcm.get(player).setRotation(MathUtils.lerpAngle(pcm.get(player).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
-		pcm.get(player).setLinearVelocity(vel.rotateRad(pcm.get(player).getRotation()).nor());
+		pcm.get(entity).setRotation(MathUtils.lerpAngle(pcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
+		pcm.get(entity).setLinearVelocity(vel.rotateRad(pcm.get(entity).getRotation()).nor().scl(speed));
 
-		scm.get(player).sprite.setRotation(scm.get(player).sprite.getRotation());
-		scm.get(player).setPosition(pcm.get(player).getPosition());
+		scm.get(entity).sprite.setRotation(scm.get(entity).sprite.getRotation());
+		scm.get(entity).setPosition(pcm.get(entity).getPosition());
 
 		Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		float diffX = mousePos.x - pcm.get(player).getPosition().x;
-		float diffY = mousePos.y - pcm.get(player).getPosition().y;
+		float diffX = mousePos.x - pcm.get(entity).getPosition().x;
+		float diffY = mousePos.y - pcm.get(entity).getPosition().y;
 		float angle = (float) Math.atan2(diffY, diffX);
-		lcm.get(player).setBodyAngleOffset(angle * MathUtils.radiansToDegrees);
+		lcm.get(entity).setBodyAngleOffset(angle * MathUtils.radiansToDegrees);
 	}
 
 	@Override

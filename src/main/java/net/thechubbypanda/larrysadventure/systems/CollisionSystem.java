@@ -10,11 +10,14 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import net.thechubbypanda.larrysadventure.components.BulletComponent;
 import net.thechubbypanda.larrysadventure.components.HealthComponent;
+import net.thechubbypanda.larrysadventure.components.LevelExitComponent;
+import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 
 public class CollisionSystem extends EntitySystem implements ContactListener {
 
 	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
 	private final ComponentMapper<BulletComponent> bcm = ComponentMapper.getFor(BulletComponent.class);
+	private final ComponentMapper<LevelExitComponent> lecm = ComponentMapper.getFor(LevelExitComponent.class);
 
 	private void dealWithContact(Entity a, Object b) {
 		if (hcm.has(a)) {
@@ -22,6 +25,9 @@ public class CollisionSystem extends EntitySystem implements ContactListener {
 		}
 		if (bcm.has(a)) {
 			Gdx.app.postRunnable(() -> getEngine().removeEntity(a));
+		}
+		if (lecm.has(a) && b instanceof Entity && ((Entity) b).getComponent(PlayerComponent.class) != null) {
+			Gdx.app.postRunnable(() -> lecm.get(a).nextLevel());
 		}
 	}
 

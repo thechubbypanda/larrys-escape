@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import net.thechubbypanda.larrysadventure.components.*;
 
 import static net.thechubbypanda.larrysadventure.Globals.PPM;
+import static net.thechubbypanda.larrysadventure.Globals.assets;
 
 public final class EntityFactory {
 
@@ -113,6 +114,31 @@ public final class EntityFactory {
 		bullet.add(new LightComponent(light));
 
 		return bullet;
+	}
+
+	public static Entity levelExit(LevelManager lm, World world, Vector2 position) {
+		Entity levelExit = new Entity();
+
+		BodyDef bdef = new BodyDef();
+		bdef.type = BodyDef.BodyType.StaticBody;
+		bdef.position.set(position.scl(1 / PPM));
+		bdef.fixedRotation = true;
+
+		CircleShape shape = new CircleShape();
+		shape.setRadius(32 / PPM);
+
+		FixtureDef fdef = new FixtureDef();
+		fdef.shape = shape;
+		fdef.isSensor = true;
+
+		Body body = world.createBody(bdef);
+		body.createFixture(fdef);
+
+		levelExit.add(new PhysicsComponent(levelExit, body));
+		levelExit.add(new SpriteComponent(assets.get("levelExit.png", Texture.class)));
+		levelExit.add(new LevelExitComponent(lm));
+
+		return levelExit;
 	}
 
 	private EntityFactory() {
