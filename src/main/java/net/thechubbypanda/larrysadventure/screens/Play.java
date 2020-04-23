@@ -4,37 +4,34 @@ import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import net.thechubbypanda.larrysadventure.EntityFactory;
-import net.thechubbypanda.larrysadventure.Globals;
+import net.thechubbypanda.larrysadventure.LevelManager;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
-import net.thechubbypanda.larrysadventure.components.TileMapComponent;
+import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 import net.thechubbypanda.larrysadventure.entityListeners.WorldListener;
-import net.thechubbypanda.larrysadventure.map.Cell;
-import net.thechubbypanda.larrysadventure.map.CellMap;
-import net.thechubbypanda.larrysadventure.map.Tile;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
+import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 import net.thechubbypanda.larrysadventure.systems.*;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 import static net.thechubbypanda.larrysadventure.Globals.*;
 
 public class Play extends ScreenAdapter implements InputProcessor {
 
-	private final Engine engine;
+	public final Signal<ResizeSignal> resizeSignal = new Signal<>();
+	public final Signal<InputSignal> inputSignal = new Signal<>();
 
+	private final Engine engine;
 	private final World world;
+	private final LevelManager levelManager;
 	private final RayHandler rayHandler;
 
 	private final OrthographicCamera mainCamera;
@@ -48,60 +45,34 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(AMBIENT_COLOR);
 
-		// Load initial files
-		assets.load(Globals.Textures.GRASS, Texture.class);
-		assets.load(Globals.Textures.WALL_CORNER, Texture.class);
-		assets.load(Globals.Textures.WALL_VERT, Texture.class);
-		assets.load(Globals.Textures.WALL_HORIZ, Texture.class);
-		assets.finishLoading();
-
-		Entity player = EntityFactory.player(world, rayHandler);
-		engine.addEntity(player);
+		levelManager = new LevelManager(engine, world, rayHandler, 0);
 
 		// Cameras
 		// Main viewport and camera
 		CameraComponent mcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), 1f);
-		mcc.follow(player, 0, Gdx.graphics.getHeight() / 8f, 0);
+		mcc.follow(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).get(0), 0, Gdx.graphics.getHeight() / 8f, 0);
 		resizeSignal.add(mcc);
 		engine.addEntity(new Entity().add(mcc));
 		mainCamera = mcc.getCamera();
 
 		// B2d viewport and camera
 		CameraComponent b2dcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth() / PPM, Gdx.graphics.getHeight() / PPM), 1f / PPM);
-		b2dcc.follow(player, 0, Gdx.graphics.getHeight() / 8f, 0);
+		b2dcc.follow(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).get(0), 0, Gdx.graphics.getHeight() / 8f, 0);
 		resizeSignal.add(b2dcc);
 		engine.addEntity(new Entity().add(b2dcc));
-
-		// Map
-		CellMap cellMap = new CellMap(5);
-		engine.addEntity(new Entity().add(new TileMapComponent(world, cellMap)));
-
-		// Enemies
-		ArrayList<Cell> containingEnemies = new ArrayList<>();
-		Random random = new Random();
-		for (int i = 0; i < 5; i++) {
-			Cell cell;
-			do {
-				cell = cellMap.getMap()[random.nextInt(cellMap.getMap().length - 1)][random.nextInt(cellMap.getMap()[0].length - 1)];
-			} while (containingEnemies.contains(cell) || cellMap.getMap()[0][0] == cell);
-			containingEnemies.add(cell);
-		}
-
-		final Vector2 pos = new Vector2();
-		for (Cell cell : containingEnemies) {
-			pos.set(cell.x * Tile.SIZE, cell.y * Tile.SIZE);
-			engine.addEntity(EntityFactory.enemy(world, pos));
-		}
 
 		// Engine systems
 		CollisionSystem cs = new CollisionSystem();
 		world.setContactListener(cs);
 
+		PlayerSystem ps = new PlayerSystem(world, rayHandler, mainCamera);
+		inputSignal.add(ps);
+
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new PlayerSystem(world, rayHandler, player, mainCamera));
-		engine.addSystem(new EnemySystem(world, player));
+		engine.addSystem(ps);
+		engine.addSystem(new EnemySystem(world));
 		engine.addSystem(cs);
 		engine.addSystem(new HealthSystem());
 
@@ -109,7 +80,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addSystem(new CameraSystem());
 		engine.addSystem(new MapRenderSystem(mainCamera));
 		engine.addSystem(new MainRenderSystem(mainCamera));
-		engine.addSystem(new PlayerRenderSystem(mainCamera, player));
+		engine.addSystem(new PlayerRenderSystem(mainCamera));
 		engine.addSystem(new LightRenderSystem(rayHandler, b2dcc.getCamera()));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
@@ -130,7 +101,7 @@ public class Play extends ScreenAdapter implements InputProcessor {
 
 	@Override
 	public void resize(int width, int height) {
-
+		resizeSignal.dispatch(new ResizeSignal(width, height));
 	}
 
 	@Override

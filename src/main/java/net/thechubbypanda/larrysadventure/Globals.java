@@ -1,10 +1,7 @@
 package net.thechubbypanda.larrysadventure;
 
-import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import net.thechubbypanda.larrysadventure.signals.InputSignal;
-import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 
 public class Globals {
 
@@ -25,9 +22,6 @@ public class Globals {
 		public static final int LIGHT_RENDER = 6;
 		public static final int DEBUG_RENDER = 7;
 	}
-
-	public static final Signal<ResizeSignal> resizeSignal = new Signal<>();
-	public static final Signal<InputSignal> inputSignal = new Signal<>();
 
 	public static boolean DEBUG = false;
 
