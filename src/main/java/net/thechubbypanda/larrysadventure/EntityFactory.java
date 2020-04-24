@@ -46,6 +46,12 @@ public final class EntityFactory {
 
 		player.add(new LightComponent(light));
 
+		PointLight light2 = new PointLight(rayHandler, 16, Color.WHITE, 48 / PPM, 0, 0);
+		light2.attachToBody(body);
+		light.setIgnoreAttachedBody(true);
+
+		player.add(new LightComponent(light));
+
 		return player;
 	}
 
@@ -128,7 +134,7 @@ public final class EntityFactory {
 		bdef.fixedRotation = true;
 
 		CircleShape shape = new CircleShape();
-		shape.setRadius(32 / PPM);
+		shape.setRadius(0.5f / PPM);
 
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
