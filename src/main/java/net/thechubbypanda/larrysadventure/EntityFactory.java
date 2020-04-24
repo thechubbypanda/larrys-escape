@@ -120,6 +120,8 @@ public final class EntityFactory {
 
 		bullet.add(new LightComponent().add(light));
 
+		bullet.add(new SpriteComponent(assets.get("bullet.png", Texture.class)));
+
 		return bullet;
 	}
 
