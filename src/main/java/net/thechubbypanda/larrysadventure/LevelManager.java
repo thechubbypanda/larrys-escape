@@ -35,6 +35,7 @@ public class LevelManager {
 
 	public void setLevel(int level) {
 		currentLevel = level;
+		destroyLevel();
 		generateLevel(level);
 	}
 
@@ -42,21 +43,19 @@ public class LevelManager {
 		setLevel(currentLevel + 1);
 	}
 
-	private void generateLevel(int level) {
-		// Destroy old
+	private void destroyLevel() {
 		if (currentMap != null) {
 			currentMap.getComponent(TileMapComponent.class).removeBodies(world);
 		}
 		ImmutableArray<Entity> keep = engine.getEntitiesFor(Family.one(CameraComponent.class).get());
-		while (engine.getEntities().size() > keep.size()) {
-			for (Entity e : engine.getEntities()) {
-				if (!keep.contains(e, true)) {
-					engine.removeEntity(e);
-				}
+		for (Entity e : engine.getEntities()) {
+			if (!keep.contains(e, true)) {
+				engine.removeEntity(e);
 			}
 		}
+	}
 
-		// New
+	private void generateLevel(int level) {
 		// Map
 		CellMap cellMap = new CellMap(level + 5);
 
@@ -94,6 +93,6 @@ public class LevelManager {
 		do {
 			exitCell = deadEnds.get(random.nextInt(deadEnds.size()));
 		} while (exitCell == cellMap.getMap()[0][0]);
-		engine.addEntity(EntityFactory.levelExit(this, world, new Vector2(exitCell.x, exitCell.y).scl(128)));
+		engine.addEntity(EntityFactory.levelExit(world, new Vector2(exitCell.x, exitCell.y).scl(128)));
 	}
 }
