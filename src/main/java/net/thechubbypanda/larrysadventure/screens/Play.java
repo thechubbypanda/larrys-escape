@@ -80,14 +80,14 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		LevelExitSystem les = new LevelExitSystem(levelManager);
 		collisionSignal.add(les);
 
-		engine.addSystem(new MainMovementSystem());
-		engine.addSystem(new AliveTimeSystem());
-		engine.addSystem(new AnimationSystem());
 		engine.addSystem(ps);
-		engine.addSystem(new EnemySystem(world));
 		engine.addSystem(hs);
 		engine.addSystem(bs);
 		engine.addSystem(les);
+		engine.addSystem(new EnemySystem(world));
+		engine.addSystem(new MainMovementSystem());
+		engine.addSystem(new AliveTimeSystem());
+		engine.addSystem(new AnimationSystem());
 
 		engine.addSystem(new GLInitSystem());
 		engine.addSystem(new CameraSystem());
