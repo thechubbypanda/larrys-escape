@@ -51,4 +51,10 @@ public class Main extends Game {
 
 		new Lwjgl3Application(new Main(), config);
 	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		assets.dispose();
+	}
 }
