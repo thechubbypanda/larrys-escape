@@ -119,7 +119,7 @@ public final class EntityFactory {
 		return bullet;
 	}
 
-	public static Entity levelExit(LevelManager lm, World world, Vector2 position) {
+	public static Entity levelExit(World world, Vector2 position) {
 		Entity levelExit = new Entity();
 
 		BodyDef bdef = new BodyDef();
@@ -139,7 +139,7 @@ public final class EntityFactory {
 
 		levelExit.add(new PhysicsComponent(levelExit, body));
 		levelExit.add(new SpriteComponent(assets.get("levelExit.png", Texture.class)));
-		levelExit.add(new LevelExitComponent(lm));
+		levelExit.add(new LevelExitComponent());
 
 		return levelExit;
 	}

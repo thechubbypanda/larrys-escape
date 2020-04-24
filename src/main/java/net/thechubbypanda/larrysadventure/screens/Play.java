@@ -7,12 +7,13 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import net.thechubbypanda.larrysadventure.Collision;
 import net.thechubbypanda.larrysadventure.LevelManager;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
@@ -22,12 +23,14 @@ import net.thechubbypanda.larrysadventure.signals.InputSignal;
 import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 import net.thechubbypanda.larrysadventure.systems.*;
 
-import static net.thechubbypanda.larrysadventure.Globals.*;
+import static net.thechubbypanda.larrysadventure.Globals.AMBIENT_COLOR;
+import static net.thechubbypanda.larrysadventure.Globals.PPM;
 
-public class Play extends ScreenAdapter implements InputProcessor {
+public class Play implements Screen, InputProcessor, ContactListener {
 
 	public final Signal<ResizeSignal> resizeSignal = new Signal<>();
 	public final Signal<InputSignal> inputSignal = new Signal<>();
+	private final Signal<Collision> collisionSignal = new Signal<>();
 
 	private final Engine engine;
 	private final World world;
@@ -38,7 +41,10 @@ public class Play extends ScreenAdapter implements InputProcessor {
 
 	public Play() {
 		engine = new Engine();
+
+		// World
 		world = new World(Vector2.Zero, true);
+		world.setContactListener(this);
 
 		// Lights
 		RayHandler.useDiffuseLight(true);
@@ -62,19 +68,26 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		engine.addEntity(new Entity().add(b2dcc));
 
 		// Engine systems
-		CollisionSystem cs = new CollisionSystem();
-		world.setContactListener(cs);
-
 		PlayerSystem ps = new PlayerSystem(world, rayHandler, mainCamera);
 		inputSignal.add(ps);
+
+		HealthSystem hs = new HealthSystem();
+		collisionSignal.add(hs);
+
+		BulletSystem bs = new BulletSystem();
+		collisionSignal.add(bs);
+
+		LevelExitSystem les = new LevelExitSystem(levelManager);
+		collisionSignal.add(les);
 
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
 		engine.addSystem(ps);
 		engine.addSystem(new EnemySystem(world));
-		engine.addSystem(cs);
-		engine.addSystem(new HealthSystem());
+		engine.addSystem(hs);
+		engine.addSystem(bs);
+		engine.addSystem(les);
 
 		engine.addSystem(new GLInitSystem());
 		engine.addSystem(new CameraSystem());
@@ -105,15 +118,46 @@ public class Play extends ScreenAdapter implements InputProcessor {
 	}
 
 	@Override
+	public void pause() {
+
+	}
+
+	@Override
+	public void resume() {
+
+	}
+
+	@Override
 	public void hide() {
 
 	}
 
 	@Override
-	public void dispose() {
-		rayHandler.dispose();
-		world.dispose();
-		assets.dispose();
+	public void beginContact(Contact contact) {
+		Object a = contact.getFixtureA().getBody().getUserData();
+		Object b = contact.getFixtureB().getBody().getUserData();
+		if (a instanceof Entity) {
+			//collisions.add(new Collision((Entity)a, b));
+			collisionSignal.dispatch(new Collision((Entity) a, b));
+		}
+		if (b instanceof Entity) {
+			//collisions.add(new Collision((Entity)b, a));
+			collisionSignal.dispatch(new Collision((Entity) b, a));
+		}
+	}
+
+	@Override
+	public void endContact(Contact contact) {
+
+	}
+
+	@Override
+	public void preSolve(Contact contact, Manifold oldManifold) {
+
+	}
+
+	@Override
+	public void postSolve(Contact contact, ContactImpulse impulse) {
 	}
 
 	@Override
@@ -187,5 +231,11 @@ public class Play extends ScreenAdapter implements InputProcessor {
 		s.button = button;
 		inputSignal.dispatch(s);
 		return true;
+	}
+
+	@Override
+	public void dispose() {
+		rayHandler.dispose();
+		world.dispose();
 	}
 }
