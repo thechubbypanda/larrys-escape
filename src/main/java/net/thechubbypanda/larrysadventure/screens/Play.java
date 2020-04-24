@@ -28,8 +28,8 @@ import static net.thechubbypanda.larrysadventure.Globals.PPM;
 
 public class Play implements Screen, InputProcessor, ContactListener {
 
-	public final Signal<ResizeSignal> resizeSignal = new Signal<>();
-	public final Signal<InputSignal> inputSignal = new Signal<>();
+	private final Signal<ResizeSignal> resizeSignal = new Signal<>();
+	private final Signal<InputSignal> inputSignal = new Signal<>();
 	private final Signal<Collision> collisionSignal = new Signal<>();
 
 	private final Engine engine;
