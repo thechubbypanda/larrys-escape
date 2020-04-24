@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysadventure.Collision;
 import net.thechubbypanda.larrysadventure.LevelManager;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
+import net.thechubbypanda.larrysadventure.components.LightComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 import net.thechubbypanda.larrysadventure.entityListeners.WorldListener;
@@ -88,6 +89,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
+		engine.addSystem(new AnimationSystem());
 
 		engine.addSystem(new GLInitSystem());
 		engine.addSystem(new CameraSystem());
@@ -98,7 +100,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners
-		engine.addEntityListener(Family.all(PhysicsComponent.class).get(), new WorldListener(world));
+		engine.addEntityListener(Family.one(PhysicsComponent.class, LightComponent.class).get(), new WorldListener(world));
 	}
 
 	@Override

@@ -26,10 +26,10 @@ public class WorldListener implements EntityListener {
 	@Override
 	public void entityRemoved(Entity entity) {
 		if (pcm.has(entity)) {
-			pcm.get(entity).removeBody(world);
+			pcm.get(entity).dispose(world);
 		}
 		if (lcm.has(entity)) {
-			lcm.get(entity).remove();
+			lcm.get(entity).dispose();
 		}
 	}
 }

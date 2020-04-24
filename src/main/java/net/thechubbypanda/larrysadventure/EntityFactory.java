@@ -44,13 +44,11 @@ public final class EntityFactory {
 		light.attachToBody(body, 0, 0, 90);
 		light.setIgnoreAttachedBody(true);
 
-		player.add(new LightComponent(light));
-
 		PointLight light2 = new PointLight(rayHandler, 16, Color.WHITE, 48 / PPM, 0, 0);
 		light2.attachToBody(body);
 		light.setIgnoreAttachedBody(true);
 
-		player.add(new LightComponent(light));
+		player.add(new LightComponent().add(light).add(light2));
 
 		return player;
 	}
@@ -120,7 +118,7 @@ public final class EntityFactory {
 		light.attachToBody(body);
 		light.setIgnoreAttachedBody(true);
 
-		bullet.add(new LightComponent(light));
+		bullet.add(new LightComponent().add(light));
 
 		return bullet;
 	}

@@ -46,7 +46,7 @@ public class PhysicsComponent implements Component {
 		body.setTransform(position.x, position.y, getRotation());
 	}
 
-	public void removeBody(World world) {
+	public void dispose(World world) {
 		world.destroyBody(body);
 	}
 }
