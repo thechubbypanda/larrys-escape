@@ -86,7 +86,7 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 		float diffX = mousePos.x - pcm.get(entity).getPosition().x;
 		float diffY = mousePos.y - pcm.get(entity).getPosition().y;
 		float angle = (float) Math.atan2(diffY, diffX);
-		lcm.get(entity).setBodyAngleOffset(angle * MathUtils.radiansToDegrees);
+		lcm.get(entity).setBodyAngleOffset((angle - targetRotation) * MathUtils.radiansToDegrees);
 	}
 
 	@Override
