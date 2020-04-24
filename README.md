@@ -10,3 +10,9 @@ In Larry's Adventure, you play as Larry, the chicken. Larry has been stuck on th
 - Start with a weapon that can stun them
 - Find gun that can actually kill them later
 - Gun spawns randomly in one of 3 levels at some point
+
+### STEALTH GAME
+
+- In light, enemies can see you
+- Shooting makes light
+- Actual reason for proper AI as before
