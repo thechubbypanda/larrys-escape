@@ -49,24 +49,27 @@ public final class EntityFactory {
 		return player;
 	}
 
-	public static Entity enemy(World world, Vector2 position) {
-		Entity enemy = new Entity();
+	private static final BodyDef ENEMY_BDEF = new BodyDef();
+	private static final FixtureDef ENEMY_FDEF = new FixtureDef();
 
-		BodyDef bdef = new BodyDef();
-		bdef.type = BodyDef.BodyType.DynamicBody;
-		bdef.fixedRotation = true;
+	static {
+		ENEMY_BDEF.type = BodyDef.BodyType.DynamicBody;
+		ENEMY_BDEF.fixedRotation = true;
 
 		Shape shape = new CircleShape();
 		shape.setRadius(16 / Globals.PPM);
 
-		FixtureDef fdef = new FixtureDef();
-		fdef.shape = shape;
+		ENEMY_FDEF.shape = shape;
+	}
 
-		bdef.position.set(position.scl(1/PPM));
+	public static Entity enemy(World world, Vector2 position) {
+		Entity enemy = new Entity();
 
-		Body body = world.createBody(bdef);
+		ENEMY_BDEF.position.set(position.scl(1 / PPM));
 
-		body.createFixture(fdef);
+		Body body = world.createBody(ENEMY_BDEF);
+
+		body.createFixture(ENEMY_FDEF);
 
 		enemy.add(new EnemyComponent());
 		enemy.add(new PhysicsComponent(enemy, body));
