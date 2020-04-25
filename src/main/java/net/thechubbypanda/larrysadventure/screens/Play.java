@@ -8,7 +8,6 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -34,10 +33,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 
 	private final Engine engine;
 	private final World world;
-	private final LevelManager levelManager;
 	private final RayHandler rayHandler;
-
-	private final Camera mainCamera;
 
 	public Play() {
 		engine = new Engine();
@@ -51,20 +47,20 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(AMBIENT_COLOR);
 
-		levelManager = new LevelManager(engine, world, rayHandler, 0);
+		LevelManager levelManager = new LevelManager(engine, world, rayHandler, 0);
 
 		// Cameras
 		// Main viewport and camera
 		CameraComponent mcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), 0, Gdx.graphics.getHeight() / 8f, 0, 1f);
+		mcc.setMainCameraComponent();
 		engine.addEntity(new Entity().add(mcc));
-		mainCamera = mcc.getCamera();
 
 		// B2d viewport and camera
 		CameraComponent b2dcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth() / PPM, Gdx.graphics.getHeight() / PPM), 0, Gdx.graphics.getHeight() / 8f, 0, 1f / PPM);
 		engine.addEntity(new Entity().add(b2dcc));
 
 		// Engine systems
-		PlayerSystem ps = new PlayerSystem(world, rayHandler, mcc.getCamera());
+		PlayerSystem ps = new PlayerSystem(world, rayHandler);
 		inputSignal.add(ps);
 		engine.addSystem(ps);
 
@@ -91,9 +87,9 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		engine.addSystem(new AnimationSystem());
 
 		engine.addSystem(new GLInitSystem());
-		engine.addSystem(new MapRenderSystem(mcc.getCamera()));
-		engine.addSystem(new MainRenderSystem(mcc.getCamera()));
-		engine.addSystem(new PlayerRenderSystem(mcc.getCamera()));
+		engine.addSystem(new MapRenderSystem());
+		engine.addSystem(new MainRenderSystem());
+		engine.addSystem(new PlayerRenderSystem());
 		engine.addSystem(new LightRenderSystem(rayHandler, b2dcc.getCamera()));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
@@ -205,10 +201,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		} else {
 			s.type = InputSignal.Type.mouseDragged;
 		}
-		Vector3 v = new Vector3(screenX, screenY, 0);
-		v = mainCamera.unproject(v);
-		s.x = (int) v.x;
-		s.y = (int) v.y;
+		if (getSignalPosition(screenX, screenY, s)) return false;
 		inputSignal.dispatch(s);
 		return true;
 	}
@@ -224,13 +217,28 @@ public class Play implements Screen, InputProcessor, ContactListener {
 	}
 
 	private boolean touchSignal(int screenX, int screenY, int button, InputSignal s) {
-		Vector3 v = new Vector3(screenX, screenY, 0);
-		v = mainCamera.unproject(v);
-		s.x = (int) v.x;
-		s.y = (int) v.y;
+		if (getSignalPosition(screenX, screenY, s)) return false;
 		s.button = button;
 		inputSignal.dispatch(s);
 		return true;
+	}
+
+	/**
+	 * @param screenX Screen position of pointer
+	 * @param screenY Screen position of pointer
+	 * @param s       Signal to set world position of
+	 * @return returns true on failure
+	 */
+	private boolean getSignalPosition(int screenX, int screenY, InputSignal s) {
+		Vector3 v = new Vector3(screenX, screenY, 0);
+		CameraComponent cc = CameraComponent.getMainCameraComponent();
+		if (cc == null) {
+			return true;
+		}
+		v = cc.getCamera().unproject(v);
+		s.x = (int) v.x;
+		s.y = (int) v.y;
+		return false;
 	}
 
 	@Override

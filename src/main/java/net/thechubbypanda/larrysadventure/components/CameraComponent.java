@@ -7,11 +7,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class CameraComponent implements Component {
 
-	private final Viewport vp;
-	private Vector2 posOffset;
-	private float rotationOffset;
+	private static CameraComponent mainCameraComponent = null;
 
+	private final Viewport vp;
 	private final float scale;
+
+	private final Vector2 posOffset;
+	private final float rotationOffset;
 
 	public CameraComponent(Viewport viewport, float offsetX, float offsetY, float rotationOffset, float scale) {
 		this.vp = viewport;
@@ -19,6 +21,14 @@ public class CameraComponent implements Component {
 		posOffset = new Vector2(offsetX, offsetY);
 		this.rotationOffset = rotationOffset;
 		this.scale = scale;
+	}
+
+	public static CameraComponent getMainCameraComponent() {
+		return mainCameraComponent;
+	}
+
+	public void setMainCameraComponent() {
+		mainCameraComponent = this;
 	}
 
 	public OrthographicCamera getCamera() {
