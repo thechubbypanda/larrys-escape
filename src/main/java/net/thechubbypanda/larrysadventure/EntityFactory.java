@@ -15,46 +15,23 @@ import static net.thechubbypanda.larrysadventure.Globals.assets;
 
 public final class EntityFactory {
 
-	public static Entity player(World world, RayHandler rayHandler) {
-		// Player
-		Entity player = new Entity();
-
-		player.add(new PlayerComponent());
-		player.add(new SpriteComponent(new Texture("icon.png")));
-		player.add(new HealthComponent(100));
-
-		BodyDef bdef = new BodyDef();
-		bdef.type = BodyDef.BodyType.DynamicBody;
-		bdef.fixedRotation = true;
-
-		Shape shape = new CircleShape();
-		shape.setRadius(16 / Globals.PPM);
-
-		FixtureDef fdef = new FixtureDef();
-		fdef.shape = shape;
-		fdef.filter.categoryBits = CollisionBit.player.bits;
-		fdef.filter.maskBits = CollisionBit.other.bits;
-
-		Body body = world.createBody(bdef);
-		body.createFixture(fdef);
-
-		player.add(new PhysicsComponent(player, body));
-
-		ConeLight light = new ConeLight(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
-		light.attachToBody(body, 0, 0, 90);
-		light.setIgnoreAttachedBody(true);
-
-		PointLight light2 = new PointLight(rayHandler, 16, Color.WHITE, 48 / PPM, 0, 0);
-		light2.attachToBody(body);
-		light.setIgnoreAttachedBody(true);
-
-		player.add(new LightComponent().add(light).add(light2));
-
-		return player;
-	}
-
 	private static final BodyDef ENEMY_BDEF = new BodyDef();
 	private static final FixtureDef ENEMY_FDEF = new FixtureDef();
+	private static final Color BULLET_LIGHT_COLOR = new Color(1, 1, 0.8f, 1);
+	private static final BodyDef BULLET_BDEF = new BodyDef();
+	private static final FixtureDef BULLET_FDEF = new FixtureDef();
+
+	static {
+		BULLET_BDEF.type = BodyDef.BodyType.DynamicBody;
+		BULLET_BDEF.bullet = true;
+		BULLET_BDEF.fixedRotation = true;
+		CircleShape shape = new CircleShape();
+		shape.setRadius(2 / PPM);
+		BULLET_FDEF.shape = shape;
+		BULLET_FDEF.isSensor = true;
+		BULLET_FDEF.filter.categoryBits = CollisionBit.bullet.bits;
+		BULLET_FDEF.filter.maskBits = CollisionBit.other.bits;
+	}
 
 	static {
 		ENEMY_BDEF.type = BodyDef.BodyType.DynamicBody;
@@ -84,19 +61,47 @@ public final class EntityFactory {
 		return enemy;
 	}
 
-	private static final Color BULLET_LIGHT_COLOR = new Color(1, 1, 0.8f, 1);
-	private static final BodyDef BULLET_BDEF = new BodyDef();
-	private static final FixtureDef BULLET_FDEF = new FixtureDef();
+	public static Entity player(World world, RayHandler rayHandler) {
+		// Player
+		Entity player = new Entity();
 
-	static {
-		BULLET_BDEF.type = BodyDef.BodyType.DynamicBody;
-		BULLET_BDEF.bullet = true;
-		BULLET_BDEF.fixedRotation = true;
-		CircleShape shape = new CircleShape();
-		shape.setRadius(2/PPM);
-		BULLET_FDEF.shape = shape;
-		BULLET_FDEF.isSensor = true;
-		BULLET_FDEF.filter.categoryBits = CollisionBit.bullet.bits;
+		player.add(new PlayerComponent());
+		player.add(new SpriteComponent(new Texture("icon.png")));
+		player.add(new HealthComponent(100));
+
+		BodyDef bdef = new BodyDef();
+		bdef.type = BodyDef.BodyType.DynamicBody;
+		bdef.fixedRotation = true;
+
+		Shape shape = new CircleShape();
+		shape.setRadius(16 / Globals.PPM);
+
+		FixtureDef fdef = new FixtureDef();
+		fdef.shape = shape;
+		fdef.filter.categoryBits = CollisionBit.player.bits;
+		fdef.filter.maskBits = (short) (CollisionBit.other.bits | CollisionBit.levelExit.bits);
+
+		Body body = world.createBody(bdef);
+		body.createFixture(fdef);
+
+		player.add(new PhysicsComponent(player, body));
+
+		Filter filter = new Filter();
+		filter.maskBits = CollisionBit.other.bits;
+
+		ConeLight light = new ConeLight(rayHandler, 64, Color.WHITE, 400 / PPM, 0, 0, 0, 45);
+		light.attachToBody(body, 0, 0, 90);
+		light.setIgnoreAttachedBody(true);
+		light.setContactFilter(filter);
+
+		PointLight light2 = new PointLight(rayHandler, 16, Color.WHITE, 48 / PPM, 0, 0);
+		light2.attachToBody(body);
+		light.setIgnoreAttachedBody(true);
+		light.setContactFilter(filter);
+
+		player.add(new LightComponent().add(light).add(light2));
+
+		return player;
 	}
 
 	public static Entity bullet(World world, RayHandler rayHandler, Vector2 position, Vector2 direction) {
@@ -105,7 +110,7 @@ public final class EntityFactory {
 		bullet.add(new BulletComponent());
 		bullet.add(new DamageComponent(10));
 
-		BULLET_BDEF.position.set(position.scl(1/PPM));
+		BULLET_BDEF.position.set(position.scl(1 / PPM));
 		BULLET_BDEF.linearVelocity.set(direction.nor().scl(2));
 
 		Body body = world.createBody(BULLET_BDEF);
@@ -139,6 +144,8 @@ public final class EntityFactory {
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
 		fdef.isSensor = true;
+		fdef.filter.categoryBits = CollisionBit.levelExit.bits;
+		fdef.filter.maskBits = CollisionBit.player.bits;
 
 		Body body = world.createBody(bdef);
 		body.createFixture(fdef);
