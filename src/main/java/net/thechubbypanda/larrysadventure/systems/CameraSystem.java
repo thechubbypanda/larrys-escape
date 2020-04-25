@@ -16,12 +16,16 @@ import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 
+import java.util.Random;
+
 public class CameraSystem extends IteratingSystem implements Listener<ResizeSignal> {
 
 	private final ComponentMapper<CameraComponent> ccm = ComponentMapper.getFor(CameraComponent.class);
 	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
 
 	private ImmutableArray<Entity> players;
+
+	private Random random = new Random();
 
 	public CameraSystem() {
 		super(Family.all(CameraComponent.class).get(), Globals.SystemPriority.VIEWPORT);
@@ -35,23 +39,37 @@ public class CameraSystem extends IteratingSystem implements Listener<ResizeSign
 
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		CameraComponent c = ccm.get(entity);
+		CameraComponent cc = ccm.get(entity);
+		Vector2 shake = new Vector2(random.nextFloat(), random.nextFloat());
 		for (Entity p : players) {
 			final Vector2 vec = pcm.get(p).getPosition();
 			float angle = pcm.get(p).getRotation();
 			final float cos = MathUtils.cos(angle);
 			final float sin = MathUtils.sin(angle);
-			final float dX = c.getPosOffset().x * cos - c.getPosOffset().y * sin;
-			final float dY = c.getPosOffset().x * sin + c.getPosOffset().y * cos;
-			c.setPosition(vec.add(new Vector2(dX, dY)));
-			c.setRotation(-MathUtils.radiansToDegrees * (c.getRotationOffset() + angle));
+			final float dX = cc.getPosOffset().x * cos - cc.getPosOffset().y * sin;
+			final float dY = cc.getPosOffset().x * sin + cc.getPosOffset().y * cos;
+			cc.setRotation(-MathUtils.radiansToDegrees * (cc.getRotationOffset() + angle));
+			vec.add(new Vector2(dX, dY));
+			if (cc.shakeDuration > 0f) {
+				vec.add(new Vector2(shake).nor().scl(cc.shakeMagnitude).scl(1 / cc.shakeInitialDuration).scl(cc.shakeDuration));
+				cc.shakeDuration -= deltaTime;
+			}
+			cc.setPosition(vec);
+		}
+	}
+
+	public void shake(float shakeDuration, float shakeMagnitude) {
+		for (Entity c : getEntities()) {
+			ccm.get(c).shakeDuration = shakeDuration;
+			ccm.get(c).shakeInitialDuration = shakeDuration;
+			ccm.get(c).shakeMagnitude = shakeMagnitude;
 		}
 	}
 
 	@Override
 	public void receive(Signal<ResizeSignal> signal, ResizeSignal resizeSignal) {
 		for (Entity e : getEntities()) {
-			ccm.get(e).getViewport().update(resizeSignal.width, resizeSignal.height);
+			ccm.get(e).viewport.update(resizeSignal.width, resizeSignal.height);
 		}
 	}
 }

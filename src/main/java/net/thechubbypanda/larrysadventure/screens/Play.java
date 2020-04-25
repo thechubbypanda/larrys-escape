@@ -60,10 +60,6 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		engine.addEntity(new Entity().add(b2dcc));
 
 		// Engine systems
-		PlayerSystem ps = new PlayerSystem(world, rayHandler);
-		inputSignal.add(ps);
-		engine.addSystem(ps);
-
 		HealthSystem hs = new HealthSystem();
 		collisionSignal.add(hs);
 		engine.addSystem(hs);
@@ -79,6 +75,10 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		CameraSystem cs = new CameraSystem();
 		resizeSignal.add(cs);
 		engine.addSystem(cs);
+
+		PlayerSystem ps = new PlayerSystem(world, rayHandler, cs);
+		inputSignal.add(ps);
+		engine.addSystem(ps);
 
 		engine.addSystem(new EnemySystem(world));
 		engine.addSystem(new MainMovementSystem());

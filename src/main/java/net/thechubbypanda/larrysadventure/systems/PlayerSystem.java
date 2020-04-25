@@ -28,16 +28,18 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 
 	private final RayHandler rayHandler;
 	private final World world;
+	private final CameraSystem cs;
 
 	private final Vector2 vel = new Vector2();
 
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
 
-	public PlayerSystem(World world, RayHandler rayHandler) {
+	public PlayerSystem(World world, RayHandler rayHandler, CameraSystem cs) {
 		super(Family.all(PlayerComponent.class).get());
 		this.world = world;
 		this.rayHandler = rayHandler;
+		this.cs = cs;
 	}
 
 	@Override
@@ -107,6 +109,7 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 				for (Entity p : getEntities()) {
 					Vector2 currentPosition = pcm.get(p).getPosition();
 					getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
+					cs.shake(0.2f, 4f);
 				}
 			}
 		}
