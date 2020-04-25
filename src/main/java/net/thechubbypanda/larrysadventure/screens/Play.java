@@ -8,7 +8,7 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -18,7 +18,6 @@ import net.thechubbypanda.larrysadventure.LevelManager;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.LightComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
-import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 import net.thechubbypanda.larrysadventure.entityListeners.WorldListener;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
@@ -38,7 +37,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 	private final LevelManager levelManager;
 	private final RayHandler rayHandler;
 
-	private final OrthographicCamera mainCamera;
+	private final Camera mainCamera;
 
 	public Play() {
 		engine = new Engine();
@@ -56,35 +55,35 @@ public class Play implements Screen, InputProcessor, ContactListener {
 
 		// Cameras
 		// Main viewport and camera
-		CameraComponent mcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), 1f);
-		mcc.follow(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).get(0), 0, Gdx.graphics.getHeight() / 8f, 0);
-		resizeSignal.add(mcc);
+		CameraComponent mcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), 0, Gdx.graphics.getHeight() / 8f, 0, 1f);
 		engine.addEntity(new Entity().add(mcc));
 		mainCamera = mcc.getCamera();
 
 		// B2d viewport and camera
-		CameraComponent b2dcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth() / PPM, Gdx.graphics.getHeight() / PPM), 1f / PPM);
-		b2dcc.follow(engine.getEntitiesFor(Family.all(PlayerComponent.class).get()).get(0), 0, Gdx.graphics.getHeight() / 8f, 0);
-		resizeSignal.add(b2dcc);
+		CameraComponent b2dcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth() / PPM, Gdx.graphics.getHeight() / PPM), 0, Gdx.graphics.getHeight() / 8f, 0, 1f / PPM);
 		engine.addEntity(new Entity().add(b2dcc));
 
 		// Engine systems
-		PlayerSystem ps = new PlayerSystem(world, rayHandler, mainCamera);
+		PlayerSystem ps = new PlayerSystem(world, rayHandler, mcc.getCamera());
 		inputSignal.add(ps);
+		engine.addSystem(ps);
 
 		HealthSystem hs = new HealthSystem();
 		collisionSignal.add(hs);
+		engine.addSystem(hs);
 
 		BulletSystem bs = new BulletSystem();
 		collisionSignal.add(bs);
+		engine.addSystem(bs);
 
 		LevelExitSystem les = new LevelExitSystem(levelManager);
 		collisionSignal.add(les);
-
-		engine.addSystem(ps);
-		engine.addSystem(hs);
-		engine.addSystem(bs);
 		engine.addSystem(les);
+
+		CameraSystem cs = new CameraSystem();
+		resizeSignal.add(cs);
+		engine.addSystem(cs);
+
 		engine.addSystem(new EnemySystem(world));
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
@@ -92,10 +91,9 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		engine.addSystem(new AnimationSystem());
 
 		engine.addSystem(new GLInitSystem());
-		engine.addSystem(new CameraSystem());
-		engine.addSystem(new MapRenderSystem(mainCamera));
-		engine.addSystem(new MainRenderSystem(mainCamera));
-		engine.addSystem(new PlayerRenderSystem(mainCamera));
+		engine.addSystem(new MapRenderSystem(mcc.getCamera()));
+		engine.addSystem(new MainRenderSystem(mcc.getCamera()));
+		engine.addSystem(new PlayerRenderSystem(mcc.getCamera()));
 		engine.addSystem(new LightRenderSystem(rayHandler, b2dcc.getCamera()));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 

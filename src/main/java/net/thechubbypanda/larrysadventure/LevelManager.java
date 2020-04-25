@@ -66,10 +66,6 @@ public class LevelManager {
 		Entity player = EntityFactory.player(world, rayHandler);
 		engine.addEntity(player);
 
-		for (Entity e : engine.getEntitiesFor(Family.all(CameraComponent.class).get())) {
-			e.getComponent(CameraComponent.class).follow(player, 0, 0, 0);
-		}
-
 		// Enemies
 		ArrayList<Cell> containingEnemies = new ArrayList<>();
 		Random random = new Random();

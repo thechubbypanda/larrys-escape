@@ -1,56 +1,24 @@
 package net.thechubbypanda.larrysadventure.components;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class CameraComponent implements Component {
 
-	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
-
 	private final Viewport vp;
-
-	private boolean following = false;
-	private Entity follow;
 	private Vector2 posOffset;
 	private float rotationOffset;
 
-	public final float scale;
+	private final float scale;
 
-	public CameraComponent(Viewport viewport, float scale) {
+	public CameraComponent(Viewport viewport, float offsetX, float offsetY, float rotationOffset, float scale) {
 		this.vp = viewport;
 		this.vp.setCamera(new OrthographicCamera());
-		this.scale = scale;
-	}
-
-	public void follow(Entity follow, float offsetX, float offsetY, float rotationOffset) {
-		following = true;
-		this.follow = follow;
 		posOffset = new Vector2(offsetX, offsetY);
 		this.rotationOffset = rotationOffset;
-	}
-
-	public boolean isFollowing() {
-		return following;
-	}
-
-	public Vector2 getFollowPosition() {
-		return pcm.get(follow).getPosition();
-	}
-
-	public float getFollowRotation() {
-		return pcm.get(follow).getRotation();
-	}
-
-	public Vector2 getPosOffset() {
-		return posOffset;
-	}
-
-	public float getRotationOffset() {
-		return rotationOffset;
+		this.scale = scale;
 	}
 
 	public OrthographicCamera getCamera() {
@@ -70,5 +38,13 @@ public class CameraComponent implements Component {
 
 	public Viewport getViewport() {
 		return vp;
+	}
+
+	public Vector2 getPosOffset() {
+		return posOffset;
+	}
+
+	public float getRotationOffset() {
+		return rotationOffset;
 	}
 }

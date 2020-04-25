@@ -24,7 +24,6 @@ import net.thechubbypanda.larrysadventure.signals.InputSignal;
 
 public class PlayerSystem extends IteratingSystem implements Listener<InputSignal> {
 
-	private static final Family family = Family.all(PlayerComponent.class).get();
 	private static float speed = 1;
 
 	private final OrthographicCamera camera;
@@ -109,8 +108,10 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 		}
 		if (o.type == InputSignal.Type.mouseDown) {
 			if (o.button == Input.Buttons.LEFT) {
-				Vector2 currentPosition = pcm.get(getEngine().getEntitiesFor(family).get(0)).getPosition();
-				getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
+				for (Entity p : getEntities()) {
+					Vector2 currentPosition = pcm.get(p).getPosition();
+					getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
+				}
 			}
 		}
 	}
