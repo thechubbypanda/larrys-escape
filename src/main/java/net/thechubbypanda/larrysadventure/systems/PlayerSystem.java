@@ -9,25 +9,18 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
-import net.thechubbypanda.larrysadventure.components.LightComponent;
-import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
-import net.thechubbypanda.larrysadventure.components.PlayerComponent;
-import net.thechubbypanda.larrysadventure.components.SpriteComponent;
+import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 
 public class PlayerSystem extends IteratingSystem implements Listener<InputSignal> {
 
-	private static final Family family = Family.all(PlayerComponent.class).get();
 	private static float speed = 1;
-
-	private final OrthographicCamera camera;
 
 	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
@@ -35,17 +28,18 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 
 	private final RayHandler rayHandler;
 	private final World world;
+	private final CameraSystem cs;
 
 	private final Vector2 vel = new Vector2();
 
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
 
-	public PlayerSystem(World world, RayHandler rayHandler, OrthographicCamera camera) {
+	public PlayerSystem(World world, RayHandler rayHandler, CameraSystem cs) {
 		super(Family.all(PlayerComponent.class).get());
-		this.camera = camera;
 		this.world = world;
 		this.rayHandler = rayHandler;
+		this.cs = cs;
 	}
 
 	@Override
@@ -82,11 +76,14 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 		scm.get(entity).sprite.setRotation(scm.get(entity).sprite.getRotation());
 		scm.get(entity).setPosition(pcm.get(entity).getPosition());
 
-		Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		float diffX = mousePos.x - pcm.get(entity).getPosition().x;
-		float diffY = mousePos.y - pcm.get(entity).getPosition().y;
-		float angle = (float) Math.atan2(diffY, diffX);
-		lcm.get(entity).setBodyAngleOffset((angle - targetRotation) * MathUtils.radiansToDegrees);
+		CameraComponent cc = CameraComponent.getMainCameraComponent();
+		if (cc != null) {
+			Vector3 mousePos = cc.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+			float diffX = mousePos.x - pcm.get(entity).getPosition().x;
+			float diffY = mousePos.y - pcm.get(entity).getPosition().y;
+			float angle = (float) Math.atan2(diffY, diffX);
+			lcm.get(entity).setBodyAngleOffset((angle - targetRotation) * MathUtils.radiansToDegrees);
+		}
 	}
 
 	@Override
@@ -109,8 +106,11 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 		}
 		if (o.type == InputSignal.Type.mouseDown) {
 			if (o.button == Input.Buttons.LEFT) {
-				Vector2 currentPosition = pcm.get(getEngine().getEntitiesFor(family).get(0)).getPosition();
-				getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
+				for (Entity p : getEntities()) {
+					Vector2 currentPosition = pcm.get(p).getPosition();
+					getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
+					cs.shake(0.2f, 4f);
+				}
 			}
 		}
 	}

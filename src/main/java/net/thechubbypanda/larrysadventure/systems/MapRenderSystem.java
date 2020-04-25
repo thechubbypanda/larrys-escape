@@ -5,10 +5,9 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.thechubbypanda.larrysadventure.Globals;
+import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.TileMapComponent;
 
 public class MapRenderSystem extends IteratingSystem {
@@ -16,17 +15,18 @@ public class MapRenderSystem extends IteratingSystem {
 	private final ComponentMapper<TileMapComponent> tmm = ComponentMapper.getFor(TileMapComponent.class);
 
 	private final SpriteBatch batch;
-	private final Camera camera;
 
-	public MapRenderSystem(OrthographicCamera camera) {
+	public MapRenderSystem() {
 		super(Family.all(TileMapComponent.class).get(), Globals.SystemPriority.MAP_RENDER);
-		this.camera = camera;
 		batch = new SpriteBatch();
 	}
 
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		batch.setProjectionMatrix(camera.combined);
+		CameraComponent cc = CameraComponent.getMainCameraComponent();
+		if (cc != null) {
+			batch.setProjectionMatrix(cc.getCamera().combined);
+		}
 		batch.begin();
 		tmm.get(entity).render(batch);
 		batch.end();
