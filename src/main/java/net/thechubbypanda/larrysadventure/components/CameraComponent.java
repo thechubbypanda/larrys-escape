@@ -3,14 +3,11 @@ package net.thechubbypanda.larrysadventure.components;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.signals.Listener;
-import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 
-public class CameraComponent implements Component, Listener<ResizeSignal> {
+public class CameraComponent implements Component {
 
 	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
 
@@ -34,11 +31,6 @@ public class CameraComponent implements Component, Listener<ResizeSignal> {
 		this.follow = follow;
 		posOffset = new Vector2(offsetX, offsetY);
 		this.rotationOffset = rotationOffset;
-	}
-
-	@Override
-	public void receive(Signal<ResizeSignal> signal, ResizeSignal resizeSignal) {
-		vp.update(resizeSignal.width, resizeSignal.height);
 	}
 
 	public boolean isFollowing() {
@@ -74,5 +66,9 @@ public class CameraComponent implements Component, Listener<ResizeSignal> {
 		getCamera().up.set(0, 1, 0);
 		getCamera().rotate(r);
 		vp.apply();
+	}
+
+	public Viewport getViewport() {
+		return vp;
 	}
 }
