@@ -227,7 +227,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 	 * @param screenX Screen position of pointer
 	 * @param screenY Screen position of pointer
 	 * @param s       Signal to set world position of
-	 * @return returns true on failure
+	 * @return True on failure
 	 */
 	private boolean getSignalPosition(int screenX, int screenY, InputSignal s) {
 		Vector3 v = new Vector3(screenX, screenY, 0);
