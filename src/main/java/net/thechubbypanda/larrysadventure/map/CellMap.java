@@ -10,7 +10,6 @@ public class CellMap {
 
 	private final Cell[][] map;
 	private final int size;
-	private ArrayList<Cell> deadEnds;
 
 	public CellMap(int size) {
 		this.size = size;
@@ -23,19 +22,20 @@ public class CellMap {
 			}
 		}
 
-		generateMaze();
+		generate();
 	}
 
 	/**
 	 * Uses recursive back-tracker to generate a maze
 	 */
-	private void generateMaze() {
+	private void generate() {
 		Stack<Cell> stack = new Stack<>();
 		Cell[] neighbours = new Cell[4];
 		Cell currentCell = map[0][0];
 		currentCell.visited = true;
 		stack.push(currentCell);
 		Cell nextCell = null;
+
 		while (!stack.empty()) {
 			currentCell = stack.pop();
 			getNeighbours(currentCell, neighbours);
@@ -47,17 +47,17 @@ public class CellMap {
 					nextCell = neighbours[index];
 				} while (nextCell == null || nextCell.visited);
 				if (index == 0) { // top
-					currentCell.top = false;
-					nextCell.bottom = false;
+					currentCell.up = nextCell;
+					nextCell.down = currentCell;
 				} else if (index == 1) { // left
-					currentCell.left = false;
-					nextCell.right = false;
+					currentCell.left = nextCell;
+					nextCell.right = currentCell;
 				} else if (index == 2) { // bottom
-					currentCell.bottom = false;
-					nextCell.top = false;
+					currentCell.down = nextCell;
+					nextCell.up = currentCell;
 				} else { // right
-					currentCell.right = false;
-					nextCell.left = false;
+					currentCell.right = nextCell;
+					nextCell.left = currentCell;
 				}
 				nextCell.visited = true;
 				stack.push(nextCell);
@@ -66,15 +66,15 @@ public class CellMap {
 			if (Globals.DEBUG) {
 				for (int y = size - 1; y >= 0; y--) {
 					for (int x = 0; x < size; x++) {
-						System.out.print(map[x][y].top ? " _ " : "   ");
+						System.out.print(map[x][y].up == null ? " _ " : "   ");
 					}
 					System.out.println();
 					for (int x = 0; x < size; x++) {
-						System.out.print((map[x][y].left ? "|" : " ") + (currentCell == map[x][y] ? "+" : (nextCell == map[x][y] ? "*" : " ")) + (map[x][y].right ? "|" : " "));
+						System.out.print((map[x][y].left == null ? "|" : " ") + (currentCell == map[x][y] ? "+" : (nextCell == map[x][y] ? "*" : " ")) + (map[x][y].right == null ? "|" : " "));
 					}
 					System.out.println();
 					for (int x = 0; x < size; x++) {
-						System.out.print(map[x][y].bottom ? " - " : "   ");
+						System.out.print(map[x][y].down == null ? " - " : "   ");
 					}
 					System.out.println();
 				}
@@ -110,30 +110,23 @@ public class CellMap {
 		return false;
 	}
 
-//	private static int countNonNullNeighbours(Cell[] cells) {
-//		int count = 0;
-//		for(Cell c : cells) {
-//			if (c != null) {
-//				count++;
-//			}
-//		}
-//		return count;
-//	}
-
+	/**
+	 * Gets all the dead ends of the maze
+	 *
+	 * @return Dead end cells
+	 */
 	public ArrayList<Cell> getDeadEnds() {
-		if (deadEnds == null) {
-			deadEnds = new ArrayList<>();
+		ArrayList<Cell> deadEnds = new ArrayList<>();
 
-			for (Cell[] cells : map) {
-				for (Cell cell : cells) {
-					int count = 0;
-					if (cell.top) count++;
-					if (cell.left) count++;
-					if (cell.bottom) count++;
-					if (cell.right) count++;
+		for (Cell[] cells : map) {
+			for (Cell cell : cells) {
+				int count = 0;
+				if (cell.up == null) count++;
+				if (cell.left == null) count++;
+				if (cell.down == null) count++;
+				if (cell.right == null) count++;
 
-					if (count == 3) deadEnds.add(cell);
-				}
+				if (count == 3) deadEnds.add(cell);
 			}
 		}
 

@@ -16,6 +16,8 @@ import net.thechubbypanda.larrysadventure.map.Tile;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static net.thechubbypanda.larrysadventure.Globals.PPM;
+
 public class LevelManager {
 
 	private final Engine engine;
@@ -24,6 +26,10 @@ public class LevelManager {
 
 	private int currentLevel;
 	private Entity currentMap;
+	public CellMap currentCellMap;
+	public ArrayList<ArrayList<Vector2>> routes;
+
+	private Random random = new Random();
 
 	public LevelManager(Engine engine, World world, RayHandler rayHandler, int initialLevel) {
 		this.engine = engine;
@@ -55,40 +61,58 @@ public class LevelManager {
 		}
 	}
 
+	private static ArrayList<Cell> getStraightPath(Cell start) {
+		ArrayList<Cell> path = new ArrayList<>();
+		path.add(start);
+		return calcPath(start, path);
+	}
+
+	private static ArrayList<Cell> calcPath(Cell cell, ArrayList<Cell> path) {
+		ArrayList<Cell> neighbours = cell.getLinkedNeighbours();
+		if (neighbours.size() == 2) {
+			neighbours.removeIf(path::contains);
+			path.add(cell);
+			return calcPath(neighbours.get(0), path);
+		} else if (neighbours.size() == 1) {
+			return calcPath(neighbours.get(0), path);
+		} else {
+			return path;
+		}
+	}
+
 	private void generateLevel(int level) {
 		// Map
-		CellMap cellMap = new CellMap(level + 5);
+		currentCellMap = new CellMap(level + 5);
 
-		currentMap = new Entity().add(new TileMapComponent(world, cellMap));
+		currentMap = new Entity().add(new TileMapComponent(world, currentCellMap));
 		engine.addEntity(currentMap);
 
 		// Player
 		Entity player = EntityFactory.player(world, rayHandler);
 		engine.addEntity(player);
 
-		// Enemies
-		ArrayList<Cell> containingEnemies = new ArrayList<>();
-		Random random = new Random();
-		int numEnemies = cellMap.getSize() * cellMap.getSize() / 8;
-		for (int i = 0; i < numEnemies; i++) {
-			Cell cell;
-			do {
-				cell = cellMap.getMap()[random.nextInt(cellMap.getSize())][random.nextInt(cellMap.getSize())];
-			} while (containingEnemies.contains(cell) || cellMap.getMap()[0][0] == cell);
-			containingEnemies.add(cell);
-		}
+		ArrayList<Cell> deadEnds = currentCellMap.getDeadEnds();
+		deadEnds.remove(currentCellMap.getMap()[0][0]);
 
-		final Vector2 pos = new Vector2();
-		for (Cell cell : containingEnemies) {
-			pos.set(cell.x * Tile.SIZE, cell.y * Tile.SIZE);
-			engine.addEntity(EntityFactory.enemy(world, pos));
-		}
-
-		ArrayList<Cell> deadEnds = cellMap.getDeadEnds();
-		Cell exitCell;
-		do {
-			exitCell = deadEnds.get(random.nextInt(deadEnds.size()));
-		} while (exitCell == cellMap.getMap()[0][0]);
+		// Level Exit
+		Cell exitCell = deadEnds.get(random.nextInt(deadEnds.size()));
 		engine.addEntity(EntityFactory.levelExit(world, new Vector2(exitCell.x, exitCell.y).scl(128)));
+		deadEnds.remove(exitCell);
+
+		// Patrol Routes
+		routes = new ArrayList<>();
+		for (Cell end : deadEnds) {
+			ArrayList<Cell> path = getStraightPath(end);
+			ArrayList<Vector2> route = new ArrayList<>();
+			for (Cell c : path) {
+				route.add(new Vector2(c.x, c.y).scl(Tile.SIZE).scl(1 / PPM));
+			}
+			routes.add(route);
+		}
+
+		// Enemies
+		for (ArrayList<Vector2> route : routes) {
+			engine.addEntity(EntityFactory.enemy(world, route));
+		}
 	}
 }
