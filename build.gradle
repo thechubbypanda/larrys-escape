@@ -7,11 +7,11 @@ mainClassName = "net.thechubbypanda.larrysadventure.Main"
 ext {
 	appName = "Larry's Adventure"
 	ashleyVersion = "1.7.3"
-	box2dlightsVersion = "1.5"
+	//box2dlightsVersion = "1.5"
 	gdxVersion = "1.9.11-SNAPSHOT"
 }
 
-version = '0.7.0-ALPHA'
+version = '0.8.0-ALPHA'
 
 repositories {
 	maven { url "https://oss.sonatype.org/content/repositories/releases/" }
