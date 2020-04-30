@@ -8,10 +8,14 @@ import java.util.ArrayList;
 public class EnemyComponent implements Component {
 
 	public final Vector2 startPosition = new Vector2();
+	public float percent = 1000f;
+
 	public ArrayList<Vector2> patrolPoints = new ArrayList<>();
 	public int nextPoint = 0;
-	public float percent = 1000f;
 	public boolean reverse = false;
+
+	public boolean tryToReturn = false;
+	public boolean returning = false;
 
 	public EnemyComponent(ArrayList<Vector2> patrolPoints) {
 		this.patrolPoints.addAll(patrolPoints);
