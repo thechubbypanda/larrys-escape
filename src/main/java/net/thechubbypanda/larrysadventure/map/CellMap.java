@@ -1,8 +1,10 @@
 package net.thechubbypanda.larrysadventure.map;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import net.thechubbypanda.larrysadventure.Globals;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class CellMap {
@@ -12,23 +14,29 @@ public class CellMap {
 
 	public CellMap(int size) {
 		this.size = size;
+
 		map = new Cell[size][size];
+
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				map[x][y] = new Cell(x, y);
 			}
 		}
 
-		generateMaze();
+		generate();
 	}
 
-	private void generateMaze() {
+	/**
+	 * Uses recursive back-tracker to generate a maze
+	 */
+	private void generate() {
 		Stack<Cell> stack = new Stack<>();
 		Cell[] neighbours = new Cell[4];
 		Cell currentCell = map[0][0];
 		currentCell.visited = true;
 		stack.push(currentCell);
 		Cell nextCell = null;
+
 		while (!stack.empty()) {
 			currentCell = stack.pop();
 			getNeighbours(currentCell, neighbours);
@@ -40,17 +48,17 @@ public class CellMap {
 					nextCell = neighbours[index];
 				} while (nextCell == null || nextCell.visited);
 				if (index == 0) { // top
-					currentCell.top = false;
-					nextCell.bottom = false;
+					currentCell.up = nextCell;
+					nextCell.down = currentCell;
 				} else if (index == 1) { // left
-					currentCell.left = false;
-					nextCell.right = false;
+					currentCell.left = nextCell;
+					nextCell.right = currentCell;
 				} else if (index == 2) { // bottom
-					currentCell.bottom = false;
-					nextCell.top = false;
+					currentCell.down = nextCell;
+					nextCell.up = currentCell;
 				} else { // right
-					currentCell.right = false;
-					nextCell.left = false;
+					currentCell.right = nextCell;
+					nextCell.left = currentCell;
 				}
 				nextCell.visited = true;
 				stack.push(nextCell);
@@ -59,24 +67,25 @@ public class CellMap {
 			if (Globals.DEBUG) {
 				for (int y = size - 1; y >= 0; y--) {
 					for (int x = 0; x < size; x++) {
-						System.out.print(map[x][y].top ? " _ " : "   ");
+						System.out.print(map[x][y].up == null ? " _ " : "   ");
 					}
 					System.out.println();
 					for (int x = 0; x < size; x++) {
-						System.out.print((map[x][y].left ? "|" : " ") + (currentCell == map[x][y] ? "+" : (nextCell == map[x][y] ? "*" : " ")) + (map[x][y].right ? "|" : " "));
+						System.out.print((map[x][y].left == null ? "|" : " ") + (currentCell == map[x][y] ? "+" : (nextCell == map[x][y] ? "*" : " ")) + (map[x][y].right == null ? "|" : " "));
 					}
 					System.out.println();
 					for (int x = 0; x < size; x++) {
-						System.out.print(map[x][y].bottom ? " - " : "   ");
+						System.out.print(map[x][y].down == null ? " - " : "   ");
 					}
 					System.out.println();
 				}
 				System.out.println();
 			}
 		}
-
 	}
-// TODO: Something wrong with determining whether there are cells available
+
+	// TODO: Something wrong with determining whether there are cells available
+	// Can't see any issues?
 	private void getNeighbours(Cell cell, Cell[] neighbours) {
 		Cell top = null, left = null, bottom = null, right = null;
 		if (cell.y != size - 1)
@@ -102,17 +111,39 @@ public class CellMap {
 		return false;
 	}
 
-	private static int countNonNullNeighbours(Cell[] cells) {
-		int count = 0;
-		for(Cell c : cells) {
-			if (c != null) {
-				count++;
+	/**
+	 * Gets all the dead ends of the maze
+	 *
+	 * @return Dead end cells
+	 */
+	public ArrayList<Cell> getDeadEnds() {
+		ArrayList<Cell> deadEnds = new ArrayList<>();
+
+		for (Cell[] cells : map) {
+			for (Cell cell : cells) {
+				int count = 0;
+				if (cell.up == null) count++;
+				if (cell.left == null) count++;
+				if (cell.down == null) count++;
+				if (cell.right == null) count++;
+
+				if (count == 3) deadEnds.add(cell);
 			}
 		}
-		return count;
+
+		return deadEnds;
+	}
+
+	public Cell getClosestCell(Vector2 position) {
+		position.scl(1 / 128f);
+		return map[Math.round(position.x)][Math.round(position.y)];
 	}
 
 	public Cell[][] getMap() {
 		return map;
+	}
+
+	public int getSize() {
+		return size;
 	}
 }

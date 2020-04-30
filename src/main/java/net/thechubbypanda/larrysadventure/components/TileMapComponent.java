@@ -9,11 +9,13 @@ import net.thechubbypanda.larrysadventure.map.Tile;
 
 public class TileMapComponent implements Component {
 
+	private final CellMap cellMap;
 	private final Tile[][] map;
 	private final int size;
 
 	public TileMapComponent(World world, CellMap cellMap) {
 		Cell[][] cMap = cellMap.getMap();
+		this.cellMap = cellMap;
 		size = cMap.length;
 		map = new Tile[size][size];
 		for (int x = 0; x < size; x++) {
@@ -33,9 +35,13 @@ public class TileMapComponent implements Component {
 
 	public void removeBodies(World world) {
 		for (Tile[] tiles : map) {
-			for(Tile tile : tiles) {
+			for (Tile tile : tiles) {
 				tile.removeBody(world);
 			}
 		}
+	}
+
+	public CellMap getCellMap() {
+		return cellMap;
 	}
 }

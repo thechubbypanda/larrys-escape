@@ -130,83 +130,83 @@ public class Tile {
 
 		bdef.position.set(cell.x * SIZE / PPM, cell.y * SIZE / PPM);
 		body = world.createBody(bdef);
-	    body.createFixture(fTopLeftCorner);
-	    body.createFixture(fBottomLeftCorner);
-	    body.createFixture(fBottomRightCorner);
-	    body.createFixture(fTopRightCorner);
-	    if(cell.top)
-	    	body.createFixture(fTop);
-	    if(cell.left)
-	    	body.createFixture(fLeft);
-	    if(cell.bottom)
-	    	body.createFixture(fBottom);
-	    if(cell.right)
-	    	body.createFixture(fRight);
+		body.createFixture(fTopLeftCorner);
+		body.createFixture(fBottomLeftCorner);
+		body.createFixture(fBottomRightCorner);
+		body.createFixture(fTopRightCorner);
+		if (cell.up == null)
+			body.createFixture(fTop);
+		if (cell.left == null)
+			body.createFixture(fLeft);
+		if (cell.down == null)
+			body.createFixture(fBottom);
+		if (cell.right == null)
+			body.createFixture(fRight);
 	}
 
 	public void render(SpriteBatch batch) {
 		batch.draw(tile, x, y);
-		if (cell.left)
+		if (cell.left == null)
 			batch.draw(wallVertLeft, x, y + WALL_SIZE);
-		if (cell.right)
-			batch.draw(wallVertRight, x+(SIZE-WALL_SIZE), y + WALL_SIZE);
-		if (cell.top)
-			batch.draw(wallHorizTop, x + WALL_SIZE, y + (SIZE-WALL_SIZE));
-		if (cell.bottom)
+		if (cell.right == null)
+			batch.draw(wallVertRight, x + (SIZE - WALL_SIZE), y + WALL_SIZE);
+		if (cell.up == null)
+			batch.draw(wallHorizTop, x + WALL_SIZE, y + (SIZE - WALL_SIZE));
+		if (cell.down == null)
 			batch.draw(wallHorizBottom, x + WALL_SIZE, y);
 
-		if (cell.top) {
-			if (cell.left) {
-				batch.draw(wallCornerBottomLeft, x, y + (SIZE-WALL_SIZE));
+		if (cell.up == null) {
+			if (cell.left == null) {
+				batch.draw(wallCornerBottomLeft, x, y + (SIZE - WALL_SIZE));
 			} else {
-				batch.draw(wallCornerBottomRight, x, y + (SIZE-WALL_SIZE));
+				batch.draw(wallCornerBottomRight, x, y + (SIZE - WALL_SIZE));
 			}
-			if (cell.right) {
-				batch.draw(wallCornerBottomLeft, x + (SIZE-WALL_SIZE), y+(SIZE-WALL_SIZE));
+			if (cell.right == null) {
+				batch.draw(wallCornerBottomLeft, x + (SIZE - WALL_SIZE), y + (SIZE - WALL_SIZE));
 			} else {
-				batch.draw(wallCornerBottomRight, x + (SIZE-WALL_SIZE), y + (SIZE-WALL_SIZE));
+				batch.draw(wallCornerBottomRight, x + (SIZE - WALL_SIZE), y + (SIZE - WALL_SIZE));
 			}
 		}
-		if (cell.left) {
-			if (!cell.top) {
-				batch.draw(wallCornerTopRight, x, y + (SIZE-WALL_SIZE));
+		if (cell.left == null) {
+			if (cell.up != null) {
+				batch.draw(wallCornerTopRight, x, y + (SIZE - WALL_SIZE));
 			}
-			if (!cell.bottom) {
+			if (cell.down != null) {
 				batch.draw(wallCornerTopRight, x, y);
 			}
 		} else {
-			if (!cell.top) {
-				batch.draw(wallCornerTopLeft, x + WALL_SIZE, y + (SIZE-WALL_SIZE) + WALL_SIZE, -WALL_SIZE, -WALL_SIZE);
+			if (cell.up != null) {
+				batch.draw(wallCornerTopLeft, x + WALL_SIZE, y + (SIZE - WALL_SIZE) + WALL_SIZE, -WALL_SIZE, -WALL_SIZE);
 			}
-			if (!cell.bottom) {
+			if (cell.down != null) {
 				batch.draw(wallCornerTopLeft, x + WALL_SIZE, y, -WALL_SIZE, WALL_SIZE);
 			}
 		}
-		if (cell.bottom) {
-			if (cell.left) {
+		if (cell.down == null) {
+			if (cell.left == null) {
 				batch.draw(wallCornerBottomLeft, x, y);
 			} else {
-				batch.draw(wallCornerBottomRight, x, y+WALL_SIZE, WALL_SIZE, -WALL_SIZE);
+				batch.draw(wallCornerBottomRight, x, y + WALL_SIZE, WALL_SIZE, -WALL_SIZE);
 			}
-			if (cell.right) {
-				batch.draw(wallCornerBottomLeft, x+(SIZE-WALL_SIZE), y);
+			if (cell.right == null) {
+				batch.draw(wallCornerBottomLeft, x + (SIZE - WALL_SIZE), y);
 			} else {
-				batch.draw(wallCornerBottomRight, x+(SIZE-WALL_SIZE), y+WALL_SIZE, WALL_SIZE, -WALL_SIZE);
+				batch.draw(wallCornerBottomRight, x + (SIZE - WALL_SIZE), y + WALL_SIZE, WALL_SIZE, -WALL_SIZE);
 			}
 		}
-		if (cell.right) {
-			if (!cell.top) {
-				batch.draw(wallCornerTopRight, x + (SIZE-WALL_SIZE) + WALL_SIZE, y + (SIZE-WALL_SIZE), -WALL_SIZE, WALL_SIZE);
+		if (cell.right == null) {
+			if (cell.up != null) {
+				batch.draw(wallCornerTopRight, x + (SIZE - WALL_SIZE) + WALL_SIZE, y + (SIZE - WALL_SIZE), -WALL_SIZE, WALL_SIZE);
 			}
-			if (!cell.bottom) {
-				batch.draw(wallCornerTopRight, x + (SIZE-WALL_SIZE)+WALL_SIZE, y, -WALL_SIZE, WALL_SIZE);
+			if (cell.down != null) {
+				batch.draw(wallCornerTopRight, x + (SIZE - WALL_SIZE) + WALL_SIZE, y, -WALL_SIZE, WALL_SIZE);
 			}
 		} else {
-			if (!cell.top) {
-				batch.draw(wallCornerTopLeft, x+ (SIZE-WALL_SIZE), y+ (SIZE-WALL_SIZE) + WALL_SIZE, WALL_SIZE, -WALL_SIZE);
+			if (cell.up != null) {
+				batch.draw(wallCornerTopLeft, x + (SIZE - WALL_SIZE), y + (SIZE - WALL_SIZE) + WALL_SIZE, WALL_SIZE, -WALL_SIZE);
 			}
-			if (!cell.bottom) {
-				batch.draw(wallCornerTopLeft, x+ (SIZE-WALL_SIZE), y);
+			if (cell.down != null) {
+				batch.draw(wallCornerTopLeft, x + (SIZE - WALL_SIZE), y);
 			}
 		}
 	}

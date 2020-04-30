@@ -22,8 +22,6 @@ public class MainMenu extends ScreenAdapter {
 	public MainMenu() {
 		stage = new Stage(new ExtendViewport(1000, 1000));
 
-		assets.load("flatearthui/flat-earth-ui.json", Skin.class);
-		assets.finishLoading();
 		Skin skin = assets.get("flatearthui/flat-earth-ui.json");
 
 		Table window = new Table();

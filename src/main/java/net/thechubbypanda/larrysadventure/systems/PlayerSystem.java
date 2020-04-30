@@ -1,46 +1,54 @@
 package net.thechubbypanda.larrysadventure.systems;
 
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
+import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.World;
+import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
-import net.thechubbypanda.larrysadventure.components.ConeLightComponent;
-import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
-import net.thechubbypanda.larrysadventure.components.SpriteComponent;
+import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 
-public class PlayerSystem extends EntitySystem implements Listener<InputSignal> {
+public class PlayerSystem extends IteratingSystem implements Listener<InputSignal> {
 
-	private final OrthographicCamera camera;
+	private static float speed = 1;
 
 	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
-	private final ComponentMapper<ConeLightComponent> clcm = ComponentMapper.getFor(ConeLightComponent.class);
+	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
 
-	private final Entity player;
+	private final RayHandler rayHandler;
+	private final World world;
+	private final CameraSystem cs;
 
 	private final Vector2 vel = new Vector2();
 
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
 
-	public PlayerSystem(Entity player, OrthographicCamera camera) {
-		Globals.inputSignal.add(this);
-		this.camera = camera;
-		this.player = player;
+	public PlayerSystem(World world, RayHandler rayHandler, CameraSystem cs) {
+		super(Family.all(PlayerComponent.class).get());
+		this.world = world;
+		this.rayHandler = rayHandler;
+		this.cs = cs;
 	}
 
 	@Override
-	public void update(float deltaTime) {
+	protected void processEntity(Entity entity, float deltaTime) {
 		vel.setZero();
+
+		if (Globals.DEBUG) {
+			speed = 5;
+		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 			vel.y += 1;
@@ -54,7 +62,7 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 			vel.x -= 1;
 			//playerAnimationComponent.play("left");
 		} else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			vel.x += 1; 
+			vel.x += 1;
 			//playerAnimationComponent.play("right");
 		}
 
@@ -62,17 +70,20 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 //			//playerAnimationComponent.setToInitialFrame();
 //		}
 
-		pcm.get(player).setRotation(MathUtils.lerpAngle(pcm.get(player).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
-		pcm.get(player).setLinearVelocity(vel.rotateRad(pcm.get(player).getRotation()).nor());
+		pcm.get(entity).setRotation(MathUtils.lerpAngle(pcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
+		pcm.get(entity).setLinearVelocity(vel.rotateRad(pcm.get(entity).getRotation()).nor().scl(speed));
 
-		scm.get(player).sprite.setRotation(scm.get(player).sprite.getRotation());
-		scm.get(player).setPosition(pcm.get(player).getPosition());
+		scm.get(entity).sprite.setRotation(scm.get(entity).sprite.getRotation());
+		scm.get(entity).setPosition(pcm.get(entity).getPosition());
 
-		Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		float diffX = mousePos.x - pcm.get(player).getPosition().x;
-		float diffY = mousePos.y - pcm.get(player).getPosition().y;
-		float angle = (float) Math.atan2(diffY, diffX);
-		clcm.get(player).setBodyAngleOffset(angle * MathUtils.radiansToDegrees);
+		CameraComponent cc = CameraComponent.getMainCameraComponent();
+		if (cc != null) {
+			Vector3 mousePos = cc.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+			float diffX = mousePos.x - pcm.get(entity).getPosition().x;
+			float diffY = mousePos.y - pcm.get(entity).getPosition().y;
+			float angle = (float) Math.atan2(diffY, diffX);
+			lcm.get(entity).setBodyAngleOffset((angle - targetRotation) * MathUtils.radiansToDegrees);
+		}
 	}
 
 	@Override
@@ -90,6 +101,15 @@ public class PlayerSystem extends EntitySystem implements Listener<InputSignal> 
 				lerpPercent = 0;
 				while (targetRotation < -MathUtils.PI2) {
 					targetRotation += MathUtils.PI2;
+				}
+			}
+		}
+		if (o.type == InputSignal.Type.mouseDown) {
+			if (o.button == Input.Buttons.LEFT) {
+				for (Entity p : getEntities()) {
+					Vector2 currentPosition = pcm.get(p).getPosition();
+					getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
+					cs.shake(0.2f, 4f);
 				}
 			}
 		}

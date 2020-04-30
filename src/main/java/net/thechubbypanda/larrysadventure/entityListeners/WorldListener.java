@@ -4,15 +4,17 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.physics.box2d.World;
+import net.thechubbypanda.larrysadventure.components.LightComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 
-public class PhysicsEntityListener implements EntityListener {
+public class WorldListener implements EntityListener {
 
-	private final ComponentMapper<PhysicsComponent> physicsMapper = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
 
 	private final World world;
 
-	public PhysicsEntityListener(World world) {
+	public WorldListener(World world) {
 		this.world = world;
 	}
 
@@ -23,6 +25,11 @@ public class PhysicsEntityListener implements EntityListener {
 
 	@Override
 	public void entityRemoved(Entity entity) {
-		physicsMapper.get(entity).removeBody(world);
+		if (pcm.has(entity)) {
+			pcm.get(entity).dispose(world);
+		}
+		if (lcm.has(entity)) {
+			lcm.get(entity).dispose();
+		}
 	}
 }
