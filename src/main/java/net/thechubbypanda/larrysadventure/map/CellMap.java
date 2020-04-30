@@ -134,6 +134,11 @@ public class CellMap {
 		return deadEnds;
 	}
 
+	public Cell getClosestCell(Vector2 position) {
+		position.scl(1 / 128f);
+		return map[Math.round(position.x)][Math.round(position.y)];
+	}
+
 	public Cell[][] getMap() {
 		return map;
 	}

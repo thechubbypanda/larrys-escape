@@ -26,4 +26,11 @@ public class Cell {
 
 		return neighbours;
 	}
+
+	public Cell parent;
+	public int gcost, hcost;
+
+	public int fcost() {
+		return gcost + hcost;
+	}
 }
