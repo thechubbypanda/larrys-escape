@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import net.thechubbypanda.larrysadventure.components.*;
 
+import java.util.ArrayList;
+
 import static net.thechubbypanda.larrysadventure.Globals.PPM;
 import static net.thechubbypanda.larrysadventure.Globals.assets;
 
@@ -43,16 +45,16 @@ public final class EntityFactory {
 		ENEMY_FDEF.shape = shape;
 	}
 
-	public static Entity enemy(World world, Vector2 position) {
+	public static Entity enemy(World world, ArrayList<Vector2> patrolRoute) {
 		Entity enemy = new Entity();
 
-		ENEMY_BDEF.position.set(position.scl(1 / PPM));
+		ENEMY_BDEF.position.set(new Vector2(patrolRoute.get(0)));
 
 		Body body = world.createBody(ENEMY_BDEF);
 
 		body.createFixture(ENEMY_FDEF);
 
-		enemy.add(new EnemyComponent());
+		enemy.add(new EnemyComponent(patrolRoute));
 		enemy.add(new PhysicsComponent(enemy, body));
 		enemy.add(new SpriteComponent(new Texture("icon.png")));
 		enemy.add(new HealthComponent(20));
