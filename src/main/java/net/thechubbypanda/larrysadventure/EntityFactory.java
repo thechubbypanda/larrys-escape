@@ -113,7 +113,7 @@ public final class EntityFactory {
 		bullet.add(new DamageComponent(10));
 
 		BULLET_BDEF.position.set(position.scl(1 / PPM));
-		BULLET_BDEF.linearVelocity.set(direction.nor().scl(2));
+		BULLET_BDEF.linearVelocity.set(direction.nor().scl(4));
 
 		Body body = world.createBody(BULLET_BDEF);
 

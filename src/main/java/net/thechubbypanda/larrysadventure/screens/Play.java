@@ -15,8 +15,10 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysadventure.Collision;
 import net.thechubbypanda.larrysadventure.LevelManager;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
+import net.thechubbypanda.larrysadventure.components.EnemyComponent;
 import net.thechubbypanda.larrysadventure.components.LightComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
+import net.thechubbypanda.larrysadventure.entityListeners.EnemyListener;
 import net.thechubbypanda.larrysadventure.entityListeners.WorldListener;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
@@ -34,6 +36,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 	private final Engine engine;
 	private final World world;
 	private final RayHandler rayHandler;
+	private final EnemyListener enemyListener;
 
 	public Play() {
 		engine = new Engine();
@@ -95,6 +98,8 @@ public class Play implements Screen, InputProcessor, ContactListener {
 
 		// Entity listeners
 		engine.addEntityListener(Family.one(PhysicsComponent.class, LightComponent.class).get(), new WorldListener(world));
+		enemyListener = new EnemyListener();
+		engine.addEntityListener(Family.all(EnemyComponent.class, PhysicsComponent.class).get(), enemyListener);
 	}
 
 	@Override
@@ -104,8 +109,9 @@ public class Play implements Screen, InputProcessor, ContactListener {
 
 	@Override
 	public void render(float delta) {
-		world.step(Gdx.graphics.getDeltaTime(), 3, 6);
-		engine.update(Gdx.graphics.getDeltaTime());
+		world.step(delta, 3, 6);
+		engine.update(delta);
+		enemyListener.render(delta);
 	}
 
 	@Override

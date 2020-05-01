@@ -10,7 +10,7 @@ public class Globals {
 	// Pixels per meter, Box2D conversion value
 	public static final float PPM = 100;
 
-	public static final float AMBIENT_INTENSITY = 0.07f;
+	public static final float AMBIENT_INTENSITY = 0.13f;
 	public static final Color AMBIENT_COLOR = new Color(AMBIENT_INTENSITY, AMBIENT_INTENSITY, AMBIENT_INTENSITY, 1f);
 
 	public static class SystemPriority {
