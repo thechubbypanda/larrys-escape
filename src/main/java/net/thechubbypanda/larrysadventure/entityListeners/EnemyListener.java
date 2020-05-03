@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
@@ -17,6 +18,7 @@ public class EnemyListener implements EntityListener {
 	private final ArrayList<ParticleEffect> running = new ArrayList<>();
 	private final ArrayList<ParticleEffect> free = new ArrayList<>();
 	private final SpriteBatch batch = new SpriteBatch();
+	private final Sound explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
 
 	public EnemyListener() {
 		for (int i = 0; i < 10; i++) {
@@ -53,5 +55,6 @@ public class EnemyListener implements EntityListener {
 		pe.reset();
 		pe.getEmitters().first().setPosition(pcm.get(entity).getPosition().x, pcm.get(entity).getPosition().y);
 		pe.start();
+		explosion.play();
 	}
 }
