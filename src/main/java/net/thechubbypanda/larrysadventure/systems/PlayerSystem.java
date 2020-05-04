@@ -13,18 +13,21 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import net.thechubbypanda.larrysadventure.Collision;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 
-public class PlayerSystem extends IteratingSystem implements Listener<InputSignal> {
+public class PlayerSystem extends IteratingSystem implements Listener {
 
 	private static float speed = 1;
 
 	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
 	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
+	private final ComponentMapper<HealthDropComponent> hdcm = ComponentMapper.getFor(HealthDropComponent.class);
+	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
 
 	private final RayHandler rayHandler;
 	private final World world;
@@ -87,29 +90,39 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 	}
 
 	@Override
-	public void receive(Signal<InputSignal> signal, InputSignal o) {
-		if (o.type == InputSignal.Type.keyDown) {
-			if (o.keycode == Input.Keys.Q) {
-				targetRotation += MathUtils.PI / 2f;
-				lerpPercent = 0;
-				while (targetRotation > MathUtils.PI2) {
-					targetRotation -= MathUtils.PI2;
+	public void receive(Signal signal, Object object) {
+		if (object instanceof InputSignal) {
+			InputSignal is = (InputSignal) object;
+			if (is.type == InputSignal.Type.keyDown) {
+				if (is.keycode == Input.Keys.Q) {
+					targetRotation += MathUtils.PI / 2f;
+					lerpPercent = 0;
+					while (targetRotation > MathUtils.PI2) {
+						targetRotation -= MathUtils.PI2;
+					}
+				}
+				if (is.keycode == Input.Keys.E) {
+					targetRotation -= MathUtils.PI / 2f;
+					lerpPercent = 0;
+					while (targetRotation < -MathUtils.PI2) {
+						targetRotation += MathUtils.PI2;
+					}
 				}
 			}
-			if (o.keycode == Input.Keys.E) {
-				targetRotation -= MathUtils.PI / 2f;
-				lerpPercent = 0;
-				while (targetRotation < -MathUtils.PI2) {
-					targetRotation += MathUtils.PI2;
+			if (is.type == InputSignal.Type.mouseDown) {
+				if (is.button == Input.Buttons.LEFT) {
+					for (Entity p : getEntities()) {
+						Vector2 currentPosition = pcm.get(p).getPosition();
+						getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(is.x, is.y).sub(currentPosition)));
+						cs.shake(0.2f, 4f);
+					}
 				}
 			}
-		}
-		if (o.type == InputSignal.Type.mouseDown) {
-			if (o.button == Input.Buttons.LEFT) {
-				for (Entity p : getEntities()) {
-					Vector2 currentPosition = pcm.get(p).getPosition();
-					getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
-					cs.shake(0.2f, 4f);
+		} else if (object instanceof Collision) {
+			Collision c = (Collision) object;
+			if (getEntities().contains(c.entity, true) && hcm.has(c.entity)) {
+				if (c.object instanceof Entity && hdcm.has((Entity) c.object)) {
+					hcm.get(c.entity).addHealth(hdcm.get((Entity) c.object).health);
 				}
 			}
 		}

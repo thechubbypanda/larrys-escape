@@ -45,23 +45,7 @@ public final class EntityFactory {
 		ENEMY_FDEF.shape = shape;
 	}
 
-	public static Entity enemy(World world, ArrayList<Vector2> patrolRoute) {
-		Entity enemy = new Entity();
-
-		ENEMY_BDEF.position.set(new Vector2(patrolRoute.get(0)));
-
-		Body body = world.createBody(ENEMY_BDEF);
-
-		body.createFixture(ENEMY_FDEF);
-
-		enemy.add(new EnemyComponent(patrolRoute));
-		enemy.add(new PhysicsComponent(enemy, body));
-		enemy.add(new SpriteComponent(new Texture("icon.png")));
-		enemy.add(new HealthComponent(20));
-		enemy.add(new DamageComponent(10));
-
-		return enemy;
-	}
+	private static final BodyDef HEALTH_BDEF = new BodyDef();
 
 	public static Entity player(World world, RayHandler rayHandler) {
 		// Player
@@ -157,6 +141,54 @@ public final class EntityFactory {
 		levelExit.add(new LevelExitComponent());
 
 		return levelExit;
+	}
+
+	private static final FixtureDef HEALTH_FDEF = new FixtureDef();
+
+	static {
+		HEALTH_BDEF.type = BodyDef.BodyType.StaticBody;
+		HEALTH_BDEF.fixedRotation = true;
+		CircleShape shape = new CircleShape();
+		shape.setRadius(8 / PPM);
+		HEALTH_FDEF.shape = shape;
+		HEALTH_FDEF.isSensor = true;
+		HEALTH_FDEF.filter.maskBits = CollisionBit.player.bits;
+	}
+
+	public static Entity enemy(World world, ArrayList<Vector2> patrolRoute, Drop drop) {
+		Entity enemy = new Entity();
+
+		ENEMY_BDEF.position.set(new Vector2(patrolRoute.get(0)));
+
+		Body body = world.createBody(ENEMY_BDEF);
+
+		body.createFixture(ENEMY_FDEF);
+
+		enemy.add(new EnemyComponent(patrolRoute, drop));
+		enemy.add(new PhysicsComponent(enemy, body));
+		enemy.add(new SpriteComponent(new Texture("icon.png")));
+		enemy.add(new HealthComponent(20));
+		enemy.add(new DamageComponent(10));
+
+		return enemy;
+	}
+
+	public static final Entity healthPack(World world, Vector2 position) {
+		Entity health = new Entity();
+
+		HEALTH_BDEF.position.set(new Vector2(position).scl(1 / PPM));
+
+		Body b = world.createBody(HEALTH_BDEF);
+
+		b.createFixture(HEALTH_FDEF);
+
+		health.add(new PhysicsComponent(health, b));
+
+		health.add(new HealthDropComponent());
+		// TODO: Sprite
+		//health.add(new SpriteComponent());
+
+		return health;
 	}
 
 	private EntityFactory() {

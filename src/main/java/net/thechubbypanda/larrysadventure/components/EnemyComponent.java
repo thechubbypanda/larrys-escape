@@ -2,6 +2,7 @@ package net.thechubbypanda.larrysadventure.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Vector2;
+import net.thechubbypanda.larrysadventure.Drop;
 
 import java.util.ArrayList;
 
@@ -18,11 +19,14 @@ public class EnemyComponent implements Component {
 	public boolean reverse = false;
 	public int nextReturnPoint = 0;
 
+	public Drop drop;
+
 	public enum State {
 		calculateReturn, returning, chasing, patrolling
 	}
 
-	public EnemyComponent(ArrayList<Vector2> patrolPoints) {
+	public EnemyComponent(ArrayList<Vector2> patrolPoints, Drop drop) {
 		this.patrolPoints.addAll(patrolPoints);
+		this.drop = drop;
 	}
 }

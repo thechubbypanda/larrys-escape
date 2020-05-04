@@ -71,6 +71,10 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		collisionSignal.add(bs);
 		engine.addSystem(bs);
 
+		DropSystem ds = new DropSystem();
+		collisionSignal.add(ds);
+		engine.addSystem(ds);
+
 		LevelExitSystem les = new LevelExitSystem(levelManager);
 		collisionSignal.add(les);
 		engine.addSystem(les);
@@ -98,7 +102,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 
 		// Entity listeners
 		engine.addEntityListener(Family.one(PhysicsComponent.class, LightComponent.class).get(), new WorldListener(world));
-		enemyListener = new EnemyListener();
+		enemyListener = new EnemyListener(engine, world);
 		engine.addEntityListener(Family.all(EnemyComponent.class, PhysicsComponent.class).get(), enemyListener);
 	}
 
