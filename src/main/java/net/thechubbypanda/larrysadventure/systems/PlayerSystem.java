@@ -9,6 +9,7 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -31,6 +32,8 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 	private final CameraSystem cs;
 
 	private final Vector2 vel = new Vector2();
+
+	private final Sound shootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/shoot.wav"));
 
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
@@ -109,6 +112,7 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 				for (Entity p : getEntities()) {
 					Vector2 currentPosition = pcm.get(p).getPosition();
 					getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
+					shootSound.play(0.6f);
 					cs.shake(0.2f, 4f);
 				}
 			}

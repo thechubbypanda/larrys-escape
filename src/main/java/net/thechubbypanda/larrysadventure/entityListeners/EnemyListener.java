@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
+import net.thechubbypanda.larrysadventure.systems.CameraSystem;
 
 import java.util.ArrayList;
 
@@ -18,14 +19,16 @@ public class EnemyListener implements EntityListener {
 	private final ArrayList<ParticleEffect> running = new ArrayList<>();
 	private final ArrayList<ParticleEffect> free = new ArrayList<>();
 	private final SpriteBatch batch = new SpriteBatch();
+	private final CameraSystem cs;
 	private final Sound explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
 
-	public EnemyListener() {
+	public EnemyListener(CameraSystem cs) {
 		for (int i = 0; i < 10; i++) {
 			ParticleEffect pe = new ParticleEffect();
 			pe.load(Gdx.files.internal("explosion.p"), Gdx.files.internal(""));
 			free.add(pe);
 		}
+		this.cs = cs;
 	}
 
 	public void render(float delta) {
@@ -56,5 +59,6 @@ public class EnemyListener implements EntityListener {
 		pe.getEmitters().first().setPosition(pcm.get(entity).getPosition().x, pcm.get(entity).getPosition().y);
 		pe.start();
 		explosion.play();
+		cs.shake(0.25f, 6f);
 	}
 }

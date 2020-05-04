@@ -98,7 +98,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 
 		// Entity listeners
 		engine.addEntityListener(Family.one(PhysicsComponent.class, LightComponent.class).get(), new WorldListener(world));
-		enemyListener = new EnemyListener();
+		enemyListener = new EnemyListener(cs);
 		engine.addEntityListener(Family.all(EnemyComponent.class, PhysicsComponent.class).get(), enemyListener);
 	}
 
