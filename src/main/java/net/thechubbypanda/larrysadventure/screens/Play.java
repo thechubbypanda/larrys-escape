@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import net.thechubbypanda.larrysadventure.Collision;
+import net.thechubbypanda.larrysadventure.CollisionSignal;
 import net.thechubbypanda.larrysadventure.LevelManager;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.EnemyComponent;
@@ -31,7 +31,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 
 	private final Signal<ResizeSignal> resizeSignal = new Signal<>();
 	private final Signal<InputSignal> inputSignal = new Signal<>();
-	private final Signal<Collision> collisionSignal = new Signal<>();
+	private final Signal<CollisionSignal> collisionSignal = new Signal<>();
 
 	private final Engine engine;
 	private final World world;
@@ -83,10 +83,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		resizeSignal.add(cs);
 		engine.addSystem(cs);
 
-		PlayerSystem ps = new PlayerSystem(world, rayHandler, cs);
-		inputSignal.add(ps);
-		engine.addSystem(ps);
-
+		engine.addSystem(new PlayerSystem(world, rayHandler, cs, collisionSignal, inputSignal));
 		engine.addSystem(new EnemySystem(world));
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
@@ -144,11 +141,11 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		Object b = contact.getFixtureB().getBody().getUserData();
 		if (a instanceof Entity) {
 			//collisions.add(new Collision((Entity)a, b));
-			collisionSignal.dispatch(new Collision((Entity) a, b));
+			collisionSignal.dispatch(new CollisionSignal((Entity) a, b));
 		}
 		if (b instanceof Entity) {
 			//collisions.add(new Collision((Entity)b, a));
-			collisionSignal.dispatch(new Collision((Entity) b, a));
+			collisionSignal.dispatch(new CollisionSignal((Entity) b, a));
 		}
 	}
 

@@ -7,13 +7,13 @@ import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
-import net.thechubbypanda.larrysadventure.Collision;
+import net.thechubbypanda.larrysadventure.CollisionSignal;
 import net.thechubbypanda.larrysadventure.components.HealthDropComponent;
 import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 
 import java.util.ArrayList;
 
-public class DropSystem extends IteratingSystem implements Listener<Collision> {
+public class DropSystem extends IteratingSystem implements Listener<CollisionSignal> {
 
 	private final ArrayList<Entity> toRemove = new ArrayList<>();
 	private ImmutableArray<Entity> players;
@@ -36,7 +36,7 @@ public class DropSystem extends IteratingSystem implements Listener<Collision> {
 	}
 
 	@Override
-	public void receive(Signal<Collision> signal, Collision object) {
+	public void receive(Signal<CollisionSignal> signal, CollisionSignal object) {
 		if (getEntities().contains(object.entity, true) && players.contains((Entity) object.object, true)) {
 			toRemove.add(object.entity);
 		}

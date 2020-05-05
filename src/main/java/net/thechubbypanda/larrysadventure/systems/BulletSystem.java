@@ -5,12 +5,12 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
-import net.thechubbypanda.larrysadventure.Collision;
+import net.thechubbypanda.larrysadventure.CollisionSignal;
 import net.thechubbypanda.larrysadventure.components.BulletComponent;
 
 import java.util.ArrayList;
 
-public class BulletSystem extends IteratingSystem implements Listener<Collision> {
+public class BulletSystem extends IteratingSystem implements Listener<CollisionSignal> {
 
 	private final ArrayList<Entity> toRemove = new ArrayList<>();
 
@@ -26,7 +26,7 @@ public class BulletSystem extends IteratingSystem implements Listener<Collision>
 	}
 
 	@Override
-	public void receive(Signal<Collision> signal, Collision object) {
+	public void receive(Signal<CollisionSignal> signal, CollisionSignal object) {
 		if (getEntities().contains(object.entity, true)) {
 			toRemove.add(object.entity);
 		}

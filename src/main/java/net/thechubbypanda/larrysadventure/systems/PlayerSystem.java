@@ -13,13 +13,13 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
-import net.thechubbypanda.larrysadventure.Collision;
+import net.thechubbypanda.larrysadventure.CollisionSignal;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 
-public class PlayerSystem extends IteratingSystem implements Listener {
+public class PlayerSystem extends IteratingSystem {
 
 	private static float speed = 1;
 
@@ -38,11 +38,14 @@ public class PlayerSystem extends IteratingSystem implements Listener {
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
 
-	public PlayerSystem(World world, RayHandler rayHandler, CameraSystem cs) {
+	public PlayerSystem(World world, RayHandler rayHandler, CameraSystem cs, Signal<CollisionSignal> collisionSignal, Signal<InputSignal> inputSignal) {
 		super(Family.all(PlayerComponent.class).get());
 		this.world = world;
 		this.rayHandler = rayHandler;
 		this.cs = cs;
+
+		collisionSignal.add(new CollisionImpl());
+		inputSignal.add(new InputImpl());
 	}
 
 	@Override
@@ -89,19 +92,29 @@ public class PlayerSystem extends IteratingSystem implements Listener {
 		}
 	}
 
-	@Override
-	public void receive(Signal signal, Object object) {
-		if (object instanceof InputSignal) {
-			InputSignal is = (InputSignal) object;
-			if (is.type == InputSignal.Type.keyDown) {
-				if (is.keycode == Input.Keys.Q) {
+	private class CollisionImpl implements Listener<CollisionSignal> {
+		@Override
+		public void receive(Signal<CollisionSignal> signal, CollisionSignal c) {
+			if (getEntities().contains(c.entity, true) && hcm.has(c.entity)) {
+				if (c.object instanceof Entity && hdcm.has((Entity) c.object)) {
+					hcm.get(c.entity).addHealth(hdcm.get((Entity) c.object).health);
+				}
+			}
+		}
+	}
+
+	private class InputImpl implements Listener<InputSignal> {
+		@Override
+		public void receive(Signal<InputSignal> signal, InputSignal i) {
+			if (i.type == InputSignal.Type.keyDown) {
+				if (i.keycode == Input.Keys.Q) {
 					targetRotation += MathUtils.PI / 2f;
 					lerpPercent = 0;
 					while (targetRotation > MathUtils.PI2) {
 						targetRotation -= MathUtils.PI2;
 					}
 				}
-				if (is.keycode == Input.Keys.E) {
+				if (i.keycode == Input.Keys.E) {
 					targetRotation -= MathUtils.PI / 2f;
 					lerpPercent = 0;
 					while (targetRotation < -MathUtils.PI2) {
@@ -109,20 +122,13 @@ public class PlayerSystem extends IteratingSystem implements Listener {
 					}
 				}
 			}
-			if (is.type == InputSignal.Type.mouseDown) {
-				if (is.button == Input.Buttons.LEFT) {
+			if (i.type == InputSignal.Type.mouseDown) {
+				if (i.button == Input.Buttons.LEFT) {
 					for (Entity p : getEntities()) {
 						Vector2 currentPosition = pcm.get(p).getPosition();
-						getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(is.x, is.y).sub(currentPosition)));
+						getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(i.x, i.y).sub(currentPosition)));
 						cs.shake(0.2f, 4f);
 					}
-				}
-			}
-		} else if (object instanceof Collision) {
-			Collision c = (Collision) object;
-			if (getEntities().contains(c.entity, true) && hcm.has(c.entity)) {
-				if (c.object instanceof Entity && hdcm.has((Entity) c.object)) {
-					hcm.get(c.entity).addHealth(hdcm.get((Entity) c.object).health);
 				}
 			}
 		}
