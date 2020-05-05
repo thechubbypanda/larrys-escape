@@ -142,6 +142,7 @@ public class EnemySystem extends IteratingSystem {
 	protected void processEntity(Entity entity, float deltaTime) {
 		EnemyComponent ec = ecm.get(entity);
 		PhysicsComponent epc = pcm.get(entity);
+
 		// TODO: Potentially slow
 		for (Entity player : players) {
 			PhysicsComponent ppc = pcm.get(player);
@@ -151,7 +152,8 @@ public class EnemySystem extends IteratingSystem {
 			switch (ec.state) {
 				case chasing:
 					if (entities.contains(player) && !entities.contains(null)) {
-						epc.setLinearVelocity(ppc.getBodyPosition().sub(epc.getBodyPosition()).nor().scl(0.5f));
+						epc.setLinearVelocity(ppc.getBodyPosition().sub(epc.getBodyPosition()).nor().scl(1));
+						epc.setRotation(epc.getVelocity().angleRad());
 					} else {
 						ec.state = calculateReturn;
 					}
@@ -195,6 +197,7 @@ public class EnemySystem extends IteratingSystem {
 						}
 						ec.percent = 0;
 						ec.startPosition.set(epc.getBodyPosition());
+						epc.setRotation(new Vector2(ec.returnPoints.get(ec.nextReturnPoint)).sub(epc.getBodyPosition()).angleRad());
 					}
 
 					epc.setPosition(new Vector2(ec.startPosition).lerp(ec.returnPoints.get(ec.nextReturnPoint), (ec.percent += (deltaTime / 2f))));
@@ -222,6 +225,7 @@ public class EnemySystem extends IteratingSystem {
 						}
 						ec.percent = 0;
 						ec.startPosition.set(epc.getBodyPosition());
+						epc.setRotation(new Vector2(ec.patrolPoints.get(ec.nextPatrolPoint)).sub(epc.getBodyPosition()).angleRad());
 					}
 
 					epc.setPosition(new Vector2(ec.startPosition).lerp(ec.patrolPoints.get(ec.nextPatrolPoint), (ec.percent += (deltaTime / 2f))));

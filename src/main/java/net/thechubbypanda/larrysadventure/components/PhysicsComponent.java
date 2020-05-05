@@ -17,6 +17,10 @@ public class PhysicsComponent implements Component {
 		this.body.setUserData(e);
 	}
 
+	public Vector2 getVelocity() {
+		return body.getLinearVelocity();
+	}
+
 	public Vector2 getPosition() {
 		return body.getPosition().scl(PPM);
 	}

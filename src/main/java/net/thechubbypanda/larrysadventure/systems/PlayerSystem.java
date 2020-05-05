@@ -79,7 +79,6 @@ public class PlayerSystem extends IteratingSystem {
 		pcm.get(entity).setRotation(MathUtils.lerpAngle(pcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
 		pcm.get(entity).setLinearVelocity(vel.rotateRad(pcm.get(entity).getRotation()).nor().scl(speed));
 
-		scm.get(entity).sprite.setRotation(scm.get(entity).sprite.getRotation());
 		scm.get(entity).setPosition(pcm.get(entity).getPosition());
 
 		CameraComponent cc = CameraComponent.getMainCameraComponent();
@@ -88,7 +87,8 @@ public class PlayerSystem extends IteratingSystem {
 			float diffX = mousePos.x - pcm.get(entity).getPosition().x;
 			float diffY = mousePos.y - pcm.get(entity).getPosition().y;
 			float angle = (float) Math.atan2(diffY, diffX);
-			lcm.get(entity).setBodyAngleOffset((angle - targetRotation) * MathUtils.radiansToDegrees);
+			lcm.get(entity).setBodyAngleOffset((angle - pcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
+			scm.get(entity).sprite.setRotation((angle) * MathUtils.radiansToDegrees);
 		}
 	}
 

@@ -6,6 +6,7 @@ import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import net.thechubbypanda.larrysadventure.components.*;
@@ -28,7 +29,7 @@ public final class EntityFactory {
 		BULLET_BDEF.bullet = true;
 		BULLET_BDEF.fixedRotation = true;
 		CircleShape shape = new CircleShape();
-		shape.setRadius(2 / PPM);
+		shape.setRadius(3 / PPM);
 		BULLET_FDEF.shape = shape;
 		BULLET_FDEF.isSensor = true;
 		BULLET_FDEF.filter.categoryBits = CollisionBit.bullet.bits;
@@ -97,7 +98,8 @@ public final class EntityFactory {
 		bullet.add(new DamageComponent(10));
 
 		BULLET_BDEF.position.set(position.scl(1 / PPM));
-		BULLET_BDEF.linearVelocity.set(direction.nor().scl(4));
+		BULLET_BDEF.linearVelocity.set(direction.nor().scl(5));
+		BULLET_BDEF.angle = direction.angleRad() - MathUtils.PI / 2f;
 
 		Body body = world.createBody(BULLET_BDEF);
 
