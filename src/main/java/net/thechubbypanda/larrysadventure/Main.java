@@ -25,6 +25,7 @@ public class Main extends Game {
 		assets.load("flatearthui/flat-earth-ui.json", Skin.class);
 		assets.load("levelExit.png", Texture.class);
 		assets.load("bullet.png", Texture.class);
+		assets.load("health.png", Texture.class);
 		assets.finishLoading();
 
 		setScreen(new MainMenu());

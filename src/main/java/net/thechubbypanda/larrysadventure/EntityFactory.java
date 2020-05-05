@@ -185,8 +185,7 @@ public final class EntityFactory {
 		health.add(new PhysicsComponent(health, b));
 
 		health.add(new HealthDropComponent());
-		// TODO: Sprite
-		//health.add(new SpriteComponent());
+		health.add(new SpriteComponent(assets.get("health.png", Texture.class)));
 
 		return health;
 	}
