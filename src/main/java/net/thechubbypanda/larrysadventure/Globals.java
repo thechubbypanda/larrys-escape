@@ -35,8 +35,7 @@ public class Globals {
 	}
 
 	public enum Screens {
-		mainMenu, play;
-
+		mainMenu, play
 	}
 
 	private Globals() {
