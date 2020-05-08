@@ -65,7 +65,7 @@ public final class EntityFactory {
 		player.add(new PlayerComponent());
 		player.add(new SpriteComponent(new Texture("icon.png")));
 		player.add(new HealthComponent(100));
-		player.add(new TransformComponent(3));
+		player.add(new TransformComponent(4));
 
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyDef.BodyType.DynamicBody;
@@ -105,7 +105,7 @@ public final class EntityFactory {
 	public static Entity bullet(World world, RayHandler rayHandler, Vector2 position, Vector2 direction) {
 		Entity bullet = new Entity();
 
-		bullet.add(new TransformComponent(2));
+		bullet.add(new TransformComponent(3));
 
 		bullet.add(new BulletComponent());
 		bullet.add(new DamageComponent(10));
@@ -162,7 +162,7 @@ public final class EntityFactory {
 	public static Entity enemy(World world, ArrayList<Vector2> patrolRoute, Drop drop) {
 		Entity enemy = new Entity();
 
-		enemy.add(new TransformComponent(1));
+		enemy.add(new TransformComponent(2));
 
 		ENEMY_BDEF.position.set(new Vector2(patrolRoute.get(0)));
 
@@ -189,6 +189,7 @@ public final class EntityFactory {
 		b.createFixture(DROP_FDEF);
 
 		health.add(new PhysicsComponent(health, b));
+		health.add(new TransformComponent(1));
 
 		health.add(new HealthDropComponent());
 		health.add(new SpriteComponent(assets.get("health.png", Texture.class)));
@@ -206,8 +207,9 @@ public final class EntityFactory {
 		b.createFixture(DROP_FDEF);
 
 		ammo.add(new PhysicsComponent(ammo, b));
+		ammo.add(new TransformComponent(1));
 		ammo.add(new AmmoDropComponent());
-		//ammo.add(new SpriteComponent(assets.get("ammo.png", Texture.class))); TODO
+		ammo.add(new SpriteComponent(assets.get("ammo.png", Texture.class)));
 
 		return ammo;
 	}
