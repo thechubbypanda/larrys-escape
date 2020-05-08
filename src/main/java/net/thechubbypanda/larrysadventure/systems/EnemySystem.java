@@ -8,10 +8,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import net.thechubbypanda.larrysadventure.components.EnemyComponent;
-import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
-import net.thechubbypanda.larrysadventure.components.PlayerComponent;
-import net.thechubbypanda.larrysadventure.components.TileMapComponent;
+import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.map.Cell;
 import net.thechubbypanda.larrysadventure.map.CellMap;
 
@@ -25,7 +22,8 @@ import static net.thechubbypanda.larrysadventure.components.EnemyComponent.State
 public class EnemySystem extends IteratingSystem {
 
 	private final World world;
-	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
 	private final ComponentMapper<EnemyComponent> ecm = ComponentMapper.getFor(EnemyComponent.class);
 	private final ComponentMapper<TileMapComponent> tmcm = ComponentMapper.getFor(TileMapComponent.class);
 
@@ -141,19 +139,17 @@ public class EnemySystem extends IteratingSystem {
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		EnemyComponent ec = ecm.get(entity);
-		PhysicsComponent epc = pcm.get(entity);
 
 		// TODO: Potentially slow
 		for (Entity player : players) {
-			PhysicsComponent ppc = pcm.get(player);
 
-			ArrayList<Entity> entities = raycast(epc.getBodyPosition(), ppc.getBodyPosition());
+			ArrayList<Entity> entities = raycast(phcm.get(entity).getPosition(), phcm.get(player).getPosition());
 
 			switch (ec.state) {
 				case chasing:
 					if (entities.contains(player) && !entities.contains(null)) {
-						epc.setLinearVelocity(ppc.getBodyPosition().sub(epc.getBodyPosition()).nor().scl(1));
-						epc.setRotation(epc.getVelocity().angleRad());
+						phcm.get(entity).setLinearVelocity(phcm.get(player).getPosition().sub(phcm.get(entity).getPosition()).nor().scl(1));
+						phcm.get(entity).setRotation(phcm.get(entity).getVelocity().angleRad());
 					} else {
 						ec.state = calculateReturn;
 					}
@@ -163,14 +159,14 @@ public class EnemySystem extends IteratingSystem {
 						ec.state = chasing;
 						break;
 					}
-					epc.setLinearVelocity(Vector2.Zero);
-					if (raycast(epc.getBodyPosition(), ec.patrolPoints.get(ec.nextPatrolPoint)).size() == 0) {
+					phcm.get(entity).setLinearVelocity(Vector2.Zero);
+					if (raycast(phcm.get(entity).getPosition(), ec.patrolPoints.get(ec.nextPatrolPoint)).size() == 0) {
 						ec.state = patrolling;
 					} else {
 						ec.returnPoints.clear();
 						for (Entity e : maps) {
 							CellMap cellMap = tmcm.get(e).getCellMap();
-							ArrayList<Cell> path = findPath(cellMap.getClosestCell(epc.getPosition()), cellMap.getClosestCell(new Vector2(ec.patrolPoints.get(ec.nextPatrolPoint)).scl(PPM)));
+							ArrayList<Cell> path = findPath(cellMap.getClosestCell(tcm.get(entity).getPosition()), cellMap.getClosestCell(new Vector2(ec.patrolPoints.get(ec.nextPatrolPoint)).scl(PPM)));
 							for (Cell cell : Objects.requireNonNull(path)) {
 								ec.returnPoints.add(new Vector2(cell.x, cell.y).scl(128 / PPM));
 							}
@@ -179,14 +175,14 @@ public class EnemySystem extends IteratingSystem {
 						ec.nextReturnPoint = 0;
 					}
 					ec.percent = 0;
-					ec.startPosition.set(epc.getBodyPosition());
+					ec.startPosition.set(phcm.get(entity).getPosition());
 					break;
 				case returning:
 					if (entities.contains(player) && !entities.contains(null)) {
 						ec.state = chasing;
 						break;
 					}
-					epc.setLinearVelocity(Vector2.Zero);
+					phcm.get(entity).setLinearVelocity(Vector2.Zero);
 					if (ec.percent >= 1) {
 						if (ec.returnPoints.size() > 1) {
 							ec.nextReturnPoint++;
@@ -196,18 +192,18 @@ public class EnemySystem extends IteratingSystem {
 							}
 						}
 						ec.percent = 0;
-						ec.startPosition.set(epc.getBodyPosition());
-						epc.setRotation(new Vector2(ec.returnPoints.get(ec.nextReturnPoint)).sub(epc.getBodyPosition()).angleRad());
+						ec.startPosition.set(phcm.get(entity).getPosition());
+						phcm.get(entity).setRotation(new Vector2(ec.returnPoints.get(ec.nextReturnPoint)).sub(phcm.get(entity).getPosition()).angleRad());
 					}
 
-					epc.setPosition(new Vector2(ec.startPosition).lerp(ec.returnPoints.get(ec.nextReturnPoint), (ec.percent += (deltaTime / 2f))));
+					phcm.get(entity).setPosition(new Vector2(ec.startPosition).lerp(ec.returnPoints.get(ec.nextReturnPoint), (ec.percent += (deltaTime / 2f))));
 					break;
 				case patrolling:
 					if (entities.contains(player) && !entities.contains(null)) {
 						ec.state = chasing;
 						break;
 					}
-					epc.setLinearVelocity(Vector2.Zero);
+					phcm.get(entity).setLinearVelocity(Vector2.Zero);
 					if (ec.percent >= 1) {
 						if (ec.patrolPoints.size() > 1) {
 							if (ec.reverse) {
@@ -224,11 +220,11 @@ public class EnemySystem extends IteratingSystem {
 							}
 						}
 						ec.percent = 0;
-						ec.startPosition.set(epc.getBodyPosition());
-						epc.setRotation(new Vector2(ec.patrolPoints.get(ec.nextPatrolPoint)).sub(epc.getBodyPosition()).angleRad());
+						ec.startPosition.set(phcm.get(entity).getPosition());
+						phcm.get(entity).setRotation(new Vector2(ec.patrolPoints.get(ec.nextPatrolPoint)).sub(phcm.get(entity).getPosition()).angleRad());
 					}
 
-					epc.setPosition(new Vector2(ec.startPosition).lerp(ec.patrolPoints.get(ec.nextPatrolPoint), (ec.percent += (deltaTime / 2f))));
+					phcm.get(entity).setPosition(new Vector2(ec.startPosition).lerp(ec.patrolPoints.get(ec.nextPatrolPoint), (ec.percent += (deltaTime / 2f))));
 					break;
 			}
 		}

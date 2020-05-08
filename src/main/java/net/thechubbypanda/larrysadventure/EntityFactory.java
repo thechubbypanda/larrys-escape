@@ -23,6 +23,18 @@ public final class EntityFactory {
 	private static final Color BULLET_LIGHT_COLOR = new Color(1, 1, 0.8f, 1);
 	private static final BodyDef BULLET_BDEF = new BodyDef();
 	private static final FixtureDef BULLET_FDEF = new FixtureDef();
+	private static final BodyDef HEALTH_BDEF = new BodyDef();
+	private static final FixtureDef HEALTH_FDEF = new FixtureDef();
+
+	static {
+		HEALTH_BDEF.type = BodyDef.BodyType.StaticBody;
+		HEALTH_BDEF.fixedRotation = true;
+		CircleShape shape = new CircleShape();
+		shape.setRadius(8 / PPM);
+		HEALTH_FDEF.shape = shape;
+		HEALTH_FDEF.isSensor = true;
+		HEALTH_FDEF.filter.maskBits = CollisionBit.player.bits;
+	}
 
 	static {
 		BULLET_BDEF.type = BodyDef.BodyType.DynamicBody;
@@ -46,8 +58,6 @@ public final class EntityFactory {
 		ENEMY_FDEF.shape = shape;
 	}
 
-	private static final BodyDef HEALTH_BDEF = new BodyDef();
-
 	public static Entity player(World world, RayHandler rayHandler) {
 		// Player
 		Entity player = new Entity();
@@ -55,6 +65,7 @@ public final class EntityFactory {
 		player.add(new PlayerComponent());
 		player.add(new SpriteComponent(new Texture("icon.png")));
 		player.add(new HealthComponent(100));
+		player.add(new TransformComponent(3));
 
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyDef.BodyType.DynamicBody;
@@ -93,6 +104,8 @@ public final class EntityFactory {
 
 	public static Entity bullet(World world, RayHandler rayHandler, Vector2 position, Vector2 direction) {
 		Entity bullet = new Entity();
+
+		bullet.add(new TransformComponent(2));
 
 		bullet.add(new BulletComponent());
 		bullet.add(new DamageComponent(10));
@@ -138,6 +151,7 @@ public final class EntityFactory {
 		Body body = world.createBody(bdef);
 		body.createFixture(fdef);
 
+		levelExit.add(new TransformComponent(0));
 		levelExit.add(new PhysicsComponent(levelExit, body));
 		levelExit.add(new SpriteComponent(assets.get("levelExit.png", Texture.class)));
 		levelExit.add(new LevelExitComponent());
@@ -145,20 +159,10 @@ public final class EntityFactory {
 		return levelExit;
 	}
 
-	private static final FixtureDef HEALTH_FDEF = new FixtureDef();
-
-	static {
-		HEALTH_BDEF.type = BodyDef.BodyType.StaticBody;
-		HEALTH_BDEF.fixedRotation = true;
-		CircleShape shape = new CircleShape();
-		shape.setRadius(8 / PPM);
-		HEALTH_FDEF.shape = shape;
-		HEALTH_FDEF.isSensor = true;
-		HEALTH_FDEF.filter.maskBits = CollisionBit.player.bits;
-	}
-
 	public static Entity enemy(World world, ArrayList<Vector2> patrolRoute, Drop drop) {
 		Entity enemy = new Entity();
+
+		enemy.add(new TransformComponent(1));
 
 		ENEMY_BDEF.position.set(new Vector2(patrolRoute.get(0)));
 

@@ -23,11 +23,13 @@ public class PlayerSystem extends IteratingSystem {
 
 	private static float speed = 1;
 
-	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
+	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
 	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
 	private final ComponentMapper<HealthDropComponent> hdcm = ComponentMapper.getFor(HealthDropComponent.class);
 	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
+	private final ComponentMapper<PlayerComponent> plcm = ComponentMapper.getFor(PlayerComponent.class);
 
 	private final RayHandler rayHandler;
 	private final World world;
@@ -37,15 +39,13 @@ public class PlayerSystem extends IteratingSystem {
 
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
+	private long lastShootTime = System.currentTimeMillis();
 
 	public PlayerSystem(World world, RayHandler rayHandler, CameraSystem cs, Signal<CollisionSignal> collisionSignal, Signal<InputSignal> inputSignal) {
 		super(Family.all(PlayerComponent.class).get());
 		this.world = world;
 		this.rayHandler = rayHandler;
 		this.cs = cs;
-
-		collisionSignal.add(new CollisionImpl());
-		inputSignal.add(new InputImpl());
 	}
 
 	@Override
@@ -76,16 +76,16 @@ public class PlayerSystem extends IteratingSystem {
 //			//playerAnimationComponent.setToInitialFrame();
 //		}
 
-		pcm.get(entity).setRotation(MathUtils.lerpAngle(pcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
-		pcm.get(entity).setLinearVelocity(vel.rotateRad(pcm.get(entity).getRotation()).nor().scl(speed));
+		phcm.get(entity).setRotation(MathUtils.lerpAngle(phcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
+		phcm.get(entity).setLinearVelocity(vel.rotateRad(phcm.get(entity).getRotation()).nor().scl(speed));
 
-		scm.get(entity).setPosition(pcm.get(entity).getPosition());
+		scm.get(entity).setPosition(tcm.get(entity).getPosition());
 
 		CameraComponent cc = CameraComponent.getMainCameraComponent();
 		if (cc != null) {
 			Vector3 mousePos = cc.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-			float diffX = mousePos.x - pcm.get(entity).getPosition().x;
-			float diffY = mousePos.y - pcm.get(entity).getPosition().y;
+			float diffX = mousePos.x - tcm.get(entity).getPosition().x;
+			float diffY = mousePos.y - tcm.get(entity).getPosition().y;
 			float angle = (float) Math.atan2(diffY, diffX);
 			lcm.get(entity).setBodyAngleOffset((angle - pcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
 			scm.get(entity).sprite.setRotation((angle) * MathUtils.radiansToDegrees);
@@ -124,10 +124,16 @@ public class PlayerSystem extends IteratingSystem {
 			}
 			if (i.type == InputSignal.Type.mouseDown) {
 				if (i.button == Input.Buttons.LEFT) {
-					for (Entity p : getEntities()) {
-						Vector2 currentPosition = pcm.get(p).getPosition();
-						getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(i.x, i.y).sub(currentPosition)));
-						cs.shake(0.2f, 4f);
+					if (lastShootTime <= System.currentTimeMillis() - PlayerComponent.SHOOT_INTERVAL) {
+						for (Entity p : getEntities()) {
+							if (plcm.get(p).ammo > 0) {
+								plcm.get(p).ammo--;
+								Vector2 currentPosition = pcm.get(p).getPosition();
+								getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(i.x, i.y).sub(currentPosition)));
+								cs.shake(0.2f, 4f);
+							}
+						}
+						lastShootTime = System.currentTimeMillis();
 					}
 				}
 			}

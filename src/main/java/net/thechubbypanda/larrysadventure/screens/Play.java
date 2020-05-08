@@ -83,18 +83,14 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		resizeSignal.add(cs);
 		engine.addSystem(cs);
 
+		engine.addSystem(new PhysicsSystem(world));
 		engine.addSystem(new PlayerSystem(world, rayHandler, cs, collisionSignal, inputSignal));
 		engine.addSystem(new EnemySystem(world));
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new AnimationSystem());
 
-		engine.addSystem(new GLInitSystem());
-		engine.addSystem(new MapRenderSystem());
-		engine.addSystem(new MainRenderSystem());
-		engine.addSystem(new PlayerRenderSystem());
-		engine.addSystem(new LightRenderSystem(rayHandler, b2dcc.getCamera()));
+		engine.addSystem(new RenderSystem(rayHandler, b2dcc.getCamera()));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners

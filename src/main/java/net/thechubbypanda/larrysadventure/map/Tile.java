@@ -1,7 +1,7 @@
 package net.thechubbypanda.larrysadventure.map;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -144,7 +144,7 @@ public class Tile {
 			body.createFixture(fRight);
 	}
 
-	public void render(SpriteBatch batch) {
+	public void render(Batch batch) {
 		batch.draw(tile, x, y);
 		if (cell.left == null)
 			batch.draw(wallVertLeft, x, y + WALL_SIZE);

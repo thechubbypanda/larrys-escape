@@ -6,8 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 
-import static net.thechubbypanda.larrysadventure.Globals.PPM;
-
 public class PhysicsComponent implements Component {
 
 	private final Body body;
@@ -21,8 +19,11 @@ public class PhysicsComponent implements Component {
 		return body.getLinearVelocity();
 	}
 
+	/**
+	 * Returns the unscaled box2D position of the body
+	 */
 	public Vector2 getPosition() {
-		return body.getPosition().scl(PPM);
+		return body.getPosition();
 	}
 
 	/**
@@ -32,22 +33,26 @@ public class PhysicsComponent implements Component {
 		return body.getAngle();
 	}
 
-	public Vector2 getBodyPosition() {
-		return body.getPosition();
-	}
-
 	public void setLinearVelocity(Vector2 vel) {
 		body.setLinearVelocity(vel);
 	}
 
+	/**
+	 * Sets the unscaled box2D position of the body
+	 */
+	public void setPosition(Vector2 position) {
+		body.setTransform(position.x, position.y, getRotation());
+	}
+
+	/**
+	 * Sets the body's angle
+	 *
+	 * @param angle in radians
+	 */
 	public void setRotation(float angle) {
 		body.setAngularVelocity(0);
 		body.setTransform(body.getPosition(), angle);
 		body.setAngularVelocity(0);
-	}
-
-	public void setPosition(Vector2 position) {
-		body.setTransform(position.x, position.y, getRotation());
 	}
 
 	public void dispose(World world) {

@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysadventure.Drop;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
+import net.thechubbypanda.larrysadventure.components.TransformComponent;
 import net.thechubbypanda.larrysadventure.components.EnemyComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 
@@ -18,9 +19,8 @@ import java.util.ArrayList;
 
 public class EnemyListener implements EntityListener {
 
-	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
 	private final ComponentMapper<EnemyComponent> ecm = ComponentMapper.getFor(EnemyComponent.class);
-
 	private final ArrayList<ParticleEffect> running = new ArrayList<>();
 	private final ArrayList<ParticleEffect> free = new ArrayList<>();
 	private final SpriteBatch batch = new SpriteBatch();
@@ -63,11 +63,11 @@ public class EnemyListener implements EntityListener {
 		free.remove(pe);
 		running.add(pe);
 		pe.reset();
-		pe.getEmitters().first().setPosition(pcm.get(entity).getPosition().x, pcm.get(entity).getPosition().y);
+		pe.getEmitters().first().setPosition(tcm.get(entity).getPosition().x, tcm.get(entity).getPosition().y);
 		pe.start();
 
 		if (ecm.get(entity).drop == Drop.health) {
-			engine.addEntity(EntityFactory.healthPack(world, pcm.get(entity).getPosition()));
+			engine.addEntity(EntityFactory.healthPack(world, tcm.get(entity).getPosition()));
 		}
 	}
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.TileMapComponent;
+import net.thechubbypanda.larrysadventure.components.TransformComponent;
 import net.thechubbypanda.larrysadventure.map.Cell;
 import net.thechubbypanda.larrysadventure.map.CellMap;
 import net.thechubbypanda.larrysadventure.map.Tile;
@@ -84,7 +85,9 @@ public class LevelManager {
 		// Map
 		currentCellMap = new CellMap(level + 5);
 
-		currentMap = new Entity().add(new TileMapComponent(world, currentCellMap));
+		currentMap = new Entity();
+		currentMap.add(new TileMapComponent(world, currentCellMap));
+		currentMap.add(new TransformComponent(0, 0, -1));
 		engine.addEntity(currentMap);
 
 		// Player

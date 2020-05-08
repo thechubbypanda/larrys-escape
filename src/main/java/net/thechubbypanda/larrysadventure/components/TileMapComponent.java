@@ -1,7 +1,7 @@
 package net.thechubbypanda.larrysadventure.components;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysadventure.map.Cell;
 import net.thechubbypanda.larrysadventure.map.CellMap;
@@ -25,7 +25,7 @@ public class TileMapComponent implements Component {
 		}
 	}
 
-	public void render(SpriteBatch batch) {
+	public void draw(Batch batch) {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				map[x][y].render(batch);

@@ -4,16 +4,12 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import net.thechubbypanda.larrysadventure.components.AnimationComponent;
-import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
-import net.thechubbypanda.larrysadventure.components.PlayerComponent;
-import net.thechubbypanda.larrysadventure.components.SpriteComponent;
+import net.thechubbypanda.larrysadventure.components.*;
 
 public class MainMovementSystem extends IteratingSystem {
 
-	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
 	private final ComponentMapper<AnimationComponent> acm = ComponentMapper.getFor(AnimationComponent.class);
 
@@ -23,11 +19,11 @@ public class MainMovementSystem extends IteratingSystem {
 
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		Vector2 position = pcm.get(entity).getPosition();
-		float rotation = pcm.get(entity).getRotation();
+		Vector2 position = tcm.get(entity).getPosition();
+		float rotation = tcm.get(entity).getRotation();
 		if (scm.has(entity)) {
 			scm.get(entity).setPosition(position);
-			scm.get(entity).sprite.setRotation(rotation * MathUtils.radiansToDegrees);
+			scm.get(entity).setRotation(rotation);
 		}
 		if (acm.has(entity)) {
 			acm.get(entity).setPosition(position);
