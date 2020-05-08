@@ -16,7 +16,10 @@ before_script:
 
 build:
   stage: build
-  script: gradle build
+  script: 
+    - git submodule init
+    - git submodule update
+    - gradle build
   artifacts:
     paths:
     - build/libs/
