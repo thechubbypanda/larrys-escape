@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.TileMapComponent;
+import net.thechubbypanda.larrysadventure.components.TransformComponent;
 import net.thechubbypanda.larrysadventure.map.Cell;
 import net.thechubbypanda.larrysadventure.map.CellMap;
 import net.thechubbypanda.larrysadventure.map.Tile;
@@ -29,7 +30,7 @@ public class LevelManager {
 	public CellMap currentCellMap;
 	public ArrayList<ArrayList<Vector2>> routes;
 
-	private Random random = new Random();
+	private final Random random = new Random();
 
 	public LevelManager(Engine engine, World world, RayHandler rayHandler, int initialLevel) {
 		this.engine = engine;
@@ -84,7 +85,9 @@ public class LevelManager {
 		// Map
 		currentCellMap = new CellMap(level + 5);
 
-		currentMap = new Entity().add(new TileMapComponent(world, currentCellMap));
+		currentMap = new Entity();
+		currentMap.add(new TileMapComponent(world, currentCellMap));
+		currentMap.add(new TransformComponent(0, 0, -1));
 		engine.addEntity(currentMap);
 
 		// Player
@@ -112,7 +115,18 @@ public class LevelManager {
 
 		// Enemies
 		for (ArrayList<Vector2> route : routes) {
-			engine.addEntity(EntityFactory.enemy(world, route));
+			Drop drop = null;
+			// TODO: proper spawning
+			if (random.nextFloat() < 0.1f) {
+				drop = Drop.health;
+			}
+			if (drop == null) {
+				if (random.nextFloat() < 0.2f) {
+					drop = Drop.ammo;
+				}
+			}
+			drop = Drop.ammo;
+			engine.addEntity(EntityFactory.enemy(world, route, drop));
 		}
 	}
 }

@@ -6,11 +6,11 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
-import net.thechubbypanda.larrysadventure.Collision;
+import net.thechubbypanda.larrysadventure.CollisionSignal;
 import net.thechubbypanda.larrysadventure.components.DamageComponent;
 import net.thechubbypanda.larrysadventure.components.HealthComponent;
 
-public class HealthSystem extends IteratingSystem implements Listener<Collision> {
+public class HealthSystem extends IteratingSystem implements Listener<CollisionSignal> {
 
 	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
 	private final ComponentMapper<DamageComponent> dcm = ComponentMapper.getFor(DamageComponent.class);
@@ -27,7 +27,7 @@ public class HealthSystem extends IteratingSystem implements Listener<Collision>
 	}
 
 	@Override
-	public void receive(Signal<Collision> signal, Collision object) {
+	public void receive(Signal<CollisionSignal> signal, CollisionSignal object) {
 		if (getEntities().contains(object.entity, true)) {
 			if (object.object instanceof Entity) {
 				Entity entityHit = (Entity) object.object;

@@ -6,26 +6,24 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public class SpriteComponent implements Component {
-
-	public final Sprite sprite;
+public class SpriteComponent extends Sprite implements Component {
 
 	public SpriteComponent(Texture texture) {
-		sprite = new Sprite(texture);
-		sprite.setCenter(0, 0);
-		sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2);
+		super(texture);
+		setCenter(0, 0);
+		setOrigin(getWidth() / 2, getHeight() / 2);
 	}
 
 	public SpriteComponent(TextureRegion textureRegion) {
-		sprite = new Sprite(textureRegion);
-		sprite.setCenter(0, 0);
-	}
-
-	public void setPosition(Vector2 position) {
-		sprite.setCenter(position.x, position.y);
+		super(textureRegion);
+		setCenter(0, 0);
 	}
 
 	public Vector2 getPosition() {
-		return new Vector2(sprite.getX() + sprite.getWidth() / 2, sprite.getY() + sprite.getHeight() / 2);
+		return new Vector2(getX() + getWidth() / 2, getY() + getHeight() / 2);
+	}
+
+	public void setPosition(Vector2 position) {
+		setCenter(position.x, position.y);
 	}
 }

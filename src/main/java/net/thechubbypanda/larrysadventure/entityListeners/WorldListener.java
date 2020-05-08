@@ -9,7 +9,7 @@ import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 
 public class WorldListener implements EntityListener {
 
-	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
 	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
 
 	private final World world;
@@ -25,8 +25,8 @@ public class WorldListener implements EntityListener {
 
 	@Override
 	public void entityRemoved(Entity entity) {
-		if (pcm.has(entity)) {
-			pcm.get(entity).dispose(world);
+		if (phcm.has(entity)) {
+			phcm.get(entity).dispose(world);
 		}
 		if (lcm.has(entity)) {
 			lcm.get(entity).dispose();
