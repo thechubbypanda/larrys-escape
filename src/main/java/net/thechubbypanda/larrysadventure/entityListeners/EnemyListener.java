@@ -7,13 +7,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
-import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
+import net.thechubbypanda.larrysadventure.components.TransformComponent;
 
 import java.util.ArrayList;
 
 public class EnemyListener implements EntityListener {
 
-	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
+
 	private final ArrayList<ParticleEffect> running = new ArrayList<>();
 	private final ArrayList<ParticleEffect> free = new ArrayList<>();
 	private final SpriteBatch batch = new SpriteBatch();
@@ -51,7 +52,7 @@ public class EnemyListener implements EntityListener {
 		free.remove(pe);
 		running.add(pe);
 		pe.reset();
-		pe.getEmitters().first().setPosition(pcm.get(entity).getPosition().x, pcm.get(entity).getPosition().y);
+		pe.getEmitters().first().setPosition(tcm.get(entity).getPosition().x, tcm.get(entity).getPosition().y);
 		pe.start();
 	}
 }

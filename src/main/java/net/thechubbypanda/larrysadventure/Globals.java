@@ -14,13 +14,13 @@ public class Globals {
 	public static final Color AMBIENT_COLOR = new Color(AMBIENT_INTENSITY, AMBIENT_INTENSITY, AMBIENT_INTENSITY, 1f);
 
 	public static class SystemPriority {
-		public static final int VIEWPORT = 1;
-		public static final int GL_INIT = 2;
-		public static final int MAP_RENDER = 3;
-		public static final int MAIN_RENDER = 4;
-		public static final int PLAYER_RENDER = 5;
-		public static final int LIGHT_RENDER = 6;
-		public static final int DEBUG_RENDER = 7;
+		public static final int PRE_UPDATE = -1;
+		public static final int UPDATE = 0;
+		public static final int POST_UPDATE = 1;
+
+		public static final int PRE_RENDER = 10;
+		public static final int RENDER = 11;
+		public static final int POST_RENDER = 12;
 	}
 
 	public static boolean DEBUG = false;

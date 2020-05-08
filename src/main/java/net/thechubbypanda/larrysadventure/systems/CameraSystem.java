@@ -14,6 +14,7 @@ import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.components.PlayerComponent;
+import net.thechubbypanda.larrysadventure.components.TransformComponent;
 import net.thechubbypanda.larrysadventure.signals.ResizeSignal;
 
 import java.util.Random;
@@ -21,14 +22,15 @@ import java.util.Random;
 public class CameraSystem extends IteratingSystem implements Listener<ResizeSignal> {
 
 	private final ComponentMapper<CameraComponent> ccm = ComponentMapper.getFor(CameraComponent.class);
-	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
+	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
 
 	private ImmutableArray<Entity> players;
 
 	private Random random = new Random();
 
 	public CameraSystem() {
-		super(Family.all(CameraComponent.class).get(), Globals.SystemPriority.VIEWPORT);
+		super(Family.all(CameraComponent.class).get(), Globals.SystemPriority.POST_UPDATE);
 	}
 
 	@Override
@@ -42,8 +44,8 @@ public class CameraSystem extends IteratingSystem implements Listener<ResizeSign
 		CameraComponent cc = ccm.get(entity);
 		Vector2 shake = new Vector2(random.nextFloat(), random.nextFloat());
 		for (Entity p : players) {
-			final Vector2 vec = pcm.get(p).getPosition();
-			float angle = pcm.get(p).getRotation();
+			final Vector2 vec = tcm.get(p).getPosition();
+			float angle = phcm.get(p).getRotation();
 			final float cos = MathUtils.cos(angle);
 			final float sin = MathUtils.sin(angle);
 			final float dX = cc.getPosOffset().x * cos - cc.getPosOffset().y * sin;
