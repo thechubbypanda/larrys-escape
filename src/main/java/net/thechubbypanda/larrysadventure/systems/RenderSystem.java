@@ -1,19 +1,16 @@
 package net.thechubbypanda.larrysadventure.systems;
 
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.SortedIteratingSystem;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.thechubbypanda.larrysadventure.Globals;
-import net.thechubbypanda.larrysadventure.components.AnimationComponent;
-import net.thechubbypanda.larrysadventure.components.CameraComponent;
-import net.thechubbypanda.larrysadventure.components.SpriteComponent;
-import net.thechubbypanda.larrysadventure.components.TransformComponent;
-
-import java.util.Comparator;
+import net.thechubbypanda.larrysadventure.components.*;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
@@ -24,17 +21,23 @@ public class RenderSystem extends SortedIteratingSystem {
 
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
 	private final ComponentMapper<AnimationComponent> acm = ComponentMapper.getFor(AnimationComponent.class);
+	private final ComponentMapper<TileMapComponent> tmcm = ComponentMapper.getFor(TileMapComponent.class);
 
 	private final Batch batch;
 
-	public RenderSystem() {
-		super(Family.all(TransformComponent.class).one(SpriteComponent.class, AnimationComponent.class).get(), new Comparator<Entity>() {
-			@Override
-			public int compare(Entity o1, Entity o2) {
-				return (int) Math.signum(tcm.get(o1).getZ() - tcm.get(o2).getZ());
-			}
-		}, Globals.SystemPriority.RENDER);
+	private final RayHandler rayHandler;
+	private final OrthographicCamera lightCamera;
+
+	public RenderSystem(RayHandler rayHandler, OrthographicCamera lightCamera) {
+		super(
+				Family.all(TransformComponent.class).one(SpriteComponent.class, AnimationComponent.class, TileMapComponent.class).get(),
+				(e1, e2) -> (int) Math.signum(tcm.get(e1).getZ() - tcm.get(e2).getZ()),
+				Globals.SystemPriority.RENDER
+		);
+
 		batch = new SpriteBatch();
+		this.rayHandler = rayHandler;
+		this.lightCamera = lightCamera;
 	}
 
 	@Override
@@ -49,6 +52,9 @@ public class RenderSystem extends SortedIteratingSystem {
 		if (acm.has(entity)) {
 			acm.get(entity).draw(batch);
 		}
+		if (tmcm.has(entity)) {
+			tmcm.get(entity).draw(batch);
+		}
 	}
 
 	@Override
@@ -58,6 +64,8 @@ public class RenderSystem extends SortedIteratingSystem {
 		super.update(deltaTime);
 		batch.flush();
 		batch.end();
+		rayHandler.setCombinedMatrix(lightCamera);
+		rayHandler.updateAndRender();
 	}
 
 	@Override

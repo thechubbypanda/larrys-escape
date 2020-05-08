@@ -88,8 +88,9 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
-		engine.addSystem(new MapRenderSystem());
-		engine.addSystem(new RenderSystem());
+
+		engine.addSystem(new RenderSystem(rayHandler, b2dcc.getCamera()));
+		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners
 		engine.addEntityListener(Family.one(PhysicsComponent.class, LightComponent.class).get(), new WorldListener(world));
@@ -104,6 +105,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 
 	@Override
 	public void render(float delta) {
+		world.step(delta, 3, 6);
 		engine.update(delta);
 		enemyListener.render(delta);
 	}

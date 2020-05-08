@@ -27,7 +27,6 @@ public class PhysicsSystem extends IteratingSystem {
 
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		world.step(deltaTime, 3, 6);
 		tcm.get(entity).setPosition(new Vector2(phcm.get(entity).getPosition()).scl(PPM));
 		tcm.get(entity).setRotation(phcm.get(entity).getRotation() * MathUtils.radiansToDegrees);
 	}
