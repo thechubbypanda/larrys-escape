@@ -13,12 +13,13 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import net.thechubbypanda.larrysadventure.CollisionSignal;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.Globals;
 import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.signals.InputSignal;
 
-public class PlayerSystem extends IteratingSystem implements Listener<InputSignal> {
+public class PlayerSystem extends IteratingSystem {
 
 	private static float speed = 1;
 
@@ -26,6 +27,9 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
 	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
+	private final ComponentMapper<HealthDropComponent> hdcm = ComponentMapper.getFor(HealthDropComponent.class);
+	private final ComponentMapper<AmmoDropComponent> adcm = ComponentMapper.getFor(AmmoDropComponent.class);
+	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
 	private final ComponentMapper<PlayerComponent> plcm = ComponentMapper.getFor(PlayerComponent.class);
 
 	private final RayHandler rayHandler;
@@ -38,11 +42,14 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 	private float lerpPercent = 0;
 	private long lastShootTime = System.currentTimeMillis();
 
-	public PlayerSystem(World world, RayHandler rayHandler, CameraSystem cs) {
+	public PlayerSystem(World world, RayHandler rayHandler, CameraSystem cs, Signal<CollisionSignal> collisionSignal, Signal<InputSignal> inputSignal) {
 		super(Family.all(PlayerComponent.class).get());
 		this.world = world;
 		this.rayHandler = rayHandler;
 		this.cs = cs;
+
+		collisionSignal.add(new CollisionImpl());
+		inputSignal.add(new InputImpl());
 	}
 
 	@Override
@@ -51,6 +58,7 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 
 		if (Globals.DEBUG) {
 			speed = 5;
+			hcm.get(entity).reset();
 		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -76,7 +84,6 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 		phcm.get(entity).setRotation(MathUtils.lerpAngle(phcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
 		phcm.get(entity).setLinearVelocity(vel.rotateRad(phcm.get(entity).getRotation()).nor().scl(speed));
 
-		scm.get(entity).setRotation(scm.get(entity).getRotation());
 		scm.get(entity).setPosition(tcm.get(entity).getPosition());
 
 		CameraComponent cc = CameraComponent.getMainCameraComponent();
@@ -85,40 +92,59 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 			float diffX = mousePos.x - tcm.get(entity).getPosition().x;
 			float diffY = mousePos.y - tcm.get(entity).getPosition().y;
 			float angle = (float) Math.atan2(diffY, diffX);
-			lcm.get(entity).setBodyAngleOffset((angle - targetRotation) * MathUtils.radiansToDegrees);
+			lcm.get(entity).setBodyAngleOffset((angle - phcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
+			scm.get(entity).setRotation((angle) * MathUtils.radiansToDegrees);
 		}
 	}
 
-	@Override
-	public void receive(Signal<InputSignal> signal, InputSignal o) {
-		if (o.type == InputSignal.Type.keyDown) {
-			if (o.keycode == Input.Keys.Q) {
-				targetRotation += MathUtils.PI / 2f;
-				lerpPercent = 0;
-				while (targetRotation > MathUtils.PI2) {
-					targetRotation -= MathUtils.PI2;
+	private class CollisionImpl implements Listener<CollisionSignal> {
+		@Override
+		public void receive(Signal<CollisionSignal> signal, CollisionSignal c) {
+			if (getEntities().contains(c.entity, true)) {
+				if (hcm.has(c.entity)) {
+					if (c.object instanceof Entity && hdcm.has((Entity) c.object)) {
+						hcm.get(c.entity).addHealth(hdcm.get((Entity) c.object).health);
+					}
 				}
-			}
-			if (o.keycode == Input.Keys.E) {
-				targetRotation -= MathUtils.PI / 2f;
-				lerpPercent = 0;
-				while (targetRotation < -MathUtils.PI2) {
-					targetRotation += MathUtils.PI2;
+				if (c.object instanceof Entity && adcm.has((Entity) c.object)) {
+					plcm.get(c.entity).addAmmo(adcm.get((Entity) c.object).ammo);
 				}
 			}
 		}
-		if (o.type == InputSignal.Type.mouseDown) {
-			if (o.button == Input.Buttons.LEFT) {
-				if (lastShootTime <= System.currentTimeMillis() - PlayerComponent.SHOOT_INTERVAL) {
-					for (Entity p : getEntities()) {
-						if (plcm.get(p).ammo > 0) {
-							plcm.get(p).ammo--;
-							Vector2 currentPosition = tcm.get(p).getPosition();
-							getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
-							cs.shake(0.2f, 4f);
-						}
+	}
+
+	private class InputImpl implements Listener<InputSignal> {
+		@Override
+		public void receive(Signal<InputSignal> signal, InputSignal i) {
+			if (i.type == InputSignal.Type.keyDown) {
+				if (i.keycode == Input.Keys.Q) {
+					targetRotation += MathUtils.PI / 2f;
+					lerpPercent = 0;
+					while (targetRotation > MathUtils.PI2) {
+						targetRotation -= MathUtils.PI2;
 					}
-					lastShootTime = System.currentTimeMillis();
+				}
+				if (i.keycode == Input.Keys.E) {
+					targetRotation -= MathUtils.PI / 2f;
+					lerpPercent = 0;
+					while (targetRotation < -MathUtils.PI2) {
+						targetRotation += MathUtils.PI2;
+					}
+				}
+			}
+			if (i.type == InputSignal.Type.mouseDown) {
+				if (i.button == Input.Buttons.LEFT) {
+					if (lastShootTime <= System.currentTimeMillis() - PlayerComponent.SHOOT_INTERVAL) {
+						for (Entity p : getEntities()) {
+							if (plcm.get(p).getAmmo() > 0) {
+								plcm.get(p).addAmmo(-1);
+								Vector2 currentPosition = tcm.get(p).getPosition();
+								getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(i.x, i.y).sub(currentPosition)));
+								cs.shake(0.2f, 4f);
+							}
+						}
+						lastShootTime = System.currentTimeMillis();
+					}
 				}
 			}
 		}

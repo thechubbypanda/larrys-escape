@@ -15,6 +15,10 @@ public class PhysicsComponent implements Component {
 		this.body.setUserData(e);
 	}
 
+	public Vector2 getVelocity() {
+		return body.getLinearVelocity();
+	}
+
 	/**
 	 * Returns the unscaled box2D position of the body
 	 */

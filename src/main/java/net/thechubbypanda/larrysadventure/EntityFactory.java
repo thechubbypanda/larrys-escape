@@ -6,6 +6,7 @@ import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import net.thechubbypanda.larrysadventure.components.*;
@@ -22,13 +23,25 @@ public final class EntityFactory {
 	private static final Color BULLET_LIGHT_COLOR = new Color(1, 1, 0.8f, 1);
 	private static final BodyDef BULLET_BDEF = new BodyDef();
 	private static final FixtureDef BULLET_FDEF = new FixtureDef();
+	private static final BodyDef DROP_BDEF = new BodyDef();
+	private static final FixtureDef DROP_FDEF = new FixtureDef();
+
+	static {
+		DROP_BDEF.type = BodyDef.BodyType.StaticBody;
+		DROP_BDEF.fixedRotation = true;
+		CircleShape shape = new CircleShape();
+		shape.setRadius(8 / PPM);
+		DROP_FDEF.shape = shape;
+		DROP_FDEF.isSensor = true;
+		DROP_FDEF.filter.maskBits = CollisionBit.player.bits;
+	}
 
 	static {
 		BULLET_BDEF.type = BodyDef.BodyType.DynamicBody;
 		BULLET_BDEF.bullet = true;
 		BULLET_BDEF.fixedRotation = true;
 		CircleShape shape = new CircleShape();
-		shape.setRadius(2 / PPM);
+		shape.setRadius(3 / PPM);
 		BULLET_FDEF.shape = shape;
 		BULLET_FDEF.isSensor = true;
 		BULLET_FDEF.filter.categoryBits = CollisionBit.bullet.bits;
@@ -45,26 +58,6 @@ public final class EntityFactory {
 		ENEMY_FDEF.shape = shape;
 	}
 
-	public static Entity enemy(World world, ArrayList<Vector2> patrolRoute) {
-		Entity enemy = new Entity();
-
-		enemy.add(new TransformComponent(1));
-
-		ENEMY_BDEF.position.set(new Vector2(patrolRoute.get(0)));
-
-		Body body = world.createBody(ENEMY_BDEF);
-
-		body.createFixture(ENEMY_FDEF);
-
-		enemy.add(new EnemyComponent(patrolRoute));
-		enemy.add(new PhysicsComponent(enemy, body));
-		enemy.add(new SpriteComponent(new Texture("icon.png")));
-		enemy.add(new HealthComponent(20));
-		enemy.add(new DamageComponent(10));
-
-		return enemy;
-	}
-
 	public static Entity player(World world, RayHandler rayHandler) {
 		// Player
 		Entity player = new Entity();
@@ -72,7 +65,7 @@ public final class EntityFactory {
 		player.add(new PlayerComponent());
 		player.add(new SpriteComponent(new Texture("icon.png")));
 		player.add(new HealthComponent(100));
-		player.add(new TransformComponent(3));
+		player.add(new TransformComponent(4));
 
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyDef.BodyType.DynamicBody;
@@ -112,13 +105,14 @@ public final class EntityFactory {
 	public static Entity bullet(World world, RayHandler rayHandler, Vector2 position, Vector2 direction) {
 		Entity bullet = new Entity();
 
-		bullet.add(new TransformComponent(2));
+		bullet.add(new TransformComponent(3));
 
 		bullet.add(new BulletComponent());
 		bullet.add(new DamageComponent(10));
 
 		BULLET_BDEF.position.set(position.scl(1 / PPM));
-		BULLET_BDEF.linearVelocity.set(direction.nor().scl(4));
+		BULLET_BDEF.linearVelocity.set(direction.nor().scl(5));
+		BULLET_BDEF.angle = direction.angleRad() - MathUtils.PI / 2f;
 
 		Body body = world.createBody(BULLET_BDEF);
 
@@ -163,6 +157,61 @@ public final class EntityFactory {
 		levelExit.add(new LevelExitComponent());
 
 		return levelExit;
+	}
+
+	public static Entity enemy(World world, ArrayList<Vector2> patrolRoute, Drop drop) {
+		Entity enemy = new Entity();
+
+		enemy.add(new TransformComponent(2));
+
+		ENEMY_BDEF.position.set(new Vector2(patrolRoute.get(0)));
+
+		Body body = world.createBody(ENEMY_BDEF);
+
+		body.createFixture(ENEMY_FDEF);
+
+		enemy.add(new EnemyComponent(patrolRoute, drop));
+		enemy.add(new PhysicsComponent(enemy, body));
+		enemy.add(new SpriteComponent(new Texture("icon.png")));
+		enemy.add(new HealthComponent(20));
+		enemy.add(new DamageComponent(10));
+
+		return enemy;
+	}
+
+	public static Entity healthPack(World world, Vector2 position) {
+		Entity health = new Entity();
+
+		DROP_BDEF.position.set(new Vector2(position).scl(1 / PPM));
+
+		Body b = world.createBody(DROP_BDEF);
+
+		b.createFixture(DROP_FDEF);
+
+		health.add(new PhysicsComponent(health, b));
+		health.add(new TransformComponent(1));
+
+		health.add(new HealthDropComponent());
+		health.add(new SpriteComponent(assets.get("health.png", Texture.class)));
+
+		return health;
+	}
+
+	public static Entity ammoPack(World world, Vector2 position) {
+		Entity ammo = new Entity();
+
+		DROP_BDEF.position.set(new Vector2(position).scl(1 / PPM));
+
+		Body b = world.createBody(DROP_BDEF);
+
+		b.createFixture(DROP_FDEF);
+
+		ammo.add(new PhysicsComponent(ammo, b));
+		ammo.add(new TransformComponent(1));
+		ammo.add(new AmmoDropComponent());
+		ammo.add(new SpriteComponent(assets.get("ammo.png", Texture.class)));
+
+		return ammo;
 	}
 
 	private EntityFactory() {

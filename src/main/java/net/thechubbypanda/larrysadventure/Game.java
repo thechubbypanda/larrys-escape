@@ -48,6 +48,8 @@ public class Game extends com.badlogic.gdx.Game {
 		assets.load("flatearthui/flat-earth-ui.json", Skin.class);
 		assets.load("levelExit.png", Texture.class);
 		assets.load("bullet.png", Texture.class);
+		assets.load("health.png", Texture.class);
+		assets.load("ammo.png", Texture.class);
 		assets.finishLoading();
 
 		screens.put(Screens.mainMenu, new MainMenu());

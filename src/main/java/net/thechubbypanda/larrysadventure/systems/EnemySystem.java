@@ -139,6 +139,7 @@ public class EnemySystem extends IteratingSystem {
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		EnemyComponent ec = ecm.get(entity);
+
 		// TODO: Potentially slow
 		for (Entity player : players) {
 
@@ -147,7 +148,8 @@ public class EnemySystem extends IteratingSystem {
 			switch (ec.state) {
 				case chasing:
 					if (entities.contains(player) && !entities.contains(null)) {
-						phcm.get(entity).setLinearVelocity(phcm.get(player).getPosition().sub(phcm.get(entity).getPosition()).nor().scl(0.5f));
+						phcm.get(entity).setLinearVelocity(phcm.get(player).getPosition().sub(phcm.get(entity).getPosition()).nor().scl(1));
+						phcm.get(entity).setRotation(phcm.get(entity).getVelocity().angleRad());
 					} else {
 						ec.state = calculateReturn;
 					}
@@ -191,6 +193,7 @@ public class EnemySystem extends IteratingSystem {
 						}
 						ec.percent = 0;
 						ec.startPosition.set(phcm.get(entity).getPosition());
+						phcm.get(entity).setRotation(new Vector2(ec.returnPoints.get(ec.nextReturnPoint)).sub(phcm.get(entity).getPosition()).angleRad());
 					}
 
 					phcm.get(entity).setPosition(new Vector2(ec.startPosition).lerp(ec.returnPoints.get(ec.nextReturnPoint), (ec.percent += (deltaTime / 2f))));
@@ -218,6 +221,7 @@ public class EnemySystem extends IteratingSystem {
 						}
 						ec.percent = 0;
 						ec.startPosition.set(phcm.get(entity).getPosition());
+						phcm.get(entity).setRotation(new Vector2(ec.patrolPoints.get(ec.nextPatrolPoint)).sub(phcm.get(entity).getPosition()).angleRad());
 					}
 
 					phcm.get(entity).setPosition(new Vector2(ec.startPosition).lerp(ec.patrolPoints.get(ec.nextPatrolPoint), (ec.percent += (deltaTime / 2f))));
