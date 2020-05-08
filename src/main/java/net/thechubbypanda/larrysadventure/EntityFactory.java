@@ -179,7 +179,7 @@ public final class EntityFactory {
 		return enemy;
 	}
 
-	public static final Entity healthPack(World world, Vector2 position) {
+	public static Entity healthPack(World world, Vector2 position) {
 		Entity health = new Entity();
 
 		DROP_BDEF.position.set(new Vector2(position).scl(1 / PPM));
