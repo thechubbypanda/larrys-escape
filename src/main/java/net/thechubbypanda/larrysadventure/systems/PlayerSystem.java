@@ -46,6 +46,9 @@ public class PlayerSystem extends IteratingSystem {
 		this.world = world;
 		this.rayHandler = rayHandler;
 		this.cs = cs;
+
+		collisionSignal.add(new CollisionImpl());
+		inputSignal.add(new InputImpl());
 	}
 
 	@Override
@@ -87,8 +90,8 @@ public class PlayerSystem extends IteratingSystem {
 			float diffX = mousePos.x - tcm.get(entity).getPosition().x;
 			float diffY = mousePos.y - tcm.get(entity).getPosition().y;
 			float angle = (float) Math.atan2(diffY, diffX);
-			lcm.get(entity).setBodyAngleOffset((angle - pcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
-			scm.get(entity).sprite.setRotation((angle) * MathUtils.radiansToDegrees);
+			lcm.get(entity).setBodyAngleOffset((angle - phcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
+			scm.get(entity).setRotation((angle) * MathUtils.radiansToDegrees);
 		}
 	}
 
@@ -128,7 +131,7 @@ public class PlayerSystem extends IteratingSystem {
 						for (Entity p : getEntities()) {
 							if (plcm.get(p).ammo > 0) {
 								plcm.get(p).ammo--;
-								Vector2 currentPosition = pcm.get(p).getPosition();
+								Vector2 currentPosition = tcm.get(p).getPosition();
 								getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(i.x, i.y).sub(currentPosition)));
 								cs.shake(0.2f, 4f);
 							}
