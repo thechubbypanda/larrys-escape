@@ -14,6 +14,7 @@ public class Globals {
 	public static final Color AMBIENT_COLOR = new Color(AMBIENT_INTENSITY, AMBIENT_INTENSITY, AMBIENT_INTENSITY, 1f);
 
 	public static class SystemPriority {
+		public static final int PHYSICS = -1;
 		public static final int VIEWPORT = 1;
 		public static final int GL_INIT = 2;
 		public static final int MAP_RENDER = 3;

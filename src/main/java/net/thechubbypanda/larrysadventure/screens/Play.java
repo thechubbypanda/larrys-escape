@@ -83,6 +83,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		inputSignal.add(ps);
 		engine.addSystem(ps);
 
+		engine.addSystem(new PhysicsSystem());
 		engine.addSystem(new EnemySystem(world));
 		engine.addSystem(new MainMovementSystem());
 		engine.addSystem(new AliveTimeSystem());

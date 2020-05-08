@@ -48,6 +48,8 @@ public final class EntityFactory {
 	public static Entity enemy(World world, ArrayList<Vector2> patrolRoute) {
 		Entity enemy = new Entity();
 
+		enemy.add(new TransformComponent(1));
+
 		ENEMY_BDEF.position.set(new Vector2(patrolRoute.get(0)));
 
 		Body body = world.createBody(ENEMY_BDEF);
@@ -70,6 +72,7 @@ public final class EntityFactory {
 		player.add(new PlayerComponent());
 		player.add(new SpriteComponent(new Texture("icon.png")));
 		player.add(new HealthComponent(100));
+		player.add(new TransformComponent(3));
 
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyDef.BodyType.DynamicBody;
@@ -108,6 +111,8 @@ public final class EntityFactory {
 
 	public static Entity bullet(World world, RayHandler rayHandler, Vector2 position, Vector2 direction) {
 		Entity bullet = new Entity();
+
+		bullet.add(new TransformComponent(2));
 
 		bullet.add(new BulletComponent());
 		bullet.add(new DamageComponent(10));
@@ -152,6 +157,7 @@ public final class EntityFactory {
 		Body body = world.createBody(bdef);
 		body.createFixture(fdef);
 
+		levelExit.add(new TransformComponent(0));
 		levelExit.add(new PhysicsComponent(levelExit, body));
 		levelExit.add(new SpriteComponent(assets.get("levelExit.png", Texture.class)));
 		levelExit.add(new LevelExitComponent());

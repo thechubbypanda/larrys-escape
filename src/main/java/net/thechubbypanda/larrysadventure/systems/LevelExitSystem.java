@@ -14,7 +14,7 @@ import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 public class LevelExitSystem extends IteratingSystem implements Listener<Collision> {
 
 	private final LevelManager lm;
-	private final ComponentMapper<PlayerComponent> pcm = ComponentMapper.getFor(PlayerComponent.class);
+	private final ComponentMapper<PlayerComponent> plcm = ComponentMapper.getFor(PlayerComponent.class);
 
 	private boolean toBump = false;
 
@@ -36,7 +36,7 @@ public class LevelExitSystem extends IteratingSystem implements Listener<Collisi
 	public void receive(Signal<Collision> signal, Collision object) {
 		if (getEntities().contains(object.entity, true)) {
 			if (object.object instanceof Entity) {
-				if (pcm.has((Entity) object.object)) {
+				if (plcm.has((Entity) object.object)) {
 					toBump = true;
 				}
 			}
