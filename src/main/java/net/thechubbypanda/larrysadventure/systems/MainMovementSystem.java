@@ -23,7 +23,7 @@ public class MainMovementSystem extends IteratingSystem {
 		float rotation = positionMapper.get(entity).getRotation();
 		if (spriteMapper.has(entity)) {
 			spriteMapper.get(entity).setPosition(position);
-			spriteMapper.get(entity).sprite.setRotation(rotation);
+			spriteMapper.get(entity).setRotation(rotation);
 		}
 		if (animationMapper.has(entity)) {
 			animationMapper.get(entity).setPosition(position);

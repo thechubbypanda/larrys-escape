@@ -22,7 +22,7 @@ import java.util.Random;
 public class CameraSystem extends IteratingSystem implements Listener<ResizeSignal> {
 
 	private final ComponentMapper<CameraComponent> ccm = ComponentMapper.getFor(CameraComponent.class);
-	private final ComponentMapper<TransformComponent> pocm = ComponentMapper.getFor(TransformComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
 	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
 
 	private ImmutableArray<Entity> players;
@@ -30,7 +30,7 @@ public class CameraSystem extends IteratingSystem implements Listener<ResizeSign
 	private Random random = new Random();
 
 	public CameraSystem() {
-		super(Family.all(CameraComponent.class).get(), Globals.SystemPriority.VIEWPORT);
+		super(Family.all(CameraComponent.class).get(), Globals.SystemPriority.POST_UPDATE);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class CameraSystem extends IteratingSystem implements Listener<ResizeSign
 		CameraComponent cc = ccm.get(entity);
 		Vector2 shake = new Vector2(random.nextFloat(), random.nextFloat());
 		for (Entity p : players) {
-			final Vector2 vec = pocm.get(p).getPosition();
+			final Vector2 vec = tcm.get(p).getPosition();
 			float angle = phcm.get(p).getRotation();
 			final float cos = MathUtils.cos(angle);
 			final float sin = MathUtils.sin(angle);

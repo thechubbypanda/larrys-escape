@@ -22,7 +22,7 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 
 	private static float speed = 1;
 
-	private final ComponentMapper<TransformComponent> pocm = ComponentMapper.getFor(TransformComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
 	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
 	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
@@ -76,14 +76,14 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 		phcm.get(entity).setRotation(MathUtils.lerpAngle(phcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
 		phcm.get(entity).setLinearVelocity(vel.rotateRad(phcm.get(entity).getRotation()).nor().scl(speed));
 
-		scm.get(entity).sprite.setRotation(scm.get(entity).sprite.getRotation());
-		scm.get(entity).setPosition(pocm.get(entity).getPosition());
+		scm.get(entity).setRotation(scm.get(entity).getRotation());
+		scm.get(entity).setPosition(tcm.get(entity).getPosition());
 
 		CameraComponent cc = CameraComponent.getMainCameraComponent();
 		if (cc != null) {
 			Vector3 mousePos = cc.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-			float diffX = mousePos.x - pocm.get(entity).getPosition().x;
-			float diffY = mousePos.y - pocm.get(entity).getPosition().y;
+			float diffX = mousePos.x - tcm.get(entity).getPosition().x;
+			float diffY = mousePos.y - tcm.get(entity).getPosition().y;
 			float angle = (float) Math.atan2(diffY, diffX);
 			lcm.get(entity).setBodyAngleOffset((angle - targetRotation) * MathUtils.radiansToDegrees);
 		}
@@ -113,7 +113,7 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 					for (Entity p : getEntities()) {
 						if (plcm.get(p).ammo > 0) {
 							plcm.get(p).ammo--;
-							Vector2 currentPosition = pocm.get(p).getPosition();
+							Vector2 currentPosition = tcm.get(p).getPosition();
 							getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
 							cs.shake(0.2f, 4f);
 						}

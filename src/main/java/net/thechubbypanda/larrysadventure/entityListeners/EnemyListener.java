@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class EnemyListener implements EntityListener {
 
-	private final ComponentMapper<TransformComponent> pocm = ComponentMapper.getFor(TransformComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
 
 	private final ArrayList<ParticleEffect> running = new ArrayList<>();
 	private final ArrayList<ParticleEffect> free = new ArrayList<>();
@@ -52,7 +52,7 @@ public class EnemyListener implements EntityListener {
 		free.remove(pe);
 		running.add(pe);
 		pe.reset();
-		pe.getEmitters().first().setPosition(pocm.get(entity).getPosition().x, pocm.get(entity).getPosition().y);
+		pe.getEmitters().first().setPosition(tcm.get(entity).getPosition().x, tcm.get(entity).getPosition().y);
 		pe.start();
 	}
 }

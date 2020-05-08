@@ -17,7 +17,7 @@ public class MapRenderSystem extends IteratingSystem {
 	private final SpriteBatch batch;
 
 	public MapRenderSystem() {
-		super(Family.all(TileMapComponent.class).get(), Globals.SystemPriority.MAP_RENDER);
+		super(Family.all(TileMapComponent.class).get(), Globals.SystemPriority.PRE_RENDER);
 		batch = new SpriteBatch();
 	}
 

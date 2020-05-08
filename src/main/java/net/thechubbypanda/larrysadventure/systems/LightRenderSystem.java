@@ -12,7 +12,7 @@ public class LightRenderSystem extends EntitySystem {
 	private final OrthographicCamera camera;
 
 	public LightRenderSystem(RayHandler rayHandler, OrthographicCamera camera) {
-		super(Globals.SystemPriority.LIGHT_RENDER);
+		super(Globals.SystemPriority.POST_RENDER);
 		this.rayHandler = rayHandler;
 		this.camera = camera;
 		this.rayHandler.setCombinedMatrix(camera);

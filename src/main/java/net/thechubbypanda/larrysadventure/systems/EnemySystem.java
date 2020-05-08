@@ -23,7 +23,7 @@ public class EnemySystem extends IteratingSystem {
 
 	private final World world;
 	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
-	private final ComponentMapper<TransformComponent> pocm = ComponentMapper.getFor(TransformComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
 	private final ComponentMapper<EnemyComponent> ecm = ComponentMapper.getFor(EnemyComponent.class);
 	private final ComponentMapper<TileMapComponent> tmcm = ComponentMapper.getFor(TileMapComponent.class);
 
@@ -164,7 +164,7 @@ public class EnemySystem extends IteratingSystem {
 						ec.returnPoints.clear();
 						for (Entity e : maps) {
 							CellMap cellMap = tmcm.get(e).getCellMap();
-							ArrayList<Cell> path = findPath(cellMap.getClosestCell(pocm.get(entity).getPosition()), cellMap.getClosestCell(new Vector2(ec.patrolPoints.get(ec.nextPatrolPoint)).scl(PPM)));
+							ArrayList<Cell> path = findPath(cellMap.getClosestCell(tcm.get(entity).getPosition()), cellMap.getClosestCell(new Vector2(ec.patrolPoints.get(ec.nextPatrolPoint)).scl(PPM)));
 							for (Cell cell : Objects.requireNonNull(path)) {
 								ec.returnPoints.add(new Vector2(cell.x, cell.y).scl(128 / PPM));
 							}
