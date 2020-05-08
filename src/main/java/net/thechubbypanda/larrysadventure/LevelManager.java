@@ -30,7 +30,7 @@ public class LevelManager {
 	public CellMap currentCellMap;
 	public ArrayList<ArrayList<Vector2>> routes;
 
-	private Random random = new Random();
+	private final Random random = new Random();
 
 	public LevelManager(Engine engine, World world, RayHandler rayHandler, int initialLevel) {
 		this.engine = engine;
@@ -120,6 +120,12 @@ public class LevelManager {
 			if (random.nextFloat() < 0.1f) {
 				drop = Drop.health;
 			}
+			if (drop == null) {
+				if (random.nextFloat() < 0.2f) {
+					drop = Drop.ammo;
+				}
+			}
+			drop = Drop.ammo;
 			engine.addEntity(EntityFactory.enemy(world, route, drop));
 		}
 	}

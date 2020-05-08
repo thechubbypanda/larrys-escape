@@ -11,9 +11,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysadventure.Drop;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
-import net.thechubbypanda.larrysadventure.components.TransformComponent;
 import net.thechubbypanda.larrysadventure.components.EnemyComponent;
-import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
+import net.thechubbypanda.larrysadventure.components.TransformComponent;
 
 import java.util.ArrayList;
 
@@ -68,6 +67,8 @@ public class EnemyListener implements EntityListener {
 
 		if (ecm.get(entity).drop == Drop.health) {
 			engine.addEntity(EntityFactory.healthPack(world, tcm.get(entity).getPosition()));
+		} else if (ecm.get(entity).drop == Drop.ammo) {
+			engine.addEntity(EntityFactory.ammoPack(world, tcm.get(entity).getPosition()));
 		}
 	}
 }

@@ -8,6 +8,7 @@ import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import net.thechubbypanda.larrysadventure.CollisionSignal;
+import net.thechubbypanda.larrysadventure.components.AmmoDropComponent;
 import net.thechubbypanda.larrysadventure.components.HealthDropComponent;
 import net.thechubbypanda.larrysadventure.components.PlayerComponent;
 
@@ -19,7 +20,7 @@ public class DropSystem extends IteratingSystem implements Listener<CollisionSig
 	private ImmutableArray<Entity> players;
 
 	public DropSystem() {
-		super(Family.one(HealthDropComponent.class).get());
+		super(Family.one(HealthDropComponent.class, AmmoDropComponent.class).get());
 	}
 
 	@Override

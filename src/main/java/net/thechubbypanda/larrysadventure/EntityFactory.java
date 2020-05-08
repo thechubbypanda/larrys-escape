@@ -23,17 +23,17 @@ public final class EntityFactory {
 	private static final Color BULLET_LIGHT_COLOR = new Color(1, 1, 0.8f, 1);
 	private static final BodyDef BULLET_BDEF = new BodyDef();
 	private static final FixtureDef BULLET_FDEF = new FixtureDef();
-	private static final BodyDef HEALTH_BDEF = new BodyDef();
-	private static final FixtureDef HEALTH_FDEF = new FixtureDef();
+	private static final BodyDef DROP_BDEF = new BodyDef();
+	private static final FixtureDef DROP_FDEF = new FixtureDef();
 
 	static {
-		HEALTH_BDEF.type = BodyDef.BodyType.StaticBody;
-		HEALTH_BDEF.fixedRotation = true;
+		DROP_BDEF.type = BodyDef.BodyType.StaticBody;
+		DROP_BDEF.fixedRotation = true;
 		CircleShape shape = new CircleShape();
 		shape.setRadius(8 / PPM);
-		HEALTH_FDEF.shape = shape;
-		HEALTH_FDEF.isSensor = true;
-		HEALTH_FDEF.filter.maskBits = CollisionBit.player.bits;
+		DROP_FDEF.shape = shape;
+		DROP_FDEF.isSensor = true;
+		DROP_FDEF.filter.maskBits = CollisionBit.player.bits;
 	}
 
 	static {
@@ -182,11 +182,11 @@ public final class EntityFactory {
 	public static final Entity healthPack(World world, Vector2 position) {
 		Entity health = new Entity();
 
-		HEALTH_BDEF.position.set(new Vector2(position).scl(1 / PPM));
+		DROP_BDEF.position.set(new Vector2(position).scl(1 / PPM));
 
-		Body b = world.createBody(HEALTH_BDEF);
+		Body b = world.createBody(DROP_BDEF);
 
-		b.createFixture(HEALTH_FDEF);
+		b.createFixture(DROP_FDEF);
 
 		health.add(new PhysicsComponent(health, b));
 
@@ -194,6 +194,22 @@ public final class EntityFactory {
 		health.add(new SpriteComponent(assets.get("health.png", Texture.class)));
 
 		return health;
+	}
+
+	public static Entity ammoPack(World world, Vector2 position) {
+		Entity ammo = new Entity();
+
+		DROP_BDEF.position.set(new Vector2(position).scl(1 / PPM));
+
+		Body b = world.createBody(DROP_BDEF);
+
+		b.createFixture(DROP_FDEF);
+
+		ammo.add(new PhysicsComponent(ammo, b));
+		ammo.add(new AmmoDropComponent());
+		//ammo.add(new SpriteComponent(assets.get("ammo.png", Texture.class))); TODO
+
+		return ammo;
 	}
 
 	private EntityFactory() {

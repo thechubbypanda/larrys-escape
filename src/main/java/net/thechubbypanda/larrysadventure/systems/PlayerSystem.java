@@ -28,6 +28,7 @@ public class PlayerSystem extends IteratingSystem {
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
 	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
 	private final ComponentMapper<HealthDropComponent> hdcm = ComponentMapper.getFor(HealthDropComponent.class);
+	private final ComponentMapper<AmmoDropComponent> adcm = ComponentMapper.getFor(AmmoDropComponent.class);
 	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
 	private final ComponentMapper<PlayerComponent> plcm = ComponentMapper.getFor(PlayerComponent.class);
 
@@ -57,6 +58,7 @@ public class PlayerSystem extends IteratingSystem {
 
 		if (Globals.DEBUG) {
 			speed = 5;
+			hcm.get(entity).reset();
 		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -98,9 +100,14 @@ public class PlayerSystem extends IteratingSystem {
 	private class CollisionImpl implements Listener<CollisionSignal> {
 		@Override
 		public void receive(Signal<CollisionSignal> signal, CollisionSignal c) {
-			if (getEntities().contains(c.entity, true) && hcm.has(c.entity)) {
-				if (c.object instanceof Entity && hdcm.has((Entity) c.object)) {
-					hcm.get(c.entity).addHealth(hdcm.get((Entity) c.object).health);
+			if (getEntities().contains(c.entity, true)) {
+				if (hcm.has(c.entity)) {
+					if (c.object instanceof Entity && hdcm.has((Entity) c.object)) {
+						hcm.get(c.entity).addHealth(hdcm.get((Entity) c.object).health);
+					}
+				}
+				if (c.object instanceof Entity && adcm.has((Entity) c.object)) {
+					plcm.get(c.entity).addAmmo(adcm.get((Entity) c.object).ammo);
 				}
 			}
 		}
@@ -129,8 +136,8 @@ public class PlayerSystem extends IteratingSystem {
 				if (i.button == Input.Buttons.LEFT) {
 					if (lastShootTime <= System.currentTimeMillis() - PlayerComponent.SHOOT_INTERVAL) {
 						for (Entity p : getEntities()) {
-							if (plcm.get(p).ammo > 0) {
-								plcm.get(p).ammo--;
+							if (plcm.get(p).getAmmo() > 0) {
+								plcm.get(p).addAmmo(-1);
 								Vector2 currentPosition = tcm.get(p).getPosition();
 								getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(i.x, i.y).sub(currentPosition)));
 								cs.shake(0.2f, 4f);
