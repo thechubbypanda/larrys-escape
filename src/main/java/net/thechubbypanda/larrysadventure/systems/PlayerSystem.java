@@ -25,6 +25,7 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
 	private final ComponentMapper<SpriteComponent> scm = ComponentMapper.getFor(SpriteComponent.class);
 	private final ComponentMapper<LightComponent> lcm = ComponentMapper.getFor(LightComponent.class);
+	private final ComponentMapper<PlayerComponent> plcm = ComponentMapper.getFor(PlayerComponent.class);
 
 	private final RayHandler rayHandler;
 	private final World world;
@@ -34,6 +35,7 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
+	private long lastShootTime = System.currentTimeMillis();
 
 	public PlayerSystem(World world, RayHandler rayHandler, CameraSystem cs) {
 		super(Family.all(PlayerComponent.class).get());
@@ -106,10 +108,16 @@ public class PlayerSystem extends IteratingSystem implements Listener<InputSigna
 		}
 		if (o.type == InputSignal.Type.mouseDown) {
 			if (o.button == Input.Buttons.LEFT) {
-				for (Entity p : getEntities()) {
-					Vector2 currentPosition = pcm.get(p).getPosition();
-					getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
-					cs.shake(0.2f, 4f);
+				if (lastShootTime <= System.currentTimeMillis() - PlayerComponent.SHOOT_INTERVAL) {
+					for (Entity p : getEntities()) {
+						if (plcm.get(p).ammo > 0) {
+							plcm.get(p).ammo--;
+							Vector2 currentPosition = pcm.get(p).getPosition();
+							getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
+							cs.shake(0.2f, 4f);
+						}
+					}
+					lastShootTime = System.currentTimeMillis();
 				}
 			}
 		}
