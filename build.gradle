@@ -3,7 +3,7 @@ plugins {
 	id 'application'
 }
 
-mainClassName = "net.thechubbypanda.larrysadventure.Main"
+mainClassName = "net.thechubbypanda.larrysadventure.Game"
 ext {
 	appName = "Larry's Adventure"
 	ashleyVersion = "1.7.3"
