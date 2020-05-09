@@ -8,15 +8,20 @@ before_script:
 
 build:
   stage: build
-  script: 
-    - gradle build
-
-jar:
-  stage: deploy
-  only:
-    - master
-  script:
-    - gradle jar
-  artifacts:
+  script: gradle --build-cache assemble
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
     paths:
-    - build/libs/*.jar
+      - build
+      - .gradle
+
+test:
+  stage: test
+  script: gradle check
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - build
+      - .gradle
