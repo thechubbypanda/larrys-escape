@@ -115,17 +115,16 @@ public class LevelManager {
 
 		// Enemies
 		for (ArrayList<Vector2> route : routes) {
-			Drop drop = null;
+			Drop drop;
 			// TODO: proper spawning
-			if (random.nextFloat() < 0.1f) {
+			float r = random.nextFloat();
+			if (r < 0.3f) {
 				drop = Drop.health;
+			} else if (r < 6f) {
+				drop = Drop.ammo;
+			} else {
+				drop = Drop.crystal;
 			}
-			if (drop == null) {
-				if (random.nextFloat() < 0.2f) {
-					drop = Drop.ammo;
-				}
-			}
-			drop = Drop.ammo;
 			engine.addEntity(EntityFactory.enemy(world, route, drop));
 		}
 	}
