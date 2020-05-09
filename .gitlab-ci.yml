@@ -9,7 +9,14 @@ before_script:
 build:
   stage: build
   script: 
-    - gradle assemble
+    - gradle build
+
+jar:
+  stage: deploy
+  only:
+    - master
+  script:
+    - gradle jar
   artifacts:
     paths:
     - build/libs/*.jar
