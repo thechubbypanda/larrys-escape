@@ -31,7 +31,8 @@ jar:
   only:
     - master
   script: 
-    - gradle assemble
+    - gradle build
+    - gradle jar
   artifacts:
     paths:
-    - build/libs/*.jar
+      - build/libs/*.jar
