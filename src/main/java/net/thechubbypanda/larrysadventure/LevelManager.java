@@ -1,15 +1,13 @@
 package net.thechubbypanda.larrysadventure;
 
-import box2dLight.RayHandler;
+import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import net.thechubbypanda.larrysadventure.components.CameraComponent;
-import net.thechubbypanda.larrysadventure.components.TileMapComponent;
-import net.thechubbypanda.larrysadventure.components.TransformComponent;
+import net.thechubbypanda.larrysadventure.components.*;
 import net.thechubbypanda.larrysadventure.map.Cell;
 import net.thechubbypanda.larrysadventure.map.CellMap;
 import net.thechubbypanda.larrysadventure.map.Tile;
@@ -21,21 +19,24 @@ import static net.thechubbypanda.larrysadventure.Globals.PPM;
 
 public class LevelManager {
 
+	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
+
 	private final Engine engine;
 	private final World world;
-	private final RayHandler rayHandler;
 
 	private int currentLevel;
 	private Entity currentMap;
-	public CellMap currentCellMap;
-	public ArrayList<ArrayList<Vector2>> routes;
+	private CellMap currentCellMap;
+	private ArrayList<ArrayList<Vector2>> routes;
+	private ImmutableArray<Entity> players;
 
 	private final Random random = new Random();
 
-	public LevelManager(Engine engine, World world, RayHandler rayHandler, int initialLevel) {
+	public LevelManager(Engine engine, World world, int initialLevel) {
 		this.engine = engine;
 		this.world = world;
-		this.rayHandler = rayHandler;
+
+		players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
 
 		setLevel(initialLevel);
 	}
@@ -54,7 +55,7 @@ public class LevelManager {
 		if (currentMap != null) {
 			currentMap.getComponent(TileMapComponent.class).removeBodies(world);
 		}
-		ImmutableArray<Entity> keep = engine.getEntitiesFor(Family.one(CameraComponent.class).get());
+		ImmutableArray<Entity> keep = engine.getEntitiesFor(Family.one(CameraComponent.class, PlayerComponent.class).get());
 		for (Entity e : engine.getEntities()) {
 			if (!keep.contains(e, true)) {
 				engine.removeEntity(e);
@@ -91,8 +92,9 @@ public class LevelManager {
 		engine.addEntity(currentMap);
 
 		// Player
-		Entity player = EntityFactory.player(world, rayHandler);
-		engine.addEntity(player);
+		for (Entity p : players) {
+			phcm.get(p).setPosition(Vector2.Zero);
+		}
 
 		ArrayList<Cell> deadEnds = currentCellMap.getDeadEnds();
 		deadEnds.remove(currentCellMap.getMap()[0][0]);
@@ -116,11 +118,10 @@ public class LevelManager {
 		// Enemies
 		for (ArrayList<Vector2> route : routes) {
 			Drop drop;
-			// TODO: proper spawning
 			float r = random.nextFloat();
-			if (r < 0.3f) {
+			if (r < 0.2f) {
 				drop = Drop.health;
-			} else if (r < 6f) {
+			} else if (r < 0.4f) {
 				drop = Drop.ammo;
 			} else {
 				drop = Drop.crystal;

@@ -15,6 +15,10 @@ import static net.thechubbypanda.larrysadventure.Globals.*;
 
 public class Game extends com.badlogic.gdx.Game {
 
+	public enum Screens {
+		mainMenu, play
+	}
+
 	private final HashMap<Screens, Screen> screens = new HashMap<>();
 
 	public static void main(String[] args) {
