@@ -30,9 +30,8 @@ jar:
   stage: deploy
   only:
     - master
-  script:
-    - gradle jar
-    - mv build/lib/*.jar .
+  script: 
+    - gradle assemble
   artifacts:
     paths:
-      - ./*.jar
+    - build/libs/*.jar
