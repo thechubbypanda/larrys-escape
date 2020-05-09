@@ -30,8 +30,9 @@ jar:
   stage: deploy
   only:
     - master
-  script:
+  script: 
+    - gradle build
     - gradle jar
   artifacts:
     paths:
-      - build/lib/*.jar
+      - build/libs/*.jar
