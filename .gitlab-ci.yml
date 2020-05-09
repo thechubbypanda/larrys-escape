@@ -34,4 +34,4 @@ jar:
     - mv build/lib/*.jar .
   artifacts:
     paths:
-      - *.jar
+      - ./*.jar
