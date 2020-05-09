@@ -32,7 +32,6 @@ jar:
     - master
   script:
     - gradle jar
-    - mv build/lib/*.jar .
   artifacts:
     paths:
-      - ./*.jar
+      - build/lib/*.jar
