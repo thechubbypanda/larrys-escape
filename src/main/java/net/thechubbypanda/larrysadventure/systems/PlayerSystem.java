@@ -63,23 +63,15 @@ public class PlayerSystem extends IteratingSystem {
 
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 			vel.y += 1;
-			//playerAnimationComponent.play("up");
 		} else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
 			vel.y -= 1;
-			//playerAnimationComponent.play("down");
 		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
 			vel.x -= 1;
-			//playerAnimationComponent.play("left");
 		} else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
 			vel.x += 1;
-			//playerAnimationComponent.play("right");
 		}
-
-//		if (vel.len2() <= 0) {
-//			//playerAnimationComponent.setToInitialFrame();
-//		}
 
 		phcm.get(entity).setRotation(MathUtils.lerpAngle(phcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
 		phcm.get(entity).setLinearVelocity(vel.rotateRad(phcm.get(entity).getRotation()).nor().scl(speed));
@@ -95,6 +87,9 @@ public class PlayerSystem extends IteratingSystem {
 			lcm.get(entity).setBodyAngleOffset((angle - phcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
 			scm.get(entity).setRotation((angle) * MathUtils.radiansToDegrees);
 		}
+
+		Globals.HUD.setHealth(hcm.get(entity).getHealth());
+		Globals.HUD.setAmmo(plcm.get(entity).getAmmo());
 	}
 
 	private class CollisionImpl implements Listener<CollisionSignal> {
