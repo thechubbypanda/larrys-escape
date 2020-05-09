@@ -1,16 +1,7 @@
-# This file is a template, and might need editing before it works on your project.
-# This is the Gradle build system for JVM applications
-# https://gradle.org/
-# https://github.com/gradle/gradle
 image: gradle:alpine
 
-# Disable the Gradle daemon for Continuous Integration servers as correctness
-# is usually a priority over speed in CI environments. Using a fresh
-# runtime for each build is more reliable since the runtime is completely
-# isolated from any previous builds.
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  GIT_SUBMODULE_STRATEGY: recursive
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -18,7 +9,7 @@ before_script:
 build:
   stage: build
   script: 
-    - gradle build
+    - gradle assemble
   artifacts:
     paths:
-    - build/libs/
+    - build/libs/*.jar
