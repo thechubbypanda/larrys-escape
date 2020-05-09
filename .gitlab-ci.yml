@@ -33,4 +33,5 @@ jar:
   script:
     - mv build/lib/*.jar .
   artifacts:
+    paths:
     - *.jar
