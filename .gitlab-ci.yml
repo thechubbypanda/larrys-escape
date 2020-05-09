@@ -14,14 +14,10 @@ variables:
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
-  - git submodule sync --recursive
-  - git submodule update --init --recursive
 
 build:
   stage: build
   script: 
-    - git submodule init
-    - git submodule update
     - gradle build
   artifacts:
     paths:
