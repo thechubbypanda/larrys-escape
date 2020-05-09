@@ -25,3 +25,12 @@ test:
     paths:
       - build
       - .gradle
+
+jar:
+  stage: deploy
+  only:
+    - master
+  script:
+    - mv build/lib/*.jar .
+  artifacts:
+    - *.jar
