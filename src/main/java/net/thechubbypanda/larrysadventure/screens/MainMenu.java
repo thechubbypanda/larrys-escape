@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysadventure.Game;
-import net.thechubbypanda.larrysadventure.Globals;
 
 import static net.thechubbypanda.larrysadventure.Globals.assets;
 
@@ -43,7 +42,7 @@ public class MainMenu extends ScreenAdapter {
 		textButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				((Game) Gdx.app.getApplicationListener()).setScreen(Globals.Screens.play);
+				((Game) Gdx.app.getApplicationListener()).setScreen(Game.Screens.play);
 			}
 		});
 		table.add(textButton).padTop(10);

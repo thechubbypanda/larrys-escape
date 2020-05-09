@@ -12,8 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import net.thechubbypanda.larrysadventure.CollisionSignal;
-import net.thechubbypanda.larrysadventure.LevelManager;
+import net.thechubbypanda.larrysadventure.*;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.EnemyComponent;
 import net.thechubbypanda.larrysadventure.components.LightComponent;
@@ -45,12 +44,14 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		world = new World(Vector2.Zero, true);
 		world.setContactListener(this);
 
+		Globals.HUD = new HUD();
+
 		// Lights
 		RayHandler.useDiffuseLight(true);
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(AMBIENT_COLOR);
 
-		LevelManager levelManager = new LevelManager(engine, world, rayHandler, 0);
+		LevelManager levelManager = new LevelManager(engine, world, 0);
 
 		// Cameras
 		// Main viewport and camera
@@ -61,6 +62,8 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		// B2d viewport and camera
 		CameraComponent b2dcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth() / PPM / 1.5f, Gdx.graphics.getHeight() / PPM / 1.5f), 0, Gdx.graphics.getHeight() / 8f, 0, 1f / PPM);
 		engine.addEntity(new Entity().add(b2dcc));
+
+		engine.addEntity(EntityFactory.player(world, rayHandler));
 
 		// Engine systems
 		HealthSystem hs = new HealthSystem();
@@ -109,11 +112,13 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		world.step(delta, 3, 6);
 		engine.update(delta);
 		enemyListener.render(delta);
+		Globals.HUD.render();
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		resizeSignal.dispatch(new ResizeSignal(width, height));
+		Globals.HUD.resize(width, height);
 	}
 
 	@Override
@@ -248,5 +253,6 @@ public class Play implements Screen, InputProcessor, ContactListener {
 	public void dispose() {
 		rayHandler.dispose();
 		world.dispose();
+		Globals.HUD.dispose();
 	}
 }

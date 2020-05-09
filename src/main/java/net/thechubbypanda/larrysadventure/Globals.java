@@ -34,9 +34,9 @@ public class Globals {
 		public static final String WALL_CORNER = "wallCorner.png";
 	}
 
-	public enum Screens {
-		mainMenu, play
-	}
+	public static final int HEALTH = 100;
+
+	public static HUD HUD;
 
 	private Globals() {
 	}

@@ -64,7 +64,7 @@ public final class EntityFactory {
 
 		player.add(new PlayerComponent());
 		player.add(new SpriteComponent(new Texture("icon.png")));
-		player.add(new HealthComponent(100));
+		player.add(new HealthComponent(Globals.HEALTH));
 		player.add(new TransformComponent(4));
 
 		BodyDef bdef = new BodyDef();
