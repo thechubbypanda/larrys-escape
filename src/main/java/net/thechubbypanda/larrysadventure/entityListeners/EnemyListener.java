@@ -30,7 +30,7 @@ public class EnemyListener implements EntityListener {
 	private final ArrayList<ParticleEffect> free = new ArrayList<>();
 	private final SpriteBatch batch = new SpriteBatch();
 	private final CameraSystem cs;
-	private final Sound explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
+	private final Sound explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion2.wav"));
 
 	private final Engine engine;
 	private final World world;
@@ -80,7 +80,7 @@ public class EnemyListener implements EntityListener {
 			engine.addEntity(EntityFactory.ammoPack(world, tcm.get(entity).getPosition()));
 		}
 		if (hcm.has(entity) && hcm.get(entity).getHealth() <= 0) {
-			explosion.play();
+			explosion.play(1);
 		}
 		cs.shake(0.25f, 6f);
 	}
