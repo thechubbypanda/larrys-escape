@@ -67,21 +67,21 @@ public class EnemyListener implements EntityListener {
 
 	@Override
 	public void entityRemoved(Entity entity) {
-		ParticleEffect pe = free.get(0);
-		free.remove(pe);
-		running.add(pe);
-		pe.reset();
-		pe.getEmitters().first().setPosition(tcm.get(entity).getPosition().x, tcm.get(entity).getPosition().y);
-		pe.start();
-
-		if (ecm.get(entity).drop == Drop.health) {
-			engine.addEntity(EntityFactory.healthPack(world, tcm.get(entity).getPosition()));
-		} else if (ecm.get(entity).drop == Drop.ammo) {
-			engine.addEntity(EntityFactory.ammoPack(world, tcm.get(entity).getPosition()));
-		}
 		if (hcm.has(entity) && hcm.get(entity).getHealth() <= 0) {
+			ParticleEffect pe = free.get(0);
+			free.remove(pe);
+			running.add(pe);
+			pe.reset();
+			pe.getEmitters().first().setPosition(tcm.get(entity).getPosition().x, tcm.get(entity).getPosition().y);
+			pe.start();
+
+			if (ecm.get(entity).drop == Drop.health) {
+				engine.addEntity(EntityFactory.healthPack(world, tcm.get(entity).getPosition()));
+			} else if (ecm.get(entity).drop == Drop.ammo) {
+				engine.addEntity(EntityFactory.ammoPack(world, tcm.get(entity).getPosition()));
+			}
 			explosion.play(1);
+			cs.shake(0.25f, 6f);
 		}
-		cs.shake(0.25f, 6f);
 	}
 }

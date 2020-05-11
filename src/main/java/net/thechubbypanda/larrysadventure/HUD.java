@@ -17,7 +17,7 @@ public class HUD {
 
 	private final Stage stage;
 	private final ProgressBar health;
-	private final Label enemies, ammo;
+	private final Label enemies, ammo, level;
 
 	public HUD() {
 		Skin skin = assets.get("flatearthui/flat-earth-ui.json");
@@ -48,9 +48,19 @@ public class HUD {
 				}
 				table.add(left).expandX().align(Align.left).pad(10);
 			}
-
-			enemies = new Label("69", skin);
-			table.add(enemies).expandX().align(Align.topRight).pad(10);
+			{
+				Table right = new Table();
+				{
+					enemies = new Label("69", skin);
+					right.add(enemies).align(Align.right);
+				}
+				right.row();
+				{
+					level = new Label("69", skin);
+					right.add(level).align(Align.right).padTop(10);
+				}
+				table.add(right).expandX().align(Align.topRight).pad(10);
+			}
 
 			stage.addActor(table);
 		}
@@ -79,5 +89,9 @@ public class HUD {
 
 	public void setEnemiesLeft(int size) {
 		enemies.setText("Enemies left: " + size);
+	}
+
+	public void setLevel(int level) {
+		this.level.setText("Level: " + level);
 	}
 }

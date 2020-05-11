@@ -43,6 +43,7 @@ public class LevelManager {
 
 	public void setLevel(int level) {
 		currentLevel = level;
+		Globals.HUD.setLevel(level);
 		destroyLevel();
 		generateLevel(level);
 	}
