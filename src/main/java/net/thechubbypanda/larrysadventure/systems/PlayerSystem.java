@@ -144,31 +144,6 @@ public class PlayerSystem extends IteratingSystem {
 						}
 						lastShootTime = System.currentTimeMillis();
 					}
-	@Override
-	public void receive(Signal<InputSignal> signal, InputSignal o) {
-		if (o.type == InputSignal.Type.keyDown) {
-			if (o.keycode == Input.Keys.Q) {
-				targetRotation += MathUtils.PI / 2f;
-				lerpPercent = 0;
-				while (targetRotation > MathUtils.PI2) {
-					targetRotation -= MathUtils.PI2;
-				}
-			}
-			if (o.keycode == Input.Keys.E) {
-				targetRotation -= MathUtils.PI / 2f;
-				lerpPercent = 0;
-				while (targetRotation < -MathUtils.PI2) {
-					targetRotation += MathUtils.PI2;
-				}
-			}
-		}
-		if (o.type == InputSignal.Type.mouseDown) {
-			if (o.button == Input.Buttons.LEFT) {
-				for (Entity p : getEntities()) {
-					Vector2 currentPosition = pcm.get(p).getPosition();
-					getEngine().addEntity(EntityFactory.bullet(world, rayHandler, currentPosition, new Vector2(o.x, o.y).sub(currentPosition)));
-					shootSound.play(0.6f);
-					cs.shake(0.2f, 4f);
 				}
 			}
 		}

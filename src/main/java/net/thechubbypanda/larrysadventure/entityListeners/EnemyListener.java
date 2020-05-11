@@ -13,8 +13,8 @@ import net.thechubbypanda.larrysadventure.Drop;
 import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
 import net.thechubbypanda.larrysadventure.components.EnemyComponent;
+import net.thechubbypanda.larrysadventure.components.HealthComponent;
 import net.thechubbypanda.larrysadventure.components.TransformComponent;
-import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.systems.CameraSystem;
 
 import java.util.ArrayList;
@@ -23,6 +23,9 @@ public class EnemyListener implements EntityListener {
 
 	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
 	private final ComponentMapper<EnemyComponent> ecm = ComponentMapper.getFor(EnemyComponent.class);
+	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
+
+
 	private final ArrayList<ParticleEffect> running = new ArrayList<>();
 	private final ArrayList<ParticleEffect> free = new ArrayList<>();
 	private final SpriteBatch batch = new SpriteBatch();
@@ -76,7 +79,9 @@ public class EnemyListener implements EntityListener {
 		} else if (ecm.get(entity).drop == Drop.ammo) {
 			engine.addEntity(EntityFactory.ammoPack(world, tcm.get(entity).getPosition()));
 		}
-		explosion.play();
+		if (hcm.has(entity) && hcm.get(entity).getHealth() <= 0) {
+			explosion.play();
+		}
 		cs.shake(0.25f, 6f);
 	}
 }
