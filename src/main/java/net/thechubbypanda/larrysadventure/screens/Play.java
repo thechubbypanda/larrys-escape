@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.Vector2;
@@ -36,6 +37,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 	private final World world;
 	private final RayHandler rayHandler;
 	private final EnemyListener enemyListener;
+	private final LevelManager levelManager;
 
 	public Play() {
 		engine = new Engine();
@@ -51,7 +53,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(AMBIENT_COLOR);
 
-		LevelManager levelManager = new LevelManager(engine, world, 0);
+		levelManager = new LevelManager(engine, world, 0);
 
 		// Cameras
 		// Main viewport and camera
@@ -100,6 +102,10 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		engine.addEntityListener(Family.one(PhysicsComponent.class, LightComponent.class).get(), new WorldListener(world));
 		enemyListener = new EnemyListener(engine, world);
 		engine.addEntityListener(Family.all(EnemyComponent.class, PhysicsComponent.class).get(), enemyListener);
+	}
+
+	public void reset() {
+		levelManager.setLevel(0);
 	}
 
 	@Override
@@ -166,6 +172,10 @@ public class Play implements Screen, InputProcessor, ContactListener {
 
 	@Override
 	public boolean keyDown(int keycode) {
+		if (keycode == Input.Keys.ESCAPE) {
+			((Game) Gdx.app.getApplicationListener()).setScreen(Game.Screens.pause);
+			return true;
+		}
 		InputSignal s = new InputSignal();
 		s.type = InputSignal.Type.keyDown;
 		s.keycode = keycode;

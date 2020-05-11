@@ -51,7 +51,7 @@ public class LevelManager {
 		setLevel(currentLevel + 1);
 	}
 
-	private void destroyLevel() {
+	public void destroyLevel() {
 		if (currentMap != null) {
 			currentMap.getComponent(TileMapComponent.class).removeBodies(world);
 		}
