@@ -1,13 +1,19 @@
 package net.thechubbypanda.larrysadventure.entityListeners;
 
 import com.badlogic.ashley.core.ComponentMapper;
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.World;
+import net.thechubbypanda.larrysadventure.Drop;
+import net.thechubbypanda.larrysadventure.EntityFactory;
 import net.thechubbypanda.larrysadventure.components.CameraComponent;
+import net.thechubbypanda.larrysadventure.components.EnemyComponent;
+import net.thechubbypanda.larrysadventure.components.TransformComponent;
 import net.thechubbypanda.larrysadventure.components.PhysicsComponent;
 import net.thechubbypanda.larrysadventure.systems.CameraSystem;
 
@@ -15,19 +21,25 @@ import java.util.ArrayList;
 
 public class EnemyListener implements EntityListener {
 
-	private final ComponentMapper<PhysicsComponent> pcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<TransformComponent> tcm = ComponentMapper.getFor(TransformComponent.class);
+	private final ComponentMapper<EnemyComponent> ecm = ComponentMapper.getFor(EnemyComponent.class);
 	private final ArrayList<ParticleEffect> running = new ArrayList<>();
 	private final ArrayList<ParticleEffect> free = new ArrayList<>();
 	private final SpriteBatch batch = new SpriteBatch();
 	private final CameraSystem cs;
 	private final Sound explosion = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
 
-	public EnemyListener(CameraSystem cs) {
+	private final Engine engine;
+	private final World world;
+
+	public EnemyListener(Engine engine, World world, CameraSystem cs) {
 		for (int i = 0; i < 10; i++) {
 			ParticleEffect pe = new ParticleEffect();
 			pe.load(Gdx.files.internal("explosion.p"), Gdx.files.internal(""));
 			free.add(pe);
 		}
+		this.engine = engine;
+		this.world = world;
 		this.cs = cs;
 	}
 
@@ -56,8 +68,14 @@ public class EnemyListener implements EntityListener {
 		free.remove(pe);
 		running.add(pe);
 		pe.reset();
-		pe.getEmitters().first().setPosition(pcm.get(entity).getPosition().x, pcm.get(entity).getPosition().y);
+		pe.getEmitters().first().setPosition(tcm.get(entity).getPosition().x, tcm.get(entity).getPosition().y);
 		pe.start();
+
+		if (ecm.get(entity).drop == Drop.health) {
+			engine.addEntity(EntityFactory.healthPack(world, tcm.get(entity).getPosition()));
+		} else if (ecm.get(entity).drop == Drop.ammo) {
+			engine.addEntity(EntityFactory.ammoPack(world, tcm.get(entity).getPosition()));
+		}
 		explosion.play();
 		cs.shake(0.25f, 6f);
 	}
