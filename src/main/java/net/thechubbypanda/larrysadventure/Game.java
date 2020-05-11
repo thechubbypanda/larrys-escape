@@ -6,7 +6,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import net.thechubbypanda.larrysadventure.screens.MainMenu;
+import net.thechubbypanda.larrysadventure.screens.Menu;
+import net.thechubbypanda.larrysadventure.screens.Pause;
 import net.thechubbypanda.larrysadventure.screens.Play;
 
 import java.util.HashMap;
@@ -15,8 +16,28 @@ import static net.thechubbypanda.larrysadventure.Globals.*;
 
 public class Game extends com.badlogic.gdx.Game {
 
-	public enum Screens {
-		mainMenu, play
+	@Override
+	public void create() {
+		//Graphics
+		Gdx.gl.glClearColor(.1f, .1f, .1f, 1);
+
+		// Load initial files
+		assets.load(Textures.GRASS, Texture.class);
+		assets.load(Textures.WALL_CORNER, Texture.class);
+		assets.load(Textures.WALL_VERT, Texture.class);
+		assets.load(Textures.WALL_HORIZ, Texture.class);
+		assets.load("flatearthui/flat-earth-ui.json", Skin.class);
+		assets.load("levelExit.png", Texture.class);
+		assets.load("bullet.png", Texture.class);
+		assets.load("health.png", Texture.class);
+		assets.load("ammo.png", Texture.class);
+		assets.finishLoading();
+
+		screens.put(Screens.menu, new Menu());
+		screens.put(Screens.play, new Play());
+		screens.put(Screens.pause, new Pause());
+
+		setScreen(Screens.menu);
 	}
 
 	private final HashMap<Screens, Screen> screens = new HashMap<>();
@@ -39,27 +60,12 @@ public class Game extends com.badlogic.gdx.Game {
 		new Lwjgl3Application(new Game(), config);
 	}
 
-	@Override
-	public void create() {
-		//Graphics
-		Gdx.gl.glClearColor(.1f, .1f, .1f, 1);
+	public void reset() {
+		((Play) screens.get(Screens.play)).reset();
+	}
 
-		// Load initial files
-		assets.load(Textures.GRASS, Texture.class);
-		assets.load(Textures.WALL_CORNER, Texture.class);
-		assets.load(Textures.WALL_VERT, Texture.class);
-		assets.load(Textures.WALL_HORIZ, Texture.class);
-		assets.load("flatearthui/flat-earth-ui.json", Skin.class);
-		assets.load("levelExit.png", Texture.class);
-		assets.load("bullet.png", Texture.class);
-		assets.load("health.png", Texture.class);
-		assets.load("ammo.png", Texture.class);
-		assets.finishLoading();
-
-		screens.put(Screens.mainMenu, new MainMenu());
-		screens.put(Screens.play, new Play());
-
-		setScreen(Screens.mainMenu);
+	public enum Screens {
+		menu, play, pause;
 	}
 
 	@Override

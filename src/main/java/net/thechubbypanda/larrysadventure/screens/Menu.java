@@ -14,11 +14,11 @@ import net.thechubbypanda.larrysadventure.Game;
 
 import static net.thechubbypanda.larrysadventure.Globals.assets;
 
-public class MainMenu extends ScreenAdapter {
+public class Menu extends ScreenAdapter {
 
 	private final Stage stage;
 
-	public MainMenu() {
+	public Menu() {
 		stage = new Stage(new ExtendViewport(1000, 1000));
 
 		Skin skin = assets.get("flatearthui/flat-earth-ui.json");
