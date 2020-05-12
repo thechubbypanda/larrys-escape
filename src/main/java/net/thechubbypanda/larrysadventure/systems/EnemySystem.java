@@ -149,7 +149,7 @@ public class EnemySystem extends IteratingSystem {
 			switch (ec.state) {
 				case chasing:
 					if (entities.contains(player) && !entities.contains(null)) {
-						phcm.get(entity).setLinearVelocity(phcm.get(player).getPosition().sub(phcm.get(entity).getPosition()).nor().scl(1));
+						phcm.get(entity).setLinearVelocity(phcm.get(player).getPosition().sub(phcm.get(entity).getPosition()).nor().scl(0.9f));
 						phcm.get(entity).setRotation(phcm.get(entity).getVelocity().angleRad());
 					} else {
 						ec.state = calculateReturn;
