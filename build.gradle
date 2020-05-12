@@ -3,9 +3,9 @@ plugins {
 	id 'application'
 }
 
-mainClassName = "net.thechubbypanda.larrysadventure.Game"
+mainClassName = "net.thechubbypanda.larrysescape.Game"
 ext {
-	appName = "Larry's Adventure"
+	appName = "Larry's Escape"
 	ashleyVersion = "1.7.3"
 	box2dlightsVersion = "1.6-SNAPSHOT"
 	gdxVersion = "1.9.11-SNAPSHOT"
