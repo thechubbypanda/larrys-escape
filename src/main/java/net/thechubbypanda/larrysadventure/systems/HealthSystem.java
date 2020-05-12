@@ -43,7 +43,7 @@ public class HealthSystem extends IteratingSystem implements Listener<CollisionS
 				Entity entityHit = (Entity) collision.objectB;
 				if (dcm.has(entityHit)) {
 					if (collision.colliding) {
-						hcm.get(collision.entityA).beingHitBy.put(dcm.get(entityHit), 0l);
+						hcm.get(collision.entityA).beingHitBy.put(dcm.get(entityHit), 0L);
 					} else {
 						hcm.get(collision.entityA).beingHitBy.remove(dcm.get(entityHit));
 					}
