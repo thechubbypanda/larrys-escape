@@ -43,7 +43,7 @@ public class Menu extends ScreenAdapter {
 		textButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				((Game) Gdx.app.getApplicationListener()).setScreen(Game.Screens.play);
+				((Game) Gdx.app.getApplicationListener()).fadeScreen(Game.Screens.play);
 			}
 		});
 		table.add(textButton).padTop(10);

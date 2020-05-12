@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import net.thechubbypanda.larrysescape.screens.Menu;
 import net.thechubbypanda.larrysescape.screens.Pause;
@@ -15,6 +17,12 @@ import java.util.HashMap;
 import static net.thechubbypanda.larrysescape.Globals.*;
 
 public class Game extends com.badlogic.gdx.Game {
+
+	private ShapeRenderer sr;
+	private float fadeAlpha = 0;
+	private Screens nextScreen;
+	private boolean fadeIn = true;
+	private FadeListener fadeListener;
 
 	@Override
 	public void create() {
@@ -37,7 +45,16 @@ public class Game extends com.badlogic.gdx.Game {
 		screens.put(Screens.play, new Play());
 		screens.put(Screens.pause, new Pause());
 
+		sr = new ShapeRenderer();
+		sr.setColor(0, 0, 0, 0);
+		Gdx.gl.glBlendFunc(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
+
 		setScreen(Screens.menu);
+	}
+
+	public void fadeScreen(Screens screen) {
+		fadeIn = false;
+		nextScreen = screen;
 	}
 
 	private final HashMap<Screens, Screen> screens = new HashMap<>();
@@ -64,10 +81,6 @@ public class Game extends com.badlogic.gdx.Game {
 		((Play) screens.get(Screens.play)).reset();
 	}
 
-	public enum Screens {
-		menu, play, pause;
-	}
-
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
@@ -75,6 +88,42 @@ public class Game extends com.badlogic.gdx.Game {
 
 	public void setScreen(Screens screen) {
 		setScreen(screens.get(screen));
+	}
+
+	public void fade(FadeListener fadeListener) {
+		fadeIn = false;
+		this.fadeListener = fadeListener;
+	}
+
+	@Override
+	public void render() {
+		if (screen != null) screen.render(Gdx.graphics.getDeltaTime());
+		if (fadeIn) {
+			fadeAlpha = MathUtils.clamp(fadeAlpha - Gdx.graphics.getDeltaTime(), 0, 1);
+		} else {
+			fadeAlpha = MathUtils.clamp(fadeAlpha + Gdx.graphics.getDeltaTime(), 0, 1);
+			if (fadeAlpha == 1) {
+				fadeIn = true;
+				if (nextScreen != null) {
+					setScreen(nextScreen);
+					nextScreen = null;
+				}
+				if (fadeListener != null) {
+					fadeListener.atMiddleOfFade();
+					fadeListener = null;
+				}
+			}
+		}
+		Gdx.gl.glEnable(Gdx.gl.GL_BLEND);
+		sr.setColor(0, 0, 0, fadeAlpha);
+		sr.begin(ShapeRenderer.ShapeType.Filled);
+		sr.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		sr.end();
+		Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
+	}
+
+	public enum Screens {
+		menu, play, pause
 	}
 
 	@Override

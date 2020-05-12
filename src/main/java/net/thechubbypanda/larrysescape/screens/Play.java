@@ -105,7 +105,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 	}
 
 	public void reset() {
-		levelManager.setLevel(0);
+		levelManager.reset();
 	}
 
 	@Override

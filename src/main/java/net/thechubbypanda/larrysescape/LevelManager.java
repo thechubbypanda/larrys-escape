@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysescape.components.*;
@@ -41,11 +42,23 @@ public class LevelManager {
 		setLevel(initialLevel);
 	}
 
-	public void setLevel(int level) {
+	private void setLevel(int level) {
 		currentLevel = level;
-		Globals.HUD.setLevel(level);
-		destroyLevel();
-		generateLevel(level);
+		if (level != 0) {
+			((Game) Gdx.app.getApplicationListener()).fade(() -> {
+				Globals.HUD.setLevel(level);
+				destroyLevel();
+				generateLevel(level);
+			});
+		} else {
+			Globals.HUD.setLevel(level);
+			destroyLevel();
+			generateLevel(level);
+		}
+	}
+
+	public void reset() {
+		setLevel(0);
 	}
 
 	public void bumpLevel() {
