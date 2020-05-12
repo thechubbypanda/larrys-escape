@@ -2,12 +2,16 @@ package net.thechubbypanda.larrysadventure.components;
 
 import com.badlogic.ashley.core.Component;
 
+import java.util.HashMap;
+
 import static com.badlogic.gdx.math.MathUtils.clamp;
 
 public class HealthComponent implements Component {
 
 	private final int maxHealth;
 	private int health;
+
+	public final HashMap<DamageComponent, Long> beingHitBy = new HashMap<>();
 
 	public HealthComponent(int maxHealth) {
 		this(maxHealth, maxHealth);

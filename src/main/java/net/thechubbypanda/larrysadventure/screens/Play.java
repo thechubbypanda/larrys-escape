@@ -39,6 +39,8 @@ public class Play implements Screen, InputProcessor, ContactListener {
 	private final EnemyListener enemyListener;
 	private final LevelManager levelManager;
 
+	private final Queue<CollisionSignal> postPhysics = new Queue<>();
+
 	public Play() {
 		engine = new Engine();
 
@@ -116,6 +118,9 @@ public class Play implements Screen, InputProcessor, ContactListener {
 	@Override
 	public void render(float delta) {
 		world.step(delta, 3, 6);
+		while (postPhysics.size() > 0) {
+			collisionSignal.dispatch(postPhysics.pop());
+		}
 		engine.update(delta);
 		enemyListener.render(delta);
 		Globals.HUD.render();
@@ -147,18 +152,23 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		Object a = contact.getFixtureA().getBody().getUserData();
 		Object b = contact.getFixtureB().getBody().getUserData();
 		if (a instanceof Entity) {
-			//collisions.add(new Collision((Entity)a, b));
-			collisionSignal.dispatch(new CollisionSignal((Entity) a, b));
+			postPhysics.push(new CollisionSignal((Entity) a, b, true));
 		}
 		if (b instanceof Entity) {
-			//collisions.add(new Collision((Entity)b, a));
-			collisionSignal.dispatch(new CollisionSignal((Entity) b, a));
+			postPhysics.push(new CollisionSignal((Entity) b, a, true));
 		}
 	}
 
 	@Override
 	public void endContact(Contact contact) {
-
+		Object a = contact.getFixtureA().getBody().getUserData();
+		Object b = contact.getFixtureB().getBody().getUserData();
+		if (a instanceof Entity) {
+			postPhysics.push(new CollisionSignal((Entity) a, b, false));
+		}
+		if (b instanceof Entity) {
+			postPhysics.push(new CollisionSignal((Entity) b, a, false));
+		}
 	}
 
 	@Override

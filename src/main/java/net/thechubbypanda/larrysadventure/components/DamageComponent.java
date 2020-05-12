@@ -7,13 +7,16 @@ import com.badlogic.ashley.core.Component;
  */
 public class DamageComponent implements Component {
 
-	private final int damage;
+	public final int damage;
+	public final long hitInterval;
 
 	public DamageComponent(int damage) {
 		this.damage = damage;
+		this.hitInterval = -1;
 	}
 
-	public int getDamage() {
-		return damage;
+	public DamageComponent(int damage, long hitInterval) {
+		this.damage = damage;
+		this.hitInterval = hitInterval;
 	}
 }

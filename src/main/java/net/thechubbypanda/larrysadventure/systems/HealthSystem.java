@@ -24,15 +24,29 @@ public class HealthSystem extends IteratingSystem implements Listener<CollisionS
 		if (hcm.get(entity).getHealth() <= 0) {
 			getEngine().removeEntity(entity);
 		}
+		for (DamageComponent dc : hcm.get(entity).beingHitBy.keySet()) {
+			if (dc.hitInterval == -1) {
+				hcm.get(entity).addHealth(-dc.damage);
+			} else {
+				if (hcm.get(entity).beingHitBy.get(dc) <= System.currentTimeMillis() - dc.hitInterval) {
+					hcm.get(entity).addHealth(-dc.damage);
+					hcm.get(entity).beingHitBy.put(dc, System.currentTimeMillis());
+				}
+			}
+		}
 	}
 
 	@Override
-	public void receive(Signal<CollisionSignal> signal, CollisionSignal object) {
-		if (getEntities().contains(object.entity, true)) {
-			if (object.object instanceof Entity) {
-				Entity entityHit = (Entity) object.object;
+	public void receive(Signal<CollisionSignal> signal, CollisionSignal collision) {
+		if (getEntities().contains(collision.entityA, true)) {
+			if (collision.objectB instanceof Entity) {
+				Entity entityHit = (Entity) collision.objectB;
 				if (dcm.has(entityHit)) {
-					hcm.get(object.entity).addHealth(-dcm.get(entityHit).getDamage());
+					if (collision.colliding) {
+						hcm.get(collision.entityA).beingHitBy.put(dcm.get(entityHit), 0l);
+					} else {
+						hcm.get(collision.entityA).beingHitBy.remove(dcm.get(entityHit));
+					}
 				}
 			}
 		}

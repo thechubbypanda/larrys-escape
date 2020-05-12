@@ -34,9 +34,9 @@ public class LevelExitSystem extends IteratingSystem implements Listener<Collisi
 
 	@Override
 	public void receive(Signal<CollisionSignal> signal, CollisionSignal object) {
-		if (getEntities().contains(object.entity, true)) {
-			if (object.object instanceof Entity) {
-				if (plcm.has((Entity) object.object)) {
+		if (getEntities().contains(object.entityA, true)) {
+			if (object.objectB instanceof Entity) {
+				if (plcm.has((Entity) object.objectB)) {
 					toBump = true;
 				}
 			}

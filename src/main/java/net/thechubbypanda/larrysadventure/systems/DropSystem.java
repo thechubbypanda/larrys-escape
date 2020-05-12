@@ -38,8 +38,8 @@ public class DropSystem extends IteratingSystem implements Listener<CollisionSig
 
 	@Override
 	public void receive(Signal<CollisionSignal> signal, CollisionSignal object) {
-		if (getEntities().contains(object.entity, true) && players.contains((Entity) object.object, true)) {
-			toRemove.add(object.entity);
+		if (getEntities().contains(object.entityA, true) && players.contains((Entity) object.objectB, true)) {
+			toRemove.add(object.entityA);
 		}
 	}
 }

@@ -26,9 +26,11 @@ public class BulletSystem extends IteratingSystem implements Listener<CollisionS
 	}
 
 	@Override
-	public void receive(Signal<CollisionSignal> signal, CollisionSignal object) {
-		if (getEntities().contains(object.entity, true)) {
-			toRemove.add(object.entity);
+	public void receive(Signal<CollisionSignal> signal, CollisionSignal collision) {
+		if (getEntities().contains(collision.entityA, true)) {
+			if (collision.colliding) {
+				toRemove.add(collision.entityA);
+			}
 		}
 	}
 }

@@ -98,14 +98,14 @@ public class PlayerSystem extends IteratingSystem {
 	private class CollisionImpl implements Listener<CollisionSignal> {
 		@Override
 		public void receive(Signal<CollisionSignal> signal, CollisionSignal c) {
-			if (getEntities().contains(c.entity, true)) {
-				if (hcm.has(c.entity)) {
-					if (c.object instanceof Entity && hdcm.has((Entity) c.object)) {
-						hcm.get(c.entity).addHealth(hdcm.get((Entity) c.object).health);
+			if (getEntities().contains(c.entityA, true)) {
+				if (hcm.has(c.entityA)) {
+					if (c.objectB instanceof Entity && hdcm.has((Entity) c.objectB)) {
+						hcm.get(c.entityA).addHealth(hdcm.get((Entity) c.objectB).health);
 					}
 				}
-				if (c.object instanceof Entity && adcm.has((Entity) c.object)) {
-					plcm.get(c.entity).addAmmo(adcm.get((Entity) c.object).ammo);
+				if (c.objectB instanceof Entity && adcm.has((Entity) c.objectB)) {
+					plcm.get(c.entityA).addAmmo(adcm.get((Entity) c.objectB).ammo);
 				}
 			}
 		}

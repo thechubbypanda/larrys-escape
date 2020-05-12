@@ -174,7 +174,7 @@ public final class EntityFactory {
 		enemy.add(new PhysicsComponent(enemy, body));
 		enemy.add(new SpriteComponent(new Texture("icon.png")));
 		enemy.add(new HealthComponent(20));
-		enemy.add(new DamageComponent(10));
+		enemy.add(new DamageComponent(10, 500));
 
 		return enemy;
 	}
