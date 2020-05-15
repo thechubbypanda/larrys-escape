@@ -139,22 +139,20 @@ public class Tile {
 		}
 	}
 
-	private final float x;
-	private final float y;
 	private final Body body;
 	private final ArrayList<RenderableThing> renderableThings = new ArrayList<>();
 
 	public Tile(World world, Cell cell) {
-		x = cell.x * SIZE - SIZE / 2f;
-		y = cell.y * SIZE - SIZE / 2f;
+		float x = cell.x * SIZE - SIZE / 2f;
+		float y = cell.y * SIZE - SIZE / 2f;
 
 		bdef.position.set(cell.x * SIZE / PPM, cell.y * SIZE / PPM);
 		body = world.createBody(bdef);
 
-		if (cell.up == null || cell.left == null) body.createFixture(fTopLeftCorner);
-		if (cell.down == null || cell.left == null) body.createFixture(fBottomLeftCorner);
-		if (cell.down == null || cell.right == null) body.createFixture(fBottomRightCorner);
-		if (cell.up == null || cell.right == null) body.createFixture(fTopRightCorner);
+		body.createFixture(fTopLeftCorner);
+		body.createFixture(fBottomLeftCorner);
+		body.createFixture(fBottomRightCorner);
+		body.createFixture(fTopRightCorner);
 		if (cell.up == null) body.createFixture(fTop);
 		if (cell.left == null) body.createFixture(fLeft);
 		if (cell.down == null) body.createFixture(fBottom);
