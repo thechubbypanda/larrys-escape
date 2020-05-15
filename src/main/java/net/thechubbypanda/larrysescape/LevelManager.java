@@ -37,22 +37,18 @@ public class LevelManager {
 
 		players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
 
-		setLevel(initialLevel);
+		currentLevel = initialLevel;
+		generateLevel(initialLevel);
+		Globals.HUD.setLevel(initialLevel);
 	}
 
 	private void setLevel(int level) {
 		currentLevel = level;
-		if (level != 0) {
-			((Game) Gdx.app.getApplicationListener()).fade(() -> {
-				Globals.HUD.setLevel(level);
-				destroyLevel();
-				generateLevel(level);
-			});
-		} else {
+		((Game) Gdx.app.getApplicationListener()).fade(() -> {
 			Globals.HUD.setLevel(level);
 			destroyLevel();
 			generateLevel(level);
-		}
+		});
 	}
 
 	public void reset() {
