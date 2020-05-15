@@ -11,23 +11,21 @@ public class TileMapComponent implements Component {
 
 	private final CellMap cellMap;
 	private final Tile[][] map;
-	private final int size;
 
 	public TileMapComponent(World world, CellMap cellMap) {
 		Cell[][] cMap = cellMap.getMap();
 		this.cellMap = cellMap;
-		size = cMap.length;
-		map = new Tile[size][size];
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
+		map = new Tile[cMap.length][cMap[0].length];
+		for (int x = 0; x < cMap.length; x++) {
+			for (int y = 0; y < cMap[0].length; y++) {
 				map[x][y] = new Tile(world, cMap[x][y]);
 			}
 		}
 	}
 
 	public void draw(Batch batch) {
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
+		for (int x = 0; x < map.length; x++) {
+			for (int y = 0; y < map[0].length; y++) {
 				map[x][y].render(batch);
 			}
 		}

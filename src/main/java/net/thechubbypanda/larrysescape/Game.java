@@ -18,6 +18,8 @@ import static net.thechubbypanda.larrysescape.Globals.*;
 
 public class Game extends com.badlogic.gdx.Game {
 
+	private final HashMap<Screens, Screen> screens = new HashMap<>();
+
 	private ShapeRenderer sr;
 	private float fadeAlpha = 0;
 	private Screens nextScreen;
@@ -57,26 +59,6 @@ public class Game extends com.badlogic.gdx.Game {
 		nextScreen = screen;
 	}
 
-	private final HashMap<Screens, Screen> screens = new HashMap<>();
-
-	public static void main(String[] args) {
-		if (args.length > 0) {
-			if (args[0].equals("debug")) {
-				DEBUG = true;
-			}
-		}
-
-		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-
-		config.setMaximized(true);
-		config.setMaximizedMonitor(Lwjgl3ApplicationConfiguration.getPrimaryMonitor());
-		config.setTitle(TITLE);
-		config.setWindowPosition(-1, -1);
-		config.setWindowIcon("icon.png");
-
-		new Lwjgl3Application(new Game(), config);
-	}
-
 	public void reset() {
 		((Play) screens.get(Screens.play)).reset();
 	}
@@ -90,6 +72,10 @@ public class Game extends com.badlogic.gdx.Game {
 		setScreen(screens.get(screen));
 	}
 
+	public Screen getScreen(Screens screen) {
+		return screens.get(screen);
+	}
+
 	public void fade(FadeListener fadeListener) {
 		fadeIn = false;
 		this.fadeListener = fadeListener;
@@ -97,7 +83,7 @@ public class Game extends com.badlogic.gdx.Game {
 
 	@Override
 	public void render() {
-		if (screen != null) screen.render(Gdx.graphics.getDeltaTime());
+		super.render();
 		if (fadeIn) {
 			fadeAlpha = MathUtils.clamp(fadeAlpha - Gdx.graphics.getDeltaTime(), 0, 1);
 		} else {
@@ -130,5 +116,26 @@ public class Game extends com.badlogic.gdx.Game {
 	public void dispose() {
 		super.dispose();
 		assets.dispose();
+		for (Screen screen : screens.values()) {
+			screen.dispose();
+		}
+	}
+
+	public static void main(String[] args) {
+		if (args.length > 0) {
+			if (args[0].equals("debug")) {
+				DEBUG = true;
+			}
+		}
+
+		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+
+		config.setMaximized(true);
+		config.setMaximizedMonitor(Lwjgl3ApplicationConfiguration.getPrimaryMonitor());
+		config.setTitle(TITLE);
+		config.setWindowPosition(-1, -1);
+		config.setWindowIcon("icon.png");
+
+		new Lwjgl3Application(new Game(), config);
 	}
 }

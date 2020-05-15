@@ -9,9 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysescape.components.*;
-import net.thechubbypanda.larrysescape.map.Cell;
-import net.thechubbypanda.larrysescape.map.CellMap;
-import net.thechubbypanda.larrysescape.map.Tile;
+import net.thechubbypanda.larrysescape.map.*;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -97,50 +95,61 @@ public class LevelManager {
 	}
 
 	private void generateLevel(int level) {
-		// Map
-		currentCellMap = new CellMap(level + 5);
-
-		currentMap = new Entity();
-		currentMap.add(new TileMapComponent(world, currentCellMap));
-		currentMap.add(new TransformComponent(0, 0, -1));
-		engine.addEntity(currentMap);
-
 		// Player
 		for (Entity p : players) {
 			phcm.get(p).setPosition(Vector2.Zero);
 		}
 
-		ArrayList<Cell> deadEnds = currentCellMap.getDeadEnds();
-		deadEnds.remove(currentCellMap.getMap()[0][0]);
+		switch (level) {
+			case 0:
+				currentCellMap = new CustomCellMap(3, 10);
+				currentMap = new Entity();
+				currentMap.add(new TileMapComponent(world, currentCellMap));
+				currentMap.add(new TransformComponent(0, 0, -1));
+				engine.addEntity(currentMap);
+				break;
+			default:
+				// Map
+				currentCellMap = new RecursiveCellMap(level + 5);
 
-		// Level Exit
-		Cell exitCell = deadEnds.get(random.nextInt(deadEnds.size()));
-		engine.addEntity(EntityFactory.levelExit(world, new Vector2(exitCell.x, exitCell.y).scl(128)));
-		deadEnds.remove(exitCell);
+				currentMap = new Entity();
+				currentMap.add(new TileMapComponent(world, currentCellMap));
+				currentMap.add(new TransformComponent(0, 0, -1));
+				engine.addEntity(currentMap);
 
-		// Patrol Routes
-		routes = new ArrayList<>();
-		for (Cell end : deadEnds) {
-			ArrayList<Cell> path = getStraightPath(end);
-			ArrayList<Vector2> route = new ArrayList<>();
-			for (Cell c : path) {
-				route.add(new Vector2(c.x, c.y).scl(Tile.SIZE).scl(1 / PPM));
-			}
-			routes.add(route);
-		}
+				ArrayList<Cell> deadEnds = currentCellMap.getDeadEnds();
+				deadEnds.remove(currentCellMap.getMap()[0][0]);
 
-		// Enemies
-		for (ArrayList<Vector2> route : routes) {
-			Drop drop;
-			float r = random.nextFloat();
-			if (r < 0.2f) {
-				drop = Drop.health;
-			} else if (r < 0.4f) {
-				drop = Drop.ammo;
-			} else {
-				drop = Drop.crystal;
-			}
-			engine.addEntity(EntityFactory.enemy(world, route, drop));
+				// Level Exit
+				Cell exitCell = deadEnds.get(random.nextInt(deadEnds.size()));
+				engine.addEntity(EntityFactory.levelExit(world, new Vector2(exitCell.x, exitCell.y).scl(128)));
+				deadEnds.remove(exitCell);
+
+				// Patrol Routes
+				routes = new ArrayList<>();
+				for (Cell end : deadEnds) {
+					ArrayList<Cell> path = getStraightPath(end);
+					ArrayList<Vector2> route = new ArrayList<>();
+					for (Cell c : path) {
+						route.add(new Vector2(c.x, c.y).scl(Tile.SIZE).scl(1 / PPM));
+					}
+					routes.add(route);
+				}
+
+				// Enemies
+				for (ArrayList<Vector2> route : routes) {
+					Drop drop;
+					float r = random.nextFloat();
+					if (r < 0.2f) {
+						drop = Drop.health;
+					} else if (r < 0.4f) {
+						drop = Drop.ammo;
+					} else {
+						drop = Drop.crystal;
+					}
+					engine.addEntity(EntityFactory.enemy(world, route, drop));
+				}
+				break;
 		}
 	}
 }

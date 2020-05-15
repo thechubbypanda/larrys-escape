@@ -7,21 +7,24 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import net.thechubbypanda.larrysescape.Globals;
 
+import java.util.ArrayList;
+
 import static net.thechubbypanda.larrysescape.Globals.PPM;
 
 public class Tile {
 
 	public static final int SIZE = 128;
 	public static final int WALL_SIZE = 12;
-	public static final int WALL_SIZE2 = WALL_SIZE*2;
+	public static final int WALL_SIZE2 = WALL_SIZE * 2;
 
-	private static final Texture tile, wallVert, wallHoriz;
+	private static final TextureRegion tile;
+	private static final Texture wallVert, wallHoriz;
 	private static final TextureRegion wallVertLeft, wallVertRight, wallHorizTop, wallHorizBottom;
 	private static final Texture wallCorner;
 	private static final TextureRegion wallCornerTopLeft, wallCornerTopRight, wallCornerBottomLeft, wallCornerBottomRight;
 
 	static {
-		tile = Globals.assets.get(Globals.Textures.GRASS);
+		tile = new TextureRegion((Texture) Globals.assets.get(Globals.Textures.GRASS));
 
 		wallVert = Globals.assets.get(Globals.Textures.WALL_VERT);
 		wallHoriz = Globals.assets.get(Globals.Textures.WALL_HORIZ);
@@ -29,8 +32,8 @@ public class Tile {
 
 		wallVertLeft = new TextureRegion(wallVert, WALL_SIZE, 0, WALL_SIZE, SIZE - WALL_SIZE2);
 		wallVertRight = new TextureRegion(wallVert, 0, 0, WALL_SIZE, SIZE - WALL_SIZE2);
-		wallHorizTop = new TextureRegion(wallHoriz, 0, WALL_SIZE, SIZE-WALL_SIZE2, WALL_SIZE);
-		wallHorizBottom = new TextureRegion(wallHoriz, 0, 0, SIZE-WALL_SIZE2, WALL_SIZE);
+		wallHorizTop = new TextureRegion(wallHoriz, 0, WALL_SIZE, SIZE - WALL_SIZE2, WALL_SIZE);
+		wallHorizBottom = new TextureRegion(wallHoriz, 0, 0, SIZE - WALL_SIZE2, WALL_SIZE);
 
 		wallCornerTopLeft = new TextureRegion(wallCorner, 0, 0, WALL_SIZE, WALL_SIZE);
 		wallCornerTopRight = new TextureRegion(wallCorner, WALL_SIZE, 0, WALL_SIZE, WALL_SIZE);
@@ -118,96 +121,114 @@ public class Tile {
 		fRight.shape = sRight;
 	}
 
-	public Cell cell;
+	private static class RenderableThing {
+		public final float x, y;
+		public final int width, height;
+		public final TextureRegion region;
+
+		public RenderableThing(TextureRegion region, float x, float y) {
+			this(new TextureRegion(region), x, y, region.getRegionWidth(), region.getRegionHeight());
+		}
+
+		public RenderableThing(TextureRegion region, float x, float y, int width, int height) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+			this.region = region;
+		}
+	}
+
 	private final float x;
 	private final float y;
 	private final Body body;
+	private final ArrayList<RenderableThing> renderableThings = new ArrayList<>();
 
 	public Tile(World world, Cell cell) {
-		this.cell = cell;
 		x = cell.x * SIZE - SIZE / 2f;
 		y = cell.y * SIZE - SIZE / 2f;
 
 		bdef.position.set(cell.x * SIZE / PPM, cell.y * SIZE / PPM);
 		body = world.createBody(bdef);
-		body.createFixture(fTopLeftCorner);
-		body.createFixture(fBottomLeftCorner);
-		body.createFixture(fBottomRightCorner);
-		body.createFixture(fTopRightCorner);
-		if (cell.up == null)
-			body.createFixture(fTop);
-		if (cell.left == null)
-			body.createFixture(fLeft);
-		if (cell.down == null)
-			body.createFixture(fBottom);
-		if (cell.right == null)
-			body.createFixture(fRight);
-	}
 
-	public void render(Batch batch) {
-		batch.draw(tile, x, y);
+		if (cell.up == null || cell.left == null) body.createFixture(fTopLeftCorner);
+		if (cell.down == null || cell.left == null) body.createFixture(fBottomLeftCorner);
+		if (cell.down == null || cell.right == null) body.createFixture(fBottomRightCorner);
+		if (cell.up == null || cell.right == null) body.createFixture(fTopRightCorner);
+		if (cell.up == null) body.createFixture(fTop);
+		if (cell.left == null) body.createFixture(fLeft);
+		if (cell.down == null) body.createFixture(fBottom);
+		if (cell.right == null) body.createFixture(fRight);
+
+		renderableThings.add(new RenderableThing(tile, x, y));
 		if (cell.left == null)
-			batch.draw(wallVertLeft, x, y + WALL_SIZE);
+			renderableThings.add(new RenderableThing(wallVertLeft, x, y + WALL_SIZE));
 		if (cell.right == null)
-			batch.draw(wallVertRight, x + (SIZE - WALL_SIZE), y + WALL_SIZE);
+			renderableThings.add(new RenderableThing(wallVertRight, x + (SIZE - WALL_SIZE), y + WALL_SIZE));
 		if (cell.up == null)
-			batch.draw(wallHorizTop, x + WALL_SIZE, y + (SIZE - WALL_SIZE));
+			renderableThings.add(new RenderableThing(wallHorizTop, x + WALL_SIZE, y + (SIZE - WALL_SIZE)));
 		if (cell.down == null)
-			batch.draw(wallHorizBottom, x + WALL_SIZE, y);
+			renderableThings.add(new RenderableThing(wallHorizBottom, x + WALL_SIZE, y));
 
 		if (cell.up == null) {
 			if (cell.left == null) {
-				batch.draw(wallCornerBottomLeft, x, y + (SIZE - WALL_SIZE));
+				renderableThings.add(new RenderableThing(wallCornerBottomLeft, x, y + (SIZE - WALL_SIZE)));
 			} else {
-				batch.draw(wallCornerBottomRight, x, y + (SIZE - WALL_SIZE));
+				renderableThings.add(new RenderableThing(wallCornerBottomRight, x, y + (SIZE - WALL_SIZE)));
 			}
 			if (cell.right == null) {
-				batch.draw(wallCornerBottomLeft, x + (SIZE - WALL_SIZE), y + (SIZE - WALL_SIZE));
+				renderableThings.add(new RenderableThing(wallCornerBottomLeft, x + (SIZE - WALL_SIZE), y + (SIZE - WALL_SIZE)));
 			} else {
-				batch.draw(wallCornerBottomRight, x + (SIZE - WALL_SIZE), y + (SIZE - WALL_SIZE));
+				renderableThings.add(new RenderableThing(wallCornerBottomRight, x + (SIZE - WALL_SIZE), y + (SIZE - WALL_SIZE)));
 			}
 		}
 		if (cell.left == null) {
 			if (cell.up != null) {
-				batch.draw(wallCornerTopRight, x, y + (SIZE - WALL_SIZE));
+				renderableThings.add(new RenderableThing(wallCornerTopRight, x, y + (SIZE - WALL_SIZE)));
 			}
 			if (cell.down != null) {
-				batch.draw(wallCornerTopRight, x, y);
+				renderableThings.add(new RenderableThing(wallCornerTopRight, x, y));
 			}
 		} else {
 			if (cell.up != null) {
-				batch.draw(wallCornerTopLeft, x + WALL_SIZE, y + (SIZE - WALL_SIZE) + WALL_SIZE, -WALL_SIZE, -WALL_SIZE);
+				renderableThings.add(new RenderableThing(wallCornerTopLeft, x + WALL_SIZE, y + (SIZE - WALL_SIZE) + WALL_SIZE, -WALL_SIZE, -WALL_SIZE));
 			}
 			if (cell.down != null) {
-				batch.draw(wallCornerTopLeft, x + WALL_SIZE, y, -WALL_SIZE, WALL_SIZE);
+				renderableThings.add(new RenderableThing(wallCornerTopLeft, x + WALL_SIZE, y, -WALL_SIZE, WALL_SIZE));
 			}
 		}
 		if (cell.down == null) {
 			if (cell.left == null) {
-				batch.draw(wallCornerBottomLeft, x, y);
+				renderableThings.add(new RenderableThing(wallCornerBottomLeft, x, y));
 			} else {
-				batch.draw(wallCornerBottomRight, x, y + WALL_SIZE, WALL_SIZE, -WALL_SIZE);
+				renderableThings.add(new RenderableThing(wallCornerBottomRight, x, y + WALL_SIZE, WALL_SIZE, -WALL_SIZE));
 			}
 			if (cell.right == null) {
-				batch.draw(wallCornerBottomLeft, x + (SIZE - WALL_SIZE), y);
+				renderableThings.add(new RenderableThing(wallCornerBottomLeft, x + (SIZE - WALL_SIZE), y));
 			} else {
-				batch.draw(wallCornerBottomRight, x + (SIZE - WALL_SIZE), y + WALL_SIZE, WALL_SIZE, -WALL_SIZE);
+				renderableThings.add(new RenderableThing(wallCornerBottomRight, x + (SIZE - WALL_SIZE), y + WALL_SIZE, WALL_SIZE, -WALL_SIZE));
 			}
 		}
 		if (cell.right == null) {
 			if (cell.up != null) {
-				batch.draw(wallCornerTopRight, x + (SIZE - WALL_SIZE) + WALL_SIZE, y + (SIZE - WALL_SIZE), -WALL_SIZE, WALL_SIZE);
+				renderableThings.add(new RenderableThing(wallCornerTopRight, x + (SIZE - WALL_SIZE) + WALL_SIZE, y + (SIZE - WALL_SIZE), -WALL_SIZE, WALL_SIZE));
 			}
 			if (cell.down != null) {
-				batch.draw(wallCornerTopRight, x + (SIZE - WALL_SIZE) + WALL_SIZE, y, -WALL_SIZE, WALL_SIZE);
+				renderableThings.add(new RenderableThing(wallCornerTopRight, x + (SIZE - WALL_SIZE) + WALL_SIZE, y, -WALL_SIZE, WALL_SIZE));
 			}
 		} else {
 			if (cell.up != null) {
-				batch.draw(wallCornerTopLeft, x + (SIZE - WALL_SIZE), y + (SIZE - WALL_SIZE) + WALL_SIZE, WALL_SIZE, -WALL_SIZE);
+				renderableThings.add(new RenderableThing(wallCornerTopLeft, x + (SIZE - WALL_SIZE), y + (SIZE - WALL_SIZE) + WALL_SIZE, WALL_SIZE, -WALL_SIZE));
 			}
 			if (cell.down != null) {
-				batch.draw(wallCornerTopLeft, x + (SIZE - WALL_SIZE), y);
+				renderableThings.add(new RenderableThing(wallCornerTopLeft, x + (SIZE - WALL_SIZE), y));
 			}
+		}
+	}
+
+	public void render(Batch batch) {
+		for (RenderableThing renderableThing : renderableThings) {
+			batch.draw(renderableThing.region, renderableThing.x, renderableThing.y, renderableThing.width, renderableThing.height);
 		}
 	}
 
