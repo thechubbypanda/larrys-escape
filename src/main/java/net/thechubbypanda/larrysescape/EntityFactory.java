@@ -63,7 +63,7 @@ public final class EntityFactory {
 		Entity player = new Entity();
 
 		player.add(new PlayerComponent());
-		player.add(new SpriteComponent(new Texture("icon.png")));
+		player.add(new SpriteComponent((Texture) assets.get(Globals.Textures.LARRY)));
 		player.add(new HealthComponent(Globals.HEALTH));
 		player.add(new TransformComponent(4));
 
@@ -172,7 +172,7 @@ public final class EntityFactory {
 
 		enemy.add(new EnemyComponent(patrolRoute, drop));
 		enemy.add(new PhysicsComponent(enemy, body));
-		enemy.add(new SpriteComponent(new Texture("icon.png")));
+		enemy.add(new SpriteComponent((Texture) assets.get(Globals.Textures.ENEMY)));
 		enemy.add(new HealthComponent(20));
 		enemy.add(new DamageComponent(10, 500));
 

@@ -26,7 +26,7 @@ public class MainMovementSystem extends IteratingSystem {
 		float rotation = tcm.get(entity).getRotation();
 		if (scm.has(entity)) {
 			scm.get(entity).setPosition(position);
-			scm.get(entity).setRotation(rotation);
+			scm.get(entity).setRotation(rotation - 90);
 		}
 		if (acm.has(entity)) {
 			acm.get(entity).setPosition(position);

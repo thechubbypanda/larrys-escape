@@ -32,6 +32,8 @@ public class Globals {
 		public static final String WALL_VERT = "wallVert.png";
 		public static final String WALL_HORIZ = "wallHoriz.png";
 		public static final String WALL_CORNER = "wallCorner.png";
+		public static final String LARRY = "tempLarry2.png";
+		public static final String ENEMY = "tempEnemy.png";
 	}
 
 	public static final int HEALTH = 100;

@@ -36,6 +36,8 @@ public class Game extends com.badlogic.gdx.Game {
 		assets.load(Textures.WALL_CORNER, Texture.class);
 		assets.load(Textures.WALL_VERT, Texture.class);
 		assets.load(Textures.WALL_HORIZ, Texture.class);
+		assets.load(Textures.LARRY, Texture.class);
+		assets.load(Textures.ENEMY, Texture.class);
 		assets.load("flatearthui/flat-earth-ui.json", Skin.class);
 		assets.load("levelExit.png", Texture.class);
 		assets.load("bullet.png", Texture.class);
