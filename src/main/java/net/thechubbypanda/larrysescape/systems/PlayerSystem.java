@@ -64,31 +64,33 @@ public class PlayerSystem extends IteratingSystem {
 			hcm.get(entity).reset();
 		}
 
-		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-			vel.y += 1;
-		} else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-			vel.y -= 1;
-		}
+		if (Gdx.input.getInputProcessor() != null) {
+			if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+				vel.y += 1;
+			} else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+				vel.y -= 1;
+			}
 
-		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-			vel.x -= 1;
-		} else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			vel.x += 1;
-		}
+			if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+				vel.x -= 1;
+			} else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+				vel.x += 1;
+			}
 
-		phcm.get(entity).setRotation(MathUtils.lerpAngle(phcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
-		phcm.get(entity).setLinearVelocity(vel.rotateRad(phcm.get(entity).getRotation()).nor().scl(speed));
+			phcm.get(entity).setRotation(MathUtils.lerpAngle(phcm.get(entity).getRotation(), targetRotation, Math.min(1f, MathUtils.clamp(lerpPercent += deltaTime, 0, 1))));
+			phcm.get(entity).setLinearVelocity(vel.rotateRad(phcm.get(entity).getRotation()).nor().scl(speed));
 
-		scm.get(entity).setPosition(tcm.get(entity).getPosition());
+			scm.get(entity).setPosition(tcm.get(entity).getPosition());
 
-		CameraComponent cc = CameraComponent.getMainCameraComponent();
-		if (cc != null) {
-			Vector3 mousePos = cc.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-			float diffX = mousePos.x - tcm.get(entity).getPosition().x;
-			float diffY = mousePos.y - tcm.get(entity).getPosition().y;
-			float angle = (float) Math.atan2(diffY, diffX);
-			lcm.get(entity).setBodyAngleOffset((angle - phcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
-			scm.get(entity).setRotation((angle) * MathUtils.radiansToDegrees - 90);
+			CameraComponent cc = CameraComponent.getMainCameraComponent();
+			if (cc != null) {
+				Vector3 mousePos = cc.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+				float diffX = mousePos.x - tcm.get(entity).getPosition().x;
+				float diffY = mousePos.y - tcm.get(entity).getPosition().y;
+				float angle = (float) Math.atan2(diffY, diffX);
+				lcm.get(entity).setBodyAngleOffset((angle - phcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
+				scm.get(entity).setRotation((angle) * MathUtils.radiansToDegrees - 90);
+			}
 		}
 
 		Globals.HUD.setHealth(hcm.get(entity).getHealth());

@@ -53,7 +53,7 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(AMBIENT_COLOR);
 
-		levelManager = new LevelManager(engine, world, 1);
+		levelManager = new LevelManager(engine, world, this, 1);
 
 		// Cameras
 		// Main viewport and camera

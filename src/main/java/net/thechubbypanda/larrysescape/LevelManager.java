@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysescape.components.*;
@@ -22,6 +23,7 @@ public class LevelManager {
 
 	private final Engine engine;
 	private final World world;
+	private final InputProcessor inputListener;
 
 	private int currentLevel;
 	private Entity currentMap;
@@ -29,11 +31,14 @@ public class LevelManager {
 	private ArrayList<ArrayList<Vector2>> routes;
 	private ImmutableArray<Entity> players;
 
+	private boolean changing = false;
+
 	private final Random random = new Random();
 
-	public LevelManager(Engine engine, World world, int initialLevel) {
+	public LevelManager(Engine engine, World world, InputProcessor inputListener, int initialLevel) {
 		this.engine = engine;
 		this.world = world;
+		this.inputListener = inputListener;
 
 		players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
 
@@ -43,12 +48,29 @@ public class LevelManager {
 	}
 
 	private void setLevel(int level) {
-		currentLevel = level;
-		((Game) Gdx.app.getApplicationListener()).fade(() -> {
-			Globals.HUD.setLevel(level);
-			destroyLevel();
-			generateLevel(level);
-		});
+		if (!changing) {
+			currentLevel = level;
+			((Game) Gdx.app.getApplicationListener()).fade(new FadeListener() {
+				@Override
+				public void fadeStart() {
+					Gdx.input.setInputProcessor(null);
+					changing = true;
+				}
+
+				@Override
+				public void atMiddleOfFade() {
+					Globals.HUD.setLevel(level);
+					destroyLevel();
+					generateLevel(level);
+				}
+
+				@Override
+				public void fadeEnd() {
+					changing = false;
+					Gdx.input.setInputProcessor(inputListener);
+				}
+			});
+		}
 	}
 
 	public void reset() {

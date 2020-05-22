@@ -81,6 +81,7 @@ public class Game extends com.badlogic.gdx.Game {
 	public void fade(FadeListener fadeListener) {
 		fadeIn = false;
 		this.fadeListener = fadeListener;
+		fadeListener.fadeStart();
 	}
 
 	@Override
@@ -88,6 +89,10 @@ public class Game extends com.badlogic.gdx.Game {
 		super.render();
 		if (fadeIn) {
 			fadeAlpha = MathUtils.clamp(fadeAlpha - Gdx.graphics.getDeltaTime(), 0, 1);
+			if (fadeListener != null && fadeAlpha == 0) {
+				fadeListener.fadeEnd();
+				fadeListener = null;
+			}
 		} else {
 			fadeAlpha = MathUtils.clamp(fadeAlpha + Gdx.graphics.getDeltaTime(), 0, 1);
 			if (fadeAlpha == 1) {
@@ -98,7 +103,6 @@ public class Game extends com.badlogic.gdx.Game {
 				}
 				if (fadeListener != null) {
 					fadeListener.atMiddleOfFade();
-					fadeListener = null;
 				}
 			}
 		}
