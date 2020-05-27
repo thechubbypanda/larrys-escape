@@ -91,6 +91,8 @@ public class PlayerSystem extends IteratingSystem {
 				lcm.get(entity).setBodyAngleOffset((angle - phcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
 				scm.get(entity).setRotation((angle) * MathUtils.radiansToDegrees - 90);
 			}
+		} else {
+			phcm.get(entity).setLinearVelocity(Vector2.Zero);
 		}
 
 		Globals.HUD.setHealth(hcm.get(entity).getHealth());
