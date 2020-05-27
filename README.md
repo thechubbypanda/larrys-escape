@@ -1,7 +1,7 @@
 # Larry's Escape
 
 #### Blurb
-In Larry's Escape, you play as Larry, the chicken. Larry has been stuck on this farm for most of his life and he has had enough. The only problem with getting out is that the farmer made a series of unnecessarily complicated mazes filled with hoards of robot chickens to stop him getting out. Thankfully, there's a few helpful characters who can help him on his journey to freedom.
+In Larry's Escape, you play as Larry, the chicken. Larry has been stuck on this farm for most of his life and he has had enough. The only problem with getting out is that the farmer made a series of unnecessarily complicated mazes filled with hoards of robot chickens to stop him getting out. Thankfully, there's a few helpful characters who can aid him on his journey to freedom.
 
 #### Elevator Pitch
 
