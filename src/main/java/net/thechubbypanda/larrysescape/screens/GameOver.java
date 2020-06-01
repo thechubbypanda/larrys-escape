@@ -11,15 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysescape.Game;
-import net.thechubbypanda.larrysescape.Globals;
 
 import static net.thechubbypanda.larrysescape.Globals.assets;
 
-public class Menu extends ScreenAdapter {
+public class GameOver extends ScreenAdapter {
 
 	private final Stage stage;
 
-	public Menu() {
+	public GameOver() {
 		stage = new Stage(new ExtendViewport(1000, 1000));
 
 		Skin skin = assets.get("flatearthui/flat-earth-ui.json");
@@ -28,7 +27,7 @@ public class Menu extends ScreenAdapter {
 		window.setFillParent(true);
 		stage.addActor(window);
 
-		Label label = new Label(Globals.TITLE, skin, "title");
+		Label label = new Label("Game Over", skin, "title");
 		window.add(label).colspan(2).padBottom(10.0f).expandX();
 
 		window.row();
@@ -39,17 +38,14 @@ public class Menu extends ScreenAdapter {
 		table.defaults().growX();
 		rowTable.add(table).width(200.0f).right();
 
-		TextButton textButton = new TextButton("Start", skin);
+		TextButton textButton = new TextButton("Main Menu", skin);
 		textButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				((Game) Gdx.app.getApplicationListener()).fadeScreen(Game.Screens.play);
+				((Game) Gdx.app.getApplicationListener()).reset();
+				((Game) Gdx.app.getApplicationListener()).fadeScreen(Game.Screens.menu);
 			}
 		});
-		table.add(textButton).padTop(10);
-
-		table.row();
-		textButton = new TextButton("Config", skin);
 		table.add(textButton).padTop(10);
 
 		table.row();

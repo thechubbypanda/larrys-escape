@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import net.thechubbypanda.larrysescape.screens.GameOver;
 import net.thechubbypanda.larrysescape.screens.Menu;
 import net.thechubbypanda.larrysescape.screens.Pause;
 import net.thechubbypanda.larrysescape.screens.Play;
@@ -48,6 +49,7 @@ public class Game extends com.badlogic.gdx.Game {
 		screens.put(Screens.menu, new Menu());
 		screens.put(Screens.play, new Play());
 		screens.put(Screens.pause, new Pause());
+		screens.put(Screens.gameOver, new GameOver());
 
 		sr = new ShapeRenderer();
 		sr.setColor(0, 0, 0, 0);
@@ -115,7 +117,7 @@ public class Game extends com.badlogic.gdx.Game {
 	}
 
 	public enum Screens {
-		menu, play, pause
+		menu, play, gameOver, pause
 	}
 
 	@Override

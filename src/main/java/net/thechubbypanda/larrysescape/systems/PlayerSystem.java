@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysescape.CollisionSignal;
 import net.thechubbypanda.larrysescape.EntityFactory;
+import net.thechubbypanda.larrysescape.Game;
 import net.thechubbypanda.larrysescape.Globals;
 import net.thechubbypanda.larrysescape.components.*;
 import net.thechubbypanda.larrysescape.signals.InputSignal;
@@ -97,6 +98,10 @@ public class PlayerSystem extends IteratingSystem {
 
 		Globals.HUD.setHealth(hcm.get(entity).getHealth());
 		Globals.HUD.setAmmo(plcm.get(entity).getAmmo());
+
+		if (hcm.get(entity).getHealth() <= 0) {
+			((Game) Gdx.app.getApplicationListener()).fadeScreen(Game.Screens.gameOver);
+		}
 	}
 
 	private class CollisionImpl implements Listener<CollisionSignal> {
