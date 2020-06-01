@@ -73,6 +73,7 @@ public class GameOver extends ScreenAdapter {
 
 	@Override
 	public void render(float delta) {
+		Gdx.input.setInputProcessor(stage);
 		Gdx.gl.glClearColor(20f / 255f, 26f / 255f, 20f / 255f, 1);
 		Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 

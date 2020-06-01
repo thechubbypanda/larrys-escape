@@ -141,7 +141,7 @@ public class PlayerSystem extends IteratingSystem {
 			}
 			if (i.type == InputSignal.Type.mouseDown) {
 				if (i.button == Input.Buttons.LEFT) {
-					if (lastShootTime <= System.currentTimeMillis() - PlayerComponent.SHOOT_INTERVAL) {
+					if (Globals.CAN_SHOOT && lastShootTime <= System.currentTimeMillis() - (Globals.FAST_FIRING ? PlayerComponent.FAST_SHOOT_INTERVAL : PlayerComponent.SHOOT_INTERVAL)) {
 						for (Entity p : getEntities()) {
 							if (plcm.get(p).getAmmo() > 0) {
 								plcm.get(p).addAmmo(-1);

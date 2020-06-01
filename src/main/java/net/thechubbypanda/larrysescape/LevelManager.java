@@ -36,16 +36,16 @@ public class LevelManager {
 
 	private final Random random = new Random();
 
-	public LevelManager(Engine engine, World world, InputProcessor inputListener, int initialLevel) {
+	public LevelManager(Engine engine, World world, InputProcessor inputListener) {
 		this.engine = engine;
 		this.world = world;
 		this.inputListener = inputListener;
 
 		players = engine.getEntitiesFor(Family.all(PlayerComponent.class).get());
 
-		currentLevel = initialLevel;
-		generateLevel(initialLevel);
-		Globals.HUD.setLevel(initialLevel);
+		currentLevel = 0;
+		generateLevel(currentLevel);
+		Globals.HUD.setLevel(currentLevel);
 	}
 
 	private void setLevel(int level) {
@@ -75,8 +75,9 @@ public class LevelManager {
 	}
 
 	public void reset() {
-		setLevel(1);
+		setLevel(0);
 		players.forEach(p -> hcm.get(p).reset());
+		Globals.reset();
 	}
 
 	public void bumpLevel() {
@@ -124,11 +125,44 @@ public class LevelManager {
 
 		switch (level) {
 			case 0:
-				currentCellMap = new CustomCellMap(3, 10);
-				currentMap = new Entity();
-				currentMap.add(new TileMapComponent(world, currentCellMap));
-				currentMap.add(new TransformComponent(0, 0, -1));
-				engine.addEntity(currentMap);
+				elderLevel(new String[]{
+								"Press SPACE to advance dialog.",
+								"Use WASD to move and QE to rotate.",
+								"I hear you wish to leave the farm, Larry.",
+								"The road ahead is a treacherous one!",
+								"You can use the portals to get to the next level",
+								"Take these weapons to aid you on your way.",
+								"Move your mouse and click to shoot."},
+						() -> Globals.CAN_SHOOT = true);
+				break;
+			case 3:
+				elderLevel(new String[]{
+								"Ah I see you too have made it this far, well done!",
+								"I was unable to continue on to freedom after I lost my leg to those god awful robots.",
+								"Take this upgrade I salvaged from my own weapon, perhaps you will stand a better chance with it.",
+								"Good luck!",
+								"You can now shoot faster."},
+						() -> Globals.FAST_FIRING = true);
+				break;
+			case 6:
+				elderLevel(new String[]{
+								"Hello! So rare someone passes through here anymore.",
+								"I no longer have the strength to continue this war.",
+								"Thank you for talking to me, young man...",
+								"Perhaps my armour can show my appreciation.",
+								"Your max health has doubled."},
+						() -> {
+							//Globals.HEALTH = 200;
+							//players.forEach(p -> hcm.get(p).setMax(Globals.HEALTH));
+						});
+				break;
+			case 9:
+				elderLevel(new String[]{
+						"Beware!",
+						"None who have passed here have ever returned!",
+						"Beware!",
+						"Thank you for playing!",
+						"The game is infinite from here on out."}, null);
 				break;
 			default:
 				// Map
@@ -171,8 +205,19 @@ public class LevelManager {
 					}
 					engine.addEntity(EntityFactory.enemy(world, route, drop));
 				}
-				break;
 		}
+	}
+
+	private void elderLevel(String[] lines, Runnable action) {
+		currentCellMap = new CustomCellMap(3, 1);
+		currentMap = new Entity();
+		currentMap.add(new TileMapComponent(world, currentCellMap));
+		currentMap.add(new TransformComponent(0, 0, -1));
+		engine.addEntity(currentMap);
+
+		engine.addEntity(EntityFactory.levelExit(world, new Vector2(currentCellMap.getMap()[2][0].x, currentCellMap.getMap()[2][0].y).scl(128)));
+
+		engine.addEntity(EntityFactory.elder(lines, action, new Vector2(currentCellMap.getMap()[1][0].x, currentCellMap.getMap()[1][0].y).scl(128)));
 	}
 
 	public int getLevel() {

@@ -7,7 +7,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.SortedIteratingSystem;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import net.thechubbypanda.larrysescape.Globals;
 import net.thechubbypanda.larrysescape.components.*;
@@ -23,12 +22,14 @@ public class RenderSystem extends SortedIteratingSystem {
 	private final ComponentMapper<AnimationComponent> acm = ComponentMapper.getFor(AnimationComponent.class);
 	private final ComponentMapper<TileMapComponent> tmcm = ComponentMapper.getFor(TileMapComponent.class);
 
-	private final Batch batch;
+	private final SpriteBatch batch;
 
 	private final RayHandler rayHandler;
 	private final OrthographicCamera lightCamera;
 
-	public RenderSystem(RayHandler rayHandler, OrthographicCamera lightCamera) {
+	private final ElderSystem elderSystem;
+
+	public RenderSystem(RayHandler rayHandler, OrthographicCamera lightCamera, ElderSystem elderSystem) {
 		super(
 				Family.all(TransformComponent.class).one(SpriteComponent.class, AnimationComponent.class, TileMapComponent.class).get(),
 				(e1, e2) -> (int) Math.signum(tcm.get(e1).getZ() - tcm.get(e2).getZ()),
@@ -38,6 +39,7 @@ public class RenderSystem extends SortedIteratingSystem {
 		batch = new SpriteBatch();
 		this.rayHandler = rayHandler;
 		this.lightCamera = lightCamera;
+		this.elderSystem = elderSystem;
 	}
 
 	@Override
@@ -66,6 +68,7 @@ public class RenderSystem extends SortedIteratingSystem {
 		batch.end();
 		rayHandler.setCombinedMatrix(lightCamera);
 		rayHandler.updateAndRender();
+		elderSystem.draw();
 	}
 
 	@Override

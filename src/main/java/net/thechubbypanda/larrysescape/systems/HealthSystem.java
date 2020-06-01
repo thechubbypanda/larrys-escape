@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import net.thechubbypanda.larrysescape.CollisionSignal;
 import net.thechubbypanda.larrysescape.components.DamageComponent;
 import net.thechubbypanda.larrysescape.components.EnemyComponent;
@@ -25,8 +26,12 @@ public class HealthSystem extends IteratingSystem implements Listener<CollisionS
 
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		if (hcm.get(entity).getHealth() <= 0 && !plcm.has(entity)) {
-			getEngine().removeEntity(entity);
+		if (hcm.get(entity).getHealth() <= 0) {
+			if (plcm.has(entity)) {
+				Gdx.input.setInputProcessor(null);
+			} else {
+				getEngine().removeEntity(entity);
+			}
 		}
 		for (DamageComponent dc : hcm.get(entity).beingHitBy.keySet()) {
 			if (dc.hitInterval == -1) {

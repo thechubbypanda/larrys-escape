@@ -1,9 +1,7 @@
 package net.thechubbypanda.larrysescape.screens;
 
 import box2dLight.RayHandler;
-import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.*;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -14,10 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import net.thechubbypanda.larrysescape.*;
-import net.thechubbypanda.larrysescape.components.CameraComponent;
-import net.thechubbypanda.larrysescape.components.EnemyComponent;
-import net.thechubbypanda.larrysescape.components.LightComponent;
-import net.thechubbypanda.larrysescape.components.PhysicsComponent;
+import net.thechubbypanda.larrysescape.components.*;
 import net.thechubbypanda.larrysescape.entityListeners.EnemyListener;
 import net.thechubbypanda.larrysescape.entityListeners.WorldListener;
 import net.thechubbypanda.larrysescape.signals.InputSignal;
@@ -53,8 +48,6 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(AMBIENT_COLOR);
 
-		levelManager = new LevelManager(engine, world, this, 1);
-
 		// Cameras
 		// Main viewport and camera
 		CameraComponent mcc = new CameraComponent(new ExtendViewport(Gdx.graphics.getWidth() / 1.5f, Gdx.graphics.getHeight() / 1.5f), 0, Gdx.graphics.getHeight() / 8f, 0, 1f);
@@ -80,13 +73,12 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		collisionSignal.add(ds);
 		engine.addSystem(ds);
 
-		LevelExitSystem les = new LevelExitSystem(levelManager);
-		collisionSignal.add(les);
-		engine.addSystem(les);
-
 		CameraSystem cs = new CameraSystem();
 		resizeSignal.add(cs);
 		engine.addSystem(cs);
+
+		ElderSystem es = new ElderSystem(resizeSignal, inputSignal);
+		engine.addSystem(es);
 
 		engine.addSystem(new PhysicsSystem(world));
 		engine.addSystem(new PlayerSystem(world, rayHandler, cs, collisionSignal, inputSignal));
@@ -95,13 +87,32 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		engine.addSystem(new AliveTimeSystem());
 		engine.addSystem(new AnimationSystem());
 
-		engine.addSystem(new RenderSystem(rayHandler, b2dcc.getCamera()));
+		engine.addSystem(new RenderSystem(rayHandler, b2dcc.getCamera(), es));
 		engine.addSystem(new DebugRenderSystem(world, b2dcc.getCamera()));
 
 		// Entity listeners
 		engine.addEntityListener(Family.one(PhysicsComponent.class, LightComponent.class).get(), new WorldListener(world));
+		engine.addEntityListener(Family.all(ElderComponent.class).get(), new EntityListener() {
+			private final ComponentMapper<ElderComponent> ecm = ComponentMapper.getFor(ElderComponent.class);
+
+			@Override
+			public void entityAdded(Entity entity) {
+				es.setText(ecm.get(entity).get());
+			}
+
+			@Override
+			public void entityRemoved(Entity entity) {
+				ecm.get(entity).act();
+			}
+		});
 		enemyListener = new EnemyListener(engine, world, cs);
 		engine.addEntityListener(Family.all(EnemyComponent.class, PhysicsComponent.class).get(), enemyListener);
+
+		levelManager = new LevelManager(engine, world, this);
+
+		LevelExitSystem les = new LevelExitSystem(levelManager);
+		collisionSignal.add(les);
+		engine.addSystem(les);
 	}
 
 	public void reset() {

@@ -13,6 +13,16 @@ public class Globals {
 	public static final float AMBIENT_INTENSITY = 0.13f;
 	public static final Color AMBIENT_COLOR = new Color(AMBIENT_INTENSITY, AMBIENT_INTENSITY, AMBIENT_INTENSITY, 1f);
 
+	public static boolean CAN_SHOOT = false;
+	public static boolean FAST_FIRING = false;
+	public static int HEALTH = 100;
+
+	public static void reset() {
+		CAN_SHOOT = false;
+		FAST_FIRING = false;
+		HEALTH = 100;
+	}
+
 	public static class SystemPriority {
 		public static final int PRE_UPDATE = -1;
 		public static final int UPDATE = 0;
@@ -35,8 +45,6 @@ public class Globals {
 		public static final String LARRY = "tempLarry2.png";
 		public static final String ENEMY = "tempEnemy.png";
 	}
-
-	public static final int HEALTH = 100;
 
 	public static HUD HUD;
 

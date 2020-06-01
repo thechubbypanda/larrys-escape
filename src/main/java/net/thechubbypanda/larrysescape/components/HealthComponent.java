@@ -8,7 +8,7 @@ import static com.badlogic.gdx.math.MathUtils.clamp;
 
 public class HealthComponent implements Component {
 
-	private final int maxHealth;
+	private int maxHealth;
 	private int health;
 
 	public final HashMap<DamageComponent, Long> beingHitBy = new HashMap<>();
@@ -33,5 +33,10 @@ public class HealthComponent implements Component {
 
 	public void reset() {
 		health = maxHealth;
+	}
+
+	public void setMax(int health) {
+		maxHealth = health;
+		this.health = maxHealth;
 	}
 }
