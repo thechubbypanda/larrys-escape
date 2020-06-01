@@ -20,6 +20,7 @@ import static net.thechubbypanda.larrysescape.Globals.PPM;
 public class LevelManager {
 
 	private final ComponentMapper<PhysicsComponent> phcm = ComponentMapper.getFor(PhysicsComponent.class);
+	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
 
 	private final Engine engine;
 	private final World world;
@@ -74,7 +75,8 @@ public class LevelManager {
 	}
 
 	public void reset() {
-		setLevel(0);
+		setLevel(1);
+		players.forEach(p -> hcm.get(p).reset());
 	}
 
 	public void bumpLevel() {
@@ -169,5 +171,9 @@ public class LevelManager {
 				}
 				break;
 		}
+	}
+
+	public int getLevel() {
+		return currentLevel;
 	}
 }

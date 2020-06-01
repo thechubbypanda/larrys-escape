@@ -9,11 +9,13 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import net.thechubbypanda.larrysescape.CollisionSignal;
 import net.thechubbypanda.larrysescape.components.DamageComponent;
 import net.thechubbypanda.larrysescape.components.HealthComponent;
+import net.thechubbypanda.larrysescape.components.PlayerComponent;
 
 public class HealthSystem extends IteratingSystem implements Listener<CollisionSignal> {
 
 	private final ComponentMapper<HealthComponent> hcm = ComponentMapper.getFor(HealthComponent.class);
 	private final ComponentMapper<DamageComponent> dcm = ComponentMapper.getFor(DamageComponent.class);
+	private final ComponentMapper<PlayerComponent> plcm = ComponentMapper.getFor(PlayerComponent.class);
 
 	public HealthSystem() {
 		super(Family.all(HealthComponent.class).get());
@@ -21,7 +23,7 @@ public class HealthSystem extends IteratingSystem implements Listener<CollisionS
 
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		if (hcm.get(entity).getHealth() <= 0) {
+		if (hcm.get(entity).getHealth() <= 0 && !plcm.has(entity)) {
 			getEngine().removeEntity(entity);
 		}
 		for (DamageComponent dc : hcm.get(entity).beingHitBy.keySet()) {

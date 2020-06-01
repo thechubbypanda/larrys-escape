@@ -108,6 +108,10 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		levelManager.reset();
 	}
 
+	public int getLevel() {
+		return levelManager.getLevel();
+	}
+
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(this);

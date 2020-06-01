@@ -17,6 +17,7 @@ import static net.thechubbypanda.larrysescape.Globals.assets;
 public class GameOver extends ScreenAdapter {
 
 	private final Stage stage;
+	private final Label level;
 
 	public GameOver() {
 		stage = new Stage(new ExtendViewport(1000, 1000));
@@ -29,6 +30,10 @@ public class GameOver extends ScreenAdapter {
 
 		Label label = new Label("Game Over", skin, "title");
 		window.add(label).colspan(2).padBottom(10.0f).expandX();
+
+		window.row();
+		level = new Label("You reached level: ", skin);
+		window.add(level).colspan(2).padBottom(10f).expandX();
 
 		window.row();
 		Table rowTable = new Table();
@@ -62,6 +67,8 @@ public class GameOver extends ScreenAdapter {
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(stage);
+		int level = ((Play) ((Game) Gdx.app.getApplicationListener()).getScreen(Game.Screens.play)).getLevel();
+		this.level.setText("You reached level " + level);
 	}
 
 	@Override
