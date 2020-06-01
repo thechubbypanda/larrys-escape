@@ -88,9 +88,11 @@ public class LevelManager {
 			currentMap.getComponent(TileMapComponent.class).removeBodies(world);
 		}
 		ImmutableArray<Entity> keep = engine.getEntitiesFor(Family.one(CameraComponent.class, PlayerComponent.class).get());
-		for (Entity e : engine.getEntities()) {
-			if (!keep.contains(e, true)) {
-				engine.removeEntity(e);
+		for (int i = 0; i < 4; i++) {
+			for (Entity e : engine.getEntities()) {
+				if (!keep.contains(e, true)) {
+					engine.removeEntity(e);
+				}
 			}
 		}
 	}
