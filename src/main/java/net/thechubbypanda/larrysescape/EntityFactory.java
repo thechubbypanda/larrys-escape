@@ -179,11 +179,11 @@ public final class EntityFactory {
 		return enemy;
 	}
 
-	public static Entity elder(String[] lines, Runnable action, Vector2 position) {
+	public static Entity elder(String[] lines, int level, Runnable action, Vector2 position) {
 		Entity elder = new Entity();
 
 		elder.add(new TransformComponent(position.x, position.y, 3));
-		elder.add(new SpriteComponent(assets.get("levelExit.png", Texture.class)));
+		elder.add(new SpriteComponent(assets.get("helper" + level + ".png", Texture.class)));
 		elder.add(new ElderComponent(lines, action));
 
 		return elder;

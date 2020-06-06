@@ -217,7 +217,7 @@ public class LevelManager {
 
 		engine.addEntity(EntityFactory.levelExit(world, new Vector2(currentCellMap.getMap()[2][0].x, currentCellMap.getMap()[2][0].y).scl(128)));
 
-		engine.addEntity(EntityFactory.elder(lines, action, new Vector2(currentCellMap.getMap()[1][0].x, currentCellMap.getMap()[1][0].y).scl(128)));
+		engine.addEntity(EntityFactory.elder(lines, currentLevel, action, new Vector2(currentCellMap.getMap()[1][0].x, currentCellMap.getMap()[1][0].y).scl(128)));
 	}
 
 	public int getLevel() {

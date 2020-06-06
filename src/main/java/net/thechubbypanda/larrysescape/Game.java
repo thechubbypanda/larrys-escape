@@ -44,6 +44,10 @@ public class Game extends com.badlogic.gdx.Game {
 		assets.load("bullet.png", Texture.class);
 		assets.load("health.png", Texture.class);
 		assets.load("ammo.png", Texture.class);
+		assets.load("helper0.png", Texture.class);
+		assets.load("helper3.png", Texture.class);
+		assets.load("helper6.png", Texture.class);
+		assets.load("helper9.png", Texture.class);
 		assets.finishLoading();
 
 		screens.put(Screens.menu, new Menu());
