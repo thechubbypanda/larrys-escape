@@ -43,6 +43,13 @@ public class ElderSystem extends IteratingSystem {
 	}
 
 	@Override
+	public void update(float deltaTime) {
+		if (getEntities().size() == 0) {
+			setText("");
+		}
+	}
+
+	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 
 	}
