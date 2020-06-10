@@ -29,8 +29,7 @@ public class LevelManager {
 	private int currentLevel;
 	private Entity currentMap;
 	private CellMap currentCellMap;
-	private ArrayList<ArrayList<Vector2>> routes;
-	private ImmutableArray<Entity> players;
+	private final ImmutableArray<Entity> players;
 
 	private boolean changing = false;
 
@@ -182,7 +181,7 @@ public class LevelManager {
 				deadEnds.remove(exitCell);
 
 				// Patrol Routes
-				routes = new ArrayList<>();
+				ArrayList<ArrayList<Vector2>> routes = new ArrayList<>();
 				for (Cell end : deadEnds) {
 					ArrayList<Cell> path = getStraightPath(end);
 					ArrayList<Vector2> route = new ArrayList<>();
