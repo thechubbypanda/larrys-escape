@@ -41,6 +41,7 @@ public class PlayerSystem extends IteratingSystem {
 	private final Vector2 vel = new Vector2();
 
 	private final Sound shootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/shoot.wav"));
+	private final Sound walkSound = Gdx.audio.newSound(Gdx.files.internal("sounds/walking.wav"));
 
 	private float targetRotation = 0;
 	private float lerpPercent = 0;
@@ -54,6 +55,8 @@ public class PlayerSystem extends IteratingSystem {
 
 		collisionSignal.add(new CollisionImpl());
 		inputSignal.add(new InputImpl());
+		walkSound.loop();
+		walkSound.pause();
 	}
 
 	@Override
@@ -94,6 +97,13 @@ public class PlayerSystem extends IteratingSystem {
 			}
 		} else {
 			phcm.get(entity).setLinearVelocity(Vector2.Zero);
+		}
+
+
+		if (vel.isZero()) {
+			walkSound.pause();
+		} else {
+			walkSound.resume();
 		}
 
 		Globals.HUD.setHealth(hcm.get(entity).getHealth());

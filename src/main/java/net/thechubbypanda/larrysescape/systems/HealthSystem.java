@@ -7,6 +7,7 @@ import com.badlogic.ashley.signals.Listener;
 import com.badlogic.ashley.signals.Signal;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import net.thechubbypanda.larrysescape.CollisionSignal;
 import net.thechubbypanda.larrysescape.components.DamageComponent;
 import net.thechubbypanda.larrysescape.components.EnemyComponent;
@@ -19,6 +20,8 @@ public class HealthSystem extends IteratingSystem implements Listener<CollisionS
 	private final ComponentMapper<DamageComponent> dcm = ComponentMapper.getFor(DamageComponent.class);
 	private final ComponentMapper<PlayerComponent> plcm = ComponentMapper.getFor(PlayerComponent.class);
 	private final ComponentMapper<EnemyComponent> ecm = ComponentMapper.getFor(EnemyComponent.class);
+
+	private final Sound hitSound = Gdx.audio.newSound(Gdx.files.internal("sounds/saw.wav"));
 
 	public HealthSystem() {
 		super(Family.all(HealthComponent.class).get());
@@ -40,6 +43,7 @@ public class HealthSystem extends IteratingSystem implements Listener<CollisionS
 				if (hcm.get(entity).beingHitBy.get(dc) <= System.currentTimeMillis() - dc.hitInterval) {
 					hcm.get(entity).addHealth(-dc.damage);
 					hcm.get(entity).beingHitBy.put(dc, System.currentTimeMillis());
+					hitSound.play();
 				}
 			}
 		}

@@ -7,6 +7,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysescape.components.*;
@@ -35,6 +36,9 @@ public class LevelManager {
 
 	private final Random random = new Random();
 
+	private final Music defaultGame = Gdx.audio.newMusic(Gdx.files.internal("sounds/defaultGame.mp3"));
+	private final Music safeGame = Gdx.audio.newMusic(Gdx.files.internal("sounds/safeGame.mp3"));
+
 	public LevelManager(Engine engine, World world, InputProcessor inputListener) {
 		this.engine = engine;
 		this.world = world;
@@ -45,6 +49,8 @@ public class LevelManager {
 		currentLevel = 0;
 		generateLevel(currentLevel);
 		Globals.HUD.setLevel(currentLevel);
+
+		defaultGame.setLooping(true);
 	}
 
 	private void setLevel(int level) {
@@ -204,6 +210,16 @@ public class LevelManager {
 					}
 					engine.addEntity(EntityFactory.enemy(world, route, drop));
 				}
+		}
+
+		if (currentCellMap instanceof RecursiveCellMap) {
+			safeGame.stop();
+			if (!defaultGame.isPlaying()) {
+				defaultGame.play();
+			}
+		} else {
+			defaultGame.stop();
+			safeGame.play();
 		}
 	}
 
