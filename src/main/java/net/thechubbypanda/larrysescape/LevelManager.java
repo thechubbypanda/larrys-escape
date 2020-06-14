@@ -8,6 +8,7 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import net.thechubbypanda.larrysescape.components.*;
@@ -38,6 +39,7 @@ public class LevelManager {
 
 	private final Music defaultGame = Gdx.audio.newMusic(Gdx.files.internal("sounds/defaultGame.mp3"));
 	private final Music safeGame = Gdx.audio.newMusic(Gdx.files.internal("sounds/safeGame.mp3"));
+	private final Sound teleport = Gdx.audio.newSound(Gdx.files.internal("sounds/teleport.wav"));
 
 	public LevelManager(Engine engine, World world, InputProcessor inputListener) {
 		this.engine = engine;
@@ -61,6 +63,7 @@ public class LevelManager {
 				public void fadeStart() {
 					Gdx.input.setInputProcessor(null);
 					changing = true;
+					teleport.play();
 				}
 
 				@Override
