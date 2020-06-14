@@ -11,7 +11,7 @@ ext {
 	gdxVersion = "1.9.11-SNAPSHOT"
 }
 
-version = '0.10.0-ALPHA'
+version = '1.0.1'
 
 repositories {
 	maven { url "https://oss.sonatype.org/content/repositories/releases/" }
