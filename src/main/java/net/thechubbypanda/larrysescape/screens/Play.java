@@ -249,10 +249,10 @@ public class Play implements Screen, InputProcessor, ContactListener {
 		return touchDragged(screenX, screenY, -1);
 	}
 
-	@Override
-	public boolean scrolled(int amount) {
-		return false;
-	}
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        return false;
+    }
 
 	private boolean touchSignal(int screenX, int screenY, int button, InputSignal s) {
 		if (getSignalPosition(screenX, screenY, s)) return false;
