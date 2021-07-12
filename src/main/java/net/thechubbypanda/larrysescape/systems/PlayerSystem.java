@@ -89,7 +89,9 @@ public class PlayerSystem extends IteratingSystem {
 			CameraComponent cc = CameraComponent.getMainCameraComponent();
 			if (cc != null) {
 				Vector3 mousePos = cc.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-				float angle = new Vector2(mousePos.x, mousePos.y).angleRad(tcm.get(entity).getPosition());
+				float diffX = mousePos.x - tcm.get(entity).getPosition().x;
+				float diffY = mousePos.y - tcm.get(entity).getPosition().y;
+				float angle = (float) Math.atan2(diffY, diffX);
 				lcm.get(entity).setBodyAngleOffset((angle - phcm.get(entity).getRotation()) * MathUtils.radiansToDegrees);
 				scm.get(entity).setRotation((angle) * MathUtils.radiansToDegrees - 90);
 			}
